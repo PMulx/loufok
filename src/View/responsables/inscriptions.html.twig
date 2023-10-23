@@ -1,0 +1,186 @@
+{% extends 'layout.html.twig' %} {% block title %} Inscriptions des étudiants
+{{ parent() }}
+{% endblock %} {% block content %}
+<link href="../assets/styles/main.css" rel="stylesheet" type="text/css" />
+<div class="bg-gradient bg">
+  <header>
+    <div class="userHeader">
+      <p>
+        Bonjour,
+        <span class="user">{{ responsable.prenom_resp_stage }}</span>
+      </p>
+      <nav class="userHeader__nav">
+        <ul>
+          <li>
+            <a
+              href="{{ url('/disconnect') }}"
+              aria-label="Déconnexion de votre espace"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M5 21q-.825 0-1.413-.588T3 19V5q0-.825.588-1.413T5 3h7v2H5v14h7v2H5Zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5l-5 5Z"
+                />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a
+              href="{{ url('/responsable/' ~ responsable.id_formation ~ '/profil') }}"
+              aria-label="Les paramètres de votre compte"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12 12q-1.65 0-2.825-1.175T8 8q0-1.65 1.175-2.825T12 4q1.65 0 2.825 1.175T16 8q0 1.65-1.175 2.825T12 12Zm-8 8v-2.8q0-.85.438-1.563T5.6 14.55q1.55-.775 3.15-1.163T12 13q1.65 0 3.25.388t3.15 1.162q.725.375 1.163 1.088T20 17.2V20H4Zm2-2h12v-.8q0-.275-.138-.5t-.362-.35q-1.35-.675-2.725-1.012T12 15q-1.4 0-2.775.338T6.5 16.35q-.225.125-.363.35T6 17.2v.8Zm6-8q.825 0 1.413-.588T14 8q0-.825-.588-1.413T12 6q-.825 0-1.413.588T10 8q0 .825.588 1.413T12 10Zm0-2Zm0 10Z"
+                />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="#" aria-label="Les dernières informations importantes">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M19 17v-5.2c-.5.1-1 .2-1.5.2H17v6H7v-7c0-2.8 2.2-5 5-5c.1-1.3.7-2.4 1.5-3.3c-.3-.4-.9-.7-1.5-.7c-1.1 0-2 .9-2 2v.3C7 5.2 5 7.9 5 11v6l-2 2v1h18v-1l-2-2m-9 4c0 1.1.9 2 2 2s2-.9 2-2h-4M21 6.5c0 1.9-1.6 3.5-3.5 3.5S14 8.4 14 6.5S15.6 3 17.5 3S21 4.6 21 6.5"
+                />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="parameters">
+    <h2 class="parameters__title">Les paramètres d'inscription</h2>
+    <div class="parameters__wrapper">
+      <p class="parameters__settings">
+        Début des inscriptions :
+        <span class="parameters__infos">{{ reglage.date_deb_insc }}</span>
+      </p>
+      <p class="parameters__settings">
+        Fin des inscriptions :
+        <span class="parameters__infos">{{ reglage.date_fin_insc }}</span>
+      </p>
+      <p class="parameters__settings">
+        Nombre d'inscription max :
+        <span class="parameters__infos">{{ reglage.nb_max_entretiens }}</span>
+      </p>
+      <button class="parameters__btn button-full" id="edit">Modifier</button>
+    </div>
+  </section>
+</div>
+
+<section class="student">
+  <h2 class="student__title">Liste des étudiants inscrits</h2>
+  <ul>
+    {% for etudiant in etudiants %}
+    <li class="student__item">
+      <div>
+        <h4 class="student__student">
+          {{ etudiant.prenom_etudiant }} {{ etudiant.nom_etudiant }}
+        </h4>
+        -
+        <a href="mailto:{{ etudiant.email_etudiant }}?subject=Urgence%20d'inscription%20stage%20dating&body=Bonjour%2C%20{{ etudiant.prenom_etudiant }}%0D%0A%0D%0AJe vois que vous ne vous êtes toujours pas inscrits à un entretien pour le stage dating.%0D%0AN'oubliez pas que la date de stage approche assez vite et que ce genre de rendez-vous permettent d'en trouver un plus facilement.%0D%0ACordialement,%0D%0A{{ responsable.nom_resp_stage }}%20{{ responsable.prenom_resp_stage }}">
+          {{ etudiant.email_etudiant }}
+        </a>
+      </div>
+      <p>
+        <a
+          href="tel:+{{ etudiant.tel_etudiant }}"
+          class="student__phoneNumber"
+          >{{ etudiant.tel_etudiant }}</a
+        >
+        -
+        <span class="student__interview">
+          {{ etudiant.nombre_entretiens > 1 ? etudiant.nombre_entretiens ~ ' entretiens' : etudiant.nombre_entretiens ~ ' entretien' }}
+        </span>
+      </p>
+    </li>
+    {% endfor %}
+  </ul>
+  <a
+    href="{{ url('/generate-pdf') }}"
+    target="_blank"
+    class="student__print button-full"
+  >
+    Imprimer la liste des inscrits
+  </a>
+</section>
+
+<div class="popup" style="display: none">
+  <form
+    action="{{ url('/responsable/' ~ responsable.id_formation ~ '/edit') }}"
+    method="post"
+    id="form"
+    enctype="multipart/form-data"
+    class="popup__form"
+  >
+    <div>
+      <label for="date_deb_insc">Début des inscriptions :</label>
+      <input
+        name="date_deb_insc"
+        type="date"
+        value="{{ reglage.date_deb_insc }}"
+        required
+      />
+    </div>
+    <div>
+      <label for="date_fin_insc">Fin des inscritions :</label>
+      <input
+        name="date_fin_insc"
+        type="date"
+        value="{{ reglage.date_fin_insc }}"
+        required
+      />
+    </div>
+    <div>
+      <label for="nb_max_entretiens">Nombre d'inscription max :</label>
+      <input
+        name="nb_max_entretiens"
+        type="number"
+        value="{{ reglage.nb_max_entretiens }}"
+        required
+        min="0"
+      />
+    </div>
+    <div class="popup__btns">
+      <button id="cancel" class="button-full-clear">Annuler</button>
+      <button type="submit" class="button-full popup__sendBtn">
+        Enregistrer
+      </button>
+    </div>
+  </form>
+</div>
+
+{% block scripts %}
+<script>
+  const editButton = document.getElementById("edit");
+  const popup = document.querySelector(".popup");
+  const cancelButton = document.getElementById("cancel");
+
+  editButton.addEventListener("click", () => {
+    popup.style.display = "flex";
+  });
+
+  cancelButton.addEventListener("click", () => {
+    popup.style.display = "none";
+  });
+</script>
+{% endblock %} {% endblock %}

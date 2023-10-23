@@ -1,0 +1,30 @@
+# utiliser le fichier index comme contrôleur frontal (solution de repli)
+DirectoryIndex index.php
+# désactiver les MultiViews
+<IfModule mod_negotiation.c>
+ Options -MultiViews
+</IfModule>
+<IfModule mod_rewrite.c>
+ RewriteEngine On
+ # Déterminer automatiquement la RewriteBase et la définir comme variable d'environnement
+ RewriteCond %{REQUEST_URI}::$0 ^(/.+)/(.*)::\2$
+ RewriteRule .* - [E=BASE:%1]
+ # spécifier le réglage de la directive HTTP_AUTHORIZATION
+ RewriteCond %{HTTP:Authorization} .+
+ RewriteRule ^ - [E=HTTP_AUTHORIZATION:%0]
+ # éviter les boucles sans fin de redirection
+ RewriteCond %{ENV:REDIRECT_STATUS} =""
+ RewriteRule ^index\.php(?:/(.*)|$) %{ENV:BASE}/$1 [R=301,L]
+ # servir le fichier si il existe
+ # sinon rediriger toutes les requêtes vers index.php
+ RewriteCond %{REQUEST_FILENAME} !-f
+ RewriteRule ^ %{ENV:BASE}/index.php [L]
+ </IfModule>
+<IfModule !mod_rewrite.c>
+ <IfModule mod_alias.c>
+ # Lorsque mod_rewrite n'est pas disponible, demander une redirection temporaire de
+ # la page d'accueil au contrôleur frontal
+ RedirectMatch 307 ^/$ /index.php/
+ # RedirectTemp cannot be used instead
+ </IfModule>
+</IfModule>

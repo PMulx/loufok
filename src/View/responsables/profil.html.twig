@@ -1,0 +1,31 @@
+{% extends 'layout.html.twig' %}
+{% block title %}Mon profil
+	{{parent()}}
+{% endblock %}
+{% block content %}
+	<section>
+		<link href="../../assets/styles/main.css" rel="stylesheet" type="text/css"/>
+		<div class="profil">
+			<h2 class="title">Vos information</h2>
+			<div>
+				<label>
+					Prénom
+				</label>
+				<input type="text" value="{{ responsable.prenom_resp_stage }}" readonly>
+			</div>
+			<div>
+				<label>
+					Nom
+				</label>
+				<input type="text" value="{{ responsable.nom_resp_stage }}" readonly>
+			</div>
+			<div>
+				<label>
+					Adresse mail
+				</label>
+				<input type="email" value="{{ responsable.email_resp_stage }}" readonly>
+			</div>
+			<a class="button-full" href="{{ url('/responsable/' ~ responsable.id_formation ) }}">Retour</a>
+		</div>
+	</section>
+{% endblock %}

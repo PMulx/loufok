@@ -1,0 +1,89 @@
+@import "global/fonts.css";
+@import "vendors/reset.css";
+@import "global/fonts.css";
+@import "blocs/auth.css";
+@import "blocs/resp_stage.css";
+@import "blocs/etud.css";
+@import "blocs/userHeader.css";
+@import "blocs/profil.css";
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --dark-grey: #313f4e;
+  --blue: #1b72f3;
+  --light-grey: #eef0f4;
+  --bg-input: rgba(53, 59, 70, 0.67);
+  --border-input: rgba(255, 255, 255, 0.12);
+  --white: #fff;
+}
+
+html,
+button,
+input::placeholder {
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  width: clamp(320px, 50%, 1200px);
+  margin: 0 auto;
+}
+
+b {
+  font-weight: 600;
+}
+
+/* A MODIF car perfectible */
+.bg-gradient {
+  background: rgb(51, 64, 79);
+  background: linear-gradient(
+    315deg,
+    rgba(51, 64, 79, 1) 12%,
+    rgba(99, 109, 119, 1) 67%,
+    rgba(155, 156, 159, 1) 100%
+  );
+}
+
+.screen--wrapper {
+  height: 100vh;
+}
+
+.button-full,
+.button-full-clear {
+  border-radius: 0.75rem;
+  padding: 1rem 1.5rem;
+  border: 0;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+.button-full {
+  background-color: var(--blue);
+  text-decoration: none;
+  color: var(--white);
+}
+
+.button-full-clear {
+  background-color: transparent;
+  color: var(--blue);
+  text-decoration: none;
+  border: 1px solid var(--blue);
+}
+
+.w-100 {
+  width: 100vw;
+}
+.txt-l {
+  font-size: 1.2rem;
+}
+.color-white {
+  color: var(--white);
+}
+
+.color-darkgrey {
+  color: var(--darkgrey);
+}

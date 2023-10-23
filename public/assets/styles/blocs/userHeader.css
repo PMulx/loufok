@@ -1,0 +1,29 @@
+.userHeader {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem 0;
+}
+
+.userHeader__nav {
+  margin-left: auto;
+}
+
+.userHeader__nav ul {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userHeader__nav li {
+  width: 24px;
+  height: 24px;
+}
+
+.userHeader__nav svg path {
+  fill: var(--dark-grey);
+}
+
+.user {
+  color: var(--dark-grey);
+  font-weight: 600;
+}
