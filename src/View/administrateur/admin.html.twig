@@ -1,0 +1,121 @@
+{% extends 'layout.html.twig' %} {% block title %} Administrateur
+{{ parent() }}
+{% endblock %} {% block content %}
+
+{% for cadavre in cadavres %}
+<p> Cadavre Exquis {{ cadavre.id_cadavre }} </p>
+{% endfor %}
+
+<hr>
+
+<h2> Création d'un nouveau cadavre Exquis </h2>
+
+{% set cadavreEnCours = false %}
+{% for cadavre in cadavres %}
+    {% if dateActuelle >= cadavre.date_debut_cadavre and dateActuelle <= cadavre.date_fin_cadavre %}
+        {% set cadavreEnCours = true %}
+    {% endif %}
+{% endfor %}
+
+{% if cadavreEnCours %}
+    <div>
+        <h3> Un cadavre exquis est encore en cours. Un seul à la fois est accepté. </h3>
+    </div>
+{% else %}
+
+    <form action="/administrateur/{{ id }}/add" method="post">
+        <input type="hidden" name="id" value="{{ id }}">
+
+        <label for="texteContribution">Texte de la contribution :</label>
+        <textarea name="texteContribution" id="texteContribution" required></textarea>
+        <div id="compteur">0/280</div>
+        
+        <label for="titre">Titre :</label>
+        <input type="text" name="titre" id="titre" required>
+
+        <label for="nbContributions">Nombre de contributions :</label>
+        <input type="number" name="nbContributions" id="nbContributions" required>
+
+        <input type="hidden" name="nbJaime" value="0">
+
+        <label for="dateDebut">Date de début :</label>
+        <input type="date" name="dateDebut" id="dateDebut" required>
+
+        <label for="dateFin">Date de fin :</label>
+        <input type="date" name="dateFin" id="dateFin" required>
+
+        <span id="messageErreur" style="color: red;"></span>
+
+        <button type="submit" class="disabled" id="btnValider" disabled>Valider</button>
+    </form>
+
+{% endif %}
+
+{% block scripts %}
+ <script>
+
+        const textarea = document.getElementById("texteContribution");
+        const dateDebut = document.getElementById("dateDebut");
+        const dateFin = document.getElementById("dateFin");
+        const compteur = document.getElementById("compteur");
+        const messageErreur = document.getElementById("messageErreur");
+        const btnValider = document.getElementById("btnValider");
+
+        const minCaracteres = 50;
+        const maxCaracteres = 280;
+
+        textarea.addEventListener("input", function () {
+            const texte = textarea.value;
+            const longueurTexte = texte.length;
+
+            if (longueurTexte >= minCaracteres && longueurTexte <= maxCaracteres && !messageErreur.textContent) {
+                btnValider.classList.remove("disabled");
+                btnValider.removeAttribute("disabled");
+            } else {
+                btnValider.classList.add("disabled");
+                btnValider.setAttribute("disabled", true);
+            }
+
+            compteur.textContent = `${longueurTexte}/${maxCaracteres}`;
+            if (longueurTexte < minCaracteres || longueurTexte > maxCaracteres) {
+                compteur.style.color = "red";
+            } else {
+                compteur.style.color = "black";
+            }
+        });
+
+        dateDebut.addEventListener("change", () => {
+            const dateDebutValue = new Date(dateDebut.value);
+            const dateFinValue = new Date(dateFin.value);
+
+            if (dateDebutValue > dateFinValue) {
+                messageErreur.textContent = "La date de début ne peut pas être supérieure à la date de fin.";
+                btnValider.classList.add("disabled");
+                btnValider.setAttribute("disabled", true);
+            } else {
+                messageErreur.textContent = "";
+                if (textarea.value.length >= minCaracteres && textarea.value.length <= maxCaracteres) {
+                    btnValider.classList.remove("disabled");
+                    btnValider.removeAttribute("disabled");
+                }
+            }
+        });
+
+        dateFin.addEventListener("change", () => {
+            const dateDebutValue = new Date(dateDebut.value);
+            const dateFinValue = new Date(dateFin.value);
+
+            if (dateDebutValue > dateFinValue) {
+                messageErreur.textContent = "La date de début ne peut pas être supérieure à la date de fin.";
+                btnValider.classList.add("disabled");
+                btnValider.setAttribute("disabled", true);
+            } else {
+                messageErreur.textContent = "";
+                if (textarea.value.length >= minCaracteres && textarea.value.length <= maxCaracteres) {
+                    btnValider.classList.remove("disabled");
+                    btnValider.removeAttribute("disabled");
+                }
+            }
+        });
+    </script>
+{% endblock %} {% endblock %}

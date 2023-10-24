@@ -26,12 +26,12 @@ class ConnexionController extends Controller
             if ($user) {
                 $_SESSION['user_id'] = $user['id'];
 
-                if ($user['type'] === 'etudiant') {
-                    $_SESSION['role'] = 'etudiant';
-                    HTTP::redirect("/etudiant/{$user['id']}");
-                } elseif ($user['type'] === 'formation') {
-                    $_SESSION['role'] = 'responsable';
-                    HTTP::redirect("/responsable/{$user['id']}");
+                if ($user['type'] === 'joueur') {
+                    $_SESSION['role'] = 'joueur';
+                    HTTP::redirect("/joueur/{$user['id']}");
+                } elseif ($user['type'] === 'administrateur') {
+                    $_SESSION['role'] = 'administrateur';
+                    HTTP::redirect("/administrateur/{$user['id']}");
                 }
             } else {
                 $errorMessage = "Adresse e-mail ou mot de passe incorrect.";
@@ -41,6 +41,28 @@ class ConnexionController extends Controller
             'connexion/index.html.twig',
             ['errorMessage' => $errorMessage ?? null]
         );
+    }
+
+    public function inscription()
+    {
+        $this->display(
+            'connexion/inscription.html.twig',
+        );
+    }
+
+    public function createUser()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $nomPlume = $_POST['nomPlume'];
+            $email = $_POST['email'];
+            $sexe = $_POST['sexe'];
+            $ddn = $_POST['ddn'];
+            $motDePasse = $_POST['motDePasse'];
+
+            Connexion::getInstance()->createUser($nomPlume, $email, $sexe, $ddn, $motDePasse);
+
+            HTTP::redirect("/");
+        }
     }
 
     public function disconnect()

@@ -1,5 +1,5 @@
 {% extends 'layout.html.twig' %}
-{% block title %}Connexion
+{% block title %}Inscription
 	{{ parent() }}
 {% endblock %}
 {% block content %}
@@ -39,34 +39,32 @@
 			</div>
 		</header>
 		<section>
-			<form action="/connexion" method="POST">
-				<label for="email"> Votre adresse mail </label>
-				<input placeholder="exemple@gmail.com" type="email" id="email" name="email" required>
-				<label for="mdp"> Votre mot de passe </label>
-				<input type="password" id="mdp" name="mdp" required>
-				<button type="submit" class="disabled" id="btnValider" disabled> Connexion </button>
+            <h2> Inscription </h2>
+			<form action="/inscription" method="POST">
+                    <label for="nomPlume">Nom Plume:</label>
+                    <input type="text" name="nomPlume" required>
+
+                    <label for="email">Adresse e-mail:</label>
+                    <input type="email" name="email" required>
+
+                    <label for="sexe">Sexe:</label>
+                    <select name="sexe">
+                        <option value="homme">Homme</option>
+                        <option value="femme">Femme</option>
+                        <option value="">Ne se prononce pas</option>
+                    </select>
+
+                    <label for="ddn">Date de naissance:</label>
+                    <input type="date" name="ddn" required>
+
+                    <label for="motDePasse">Mot de passe:</label>
+                    <input type="password" name="motDePasse" required>
+
+				<button type="submit" class="disabled" id="btnValider"> Créer un compte </button>
 			</form>
-			<a href="/inscription"> Créer un compte </a>
 		</section>
 	</body>
 	{% block scripts %}
 	    <script>
-			const emailField = document.getElementById("email");
-			const passwordField = document.getElementById("mdp");
-
-			const btnValider = document.getElementById("btnValider");
-
-			emailField.addEventListener("input", toggleButtonState);
-			passwordField.addEventListener("input", toggleButtonState);
-
-			function toggleButtonState() {
-				if (emailField.value.trim() !== "" && passwordField.value.trim() !== "") {
-					btnValider.classList.remove("disabled");
-					btnValider.removeAttribute("disabled");
-				} else {
-					btnValider.classList.add("disabled");
-					btnValider.setAttribute("disabled", "disabled");
-				}
-			}
     	</script>
 {% endblock %} {% endblock %}

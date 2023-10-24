@@ -4,8 +4,8 @@ namespace App\Model;
 
 class Connexion extends Model
 {
-    protected $tableName = APP_TABLE_PREFIX . 'etudiant';
-    protected $tableFormation = APP_TABLE_PREFIX . 'formation';
+    protected $tableJoueur = APP_TABLE_PREFIX . 'joueur';
+    protected $tableAdministration = APP_TABLE_PREFIX . 'administration';
 
     protected static $instance;
 
@@ -20,13 +20,13 @@ class Connexion extends Model
 
     public function authenticateUser($email, $password)
     {
-        $sql = "SELECT id_etudiant AS id, email_etudiant AS email, mp_etudiant AS mot_de_passe, 'etudiant' AS type
-                FROM etudiant
-                WHERE email_etudiant = :email AND mp_etudiant = :password
+        $sql = "SELECT id_joueur AS id, ad_mail_joueur AS email, mot_de_passe_joueur AS mot_de_passe, 'joueur' AS type
+                FROM joueur
+                WHERE ad_mail_joueur = :email AND mot_de_passe_joueur = :password
                 UNION
-                SELECT id_formation AS id, email_resp_stage AS email, mp_resp_stage AS mot_de_passe, 'formation' AS type
-                FROM formation
-                WHERE email_resp_stage = :email AND mp_resp_stage = :password";
+                SELECT id_administrateur AS id, ad_mail_administrateur AS email, mot_de_passe_administrateur AS mot_de_passe, 'administrateur' AS type
+                FROM administrateur
+                WHERE ad_mail_administrateur = :email AND mot_de_passe_administrateur = :password";
 
         $sth = self::$dbh->prepare($sql);
         $sth->bindParam(':email', $email);
@@ -34,5 +34,19 @@ class Connexion extends Model
         $sth->execute();
 
         return $sth->fetch();
+    }
+
+    public function createUser($nomPlume, $email, $sexe, $ddn, $motDePasse)
+    {
+        $sql = "INSERT INTO joueur (nom_plume, ad_mail_joueur, sexe, ddn, mot_de_passe_joueur)
+                VALUES (:nomPlume, :email, :sexe, :ddn, :motDePasse)";
+
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':nomPlume', $nomPlume);
+        $sth->bindParam(':email', $email);
+        $sth->bindParam(':sexe', $sexe);
+        $sth->bindParam(':ddn', $ddn);
+        $sth->bindParam(':motDePasse', $motDePasse);
+        $sth->execute();
     }
 }
