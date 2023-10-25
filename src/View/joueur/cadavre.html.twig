@@ -1,0 +1,53 @@
+{% extends 'layout.html.twig' %}
+{% block title %}Réalisation d'une contribution
+	{{parent()}}
+{% endblock %}
+{% block content %}
+
+	<link href="../../assets/styles/main.css" rel="stylesheet" type="text/css"/>
+
+<h2> Cadavre Exquis {{ contributions.0.id_cadavre }} </h2>
+
+{% set contributionsMap = {} %}
+{% set idcadavre = contributions.0.id_cadavre %}
+{% set lastOrdreSoumission = 0 %}
+
+{% for contribution in contributions %}
+    {% if contribution.ordre_soumission > lastOrdreSoumission %}
+        {% set lastOrdreSoumission = contribution.ordre_soumission %}
+    {% endif %}
+{% endfor %}
+
+{% set nextOrdreSoumission = lastOrdreSoumission + 1 %}
+
+{% for contributionVisible in contributionAleatoire %}
+    {% set contributionsMap = contributionsMap|merge({(contributionVisible.num_contribution): contributionVisible.texte_contribution}) %}
+{% endfor %}
+
+{% for contribution in contributions %}
+    <div>
+        <p> Contribution n° {{ contribution.ordre_soumission }} </p>
+        {% for contributionVisible in contributionAleatoire %}
+            {% if contribution.ordre_soumission == contributionVisible.num_contribution %}
+                <p>{{ contributionVisible.texte_contribution }}</p>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endfor %}
+
+{% if hiscontribution %}
+	<h3> Votre contribution : </h3>
+    <p>{{ hiscontribution.texte_contribution }} (Contribution n° {{ hiscontribution.ordre_soumission }})</p>
+{% else %}
+    <form action="{{ url('/joueur/contribution/' ~ id ~ '/' ~ idcadavre) }}" method="post">
+        <input type="hidden" name="ordreSoumission" value="{{ nextOrdreSoumission }}">
+        <textarea name="texteContribution" required></textarea>
+        <button type="submit">Valider</button>
+    </form>
+{% endif %}
+
+
+
+
+
+{% endblock %}

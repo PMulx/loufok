@@ -2,9 +2,9 @@
 
 namespace App\Model;
 
-class Etudiant extends Model
+class Joueur extends Model
 {
-    protected $tableName = APP_TABLE_PREFIX . 'etudiant';
+    protected $tableName = APP_TABLE_PREFIX . 'joueur';
 
     protected static $instance;
 
@@ -16,117 +16,90 @@ class Etudiant extends Model
 
         return self::$instance;
     }
-
-    public function etudiantData($id)
+    public function getContributionCount()
     {
-        $sql = "SELECT id_etudiant, nom_etudiant, prenom_etudiant, tel_etudiant, email_etudiant
-            FROM etudiant
-            WHERE id_etudiant = :id";
+        $sql = "SELECT c.id_cadavre, c.date_debut_cadavre, c.date_fin_cadavre, COUNT(co.id_contribution) AS contribution_count
+            FROM cadavre c
+            LEFT JOIN contribution co ON c.id_cadavre = co.id_cadavre
+            GROUP BY c.id_cadavre, c.date_debut_cadavre, c.date_fin_cadavre";
 
         $sth = self::$dbh->prepare($sql);
-        $sth->bindParam(':id', $id);
         $sth->execute();
 
-        return $sth->fetch();
+        return $sth->fetchAll();
     }
-
-    public function sesEntretiens($id)
+    public function ajouterAleatoire($nbAleatoire, $id, $idCadavre)
     {
-        $sql = "SELECT e.id_entreprise, e.nom_entreprise, e.dpt_entreprise, o.fichier_offre
-            FROM souhaiter_entretien s
-            INNER JOIN entreprise e ON s.id_entreprise = e.id_entreprise
-            LEFT JOIN offre o ON e.id_entreprise = o.id_entreprise
-            WHERE s.id_etudiant = :id";
+        $sqlCheck = "SELECT 1 FROM contribution_aléatoire WHERE id_joueur = :idJoueur AND id_cadavre = :idCadavre LIMIT 1";
 
-        $sth = self::$dbh->prepare($sql);
-        $sth->bindParam(':id', $id);
-        $sth->execute();
+        $sthCheck = self::$dbh->prepare($sqlCheck);
+        $sthCheck->bindParam(':idJoueur', $id);
+        $sthCheck->bindParam(':idCadavre', $idCadavre);
+        $sthCheck->execute();
 
-        $entreprises = [];
-        while ($row = $sth->fetch()) {
-            $id_entreprise = $row['id_entreprise'];
-            if (!isset($entreprises[$id_entreprise])) {
-                $entreprises[$id_entreprise] = [
-                    'id_entreprise' => $row['id_entreprise'],
-                    'nom_entreprise' => $row['nom_entreprise'],
-                    'dpt_entreprise' => $row['dpt_entreprise'],
-                    'fichiers_offre' => [],
-                ];
-            }
-            if ($row['fichier_offre']) {
-                $entreprises[$id_entreprise]['fichiers_offre'][] = $row['fichier_offre'];
-            }
+        $row = $sthCheck->fetch();
+        if (!$row) {
+            $sql = "INSERT INTO contribution_aléatoire (num_contribution, id_joueur, id_cadavre)
+                    VALUES (:numContribution, :idJoueur, :idCadavre)";
+
+            $sth = self::$dbh->prepare($sql);
+            $sth->bindParam(':numContribution', $nbAleatoire);
+            $sth->bindParam(':idJoueur', $id);
+            $sth->bindParam(':idCadavre', $idCadavre);
+            $sth->execute();
         }
-        return $entreprises;
     }
 
-    public function potentielEntretiens($id)
+    public function getCadavreInfo($idcadavre)
     {
-        $sql = "SELECT e.id_entreprise, e.nom_entreprise, e.dpt_entreprise, o.fichier_offre
-            FROM entreprise e
-            LEFT JOIN offre o ON e.id_entreprise = o.id_entreprise
-            WHERE e.id_entreprise NOT IN (
-                SELECT se.id_entreprise
-                FROM souhaiter_entretien se
-                WHERE se.id_etudiant = :id
-            )
-            AND e.id_entreprise IN (
-                SELECT fo.id_entreprise
-                FROM etudiant fe
-                INNER JOIN offre fo ON fe.id_formation = fo.id_formation
-                WHERE fe.id_etudiant = :id
-            )";
+        $sql = "SELECT cadavre.id_cadavre, MAX(cadavre.nb_contributions) AS nb_contribution_max, contribution.ordre_soumission
+                FROM cadavre
+                INNER JOIN contribution ON cadavre.id_cadavre = contribution.id_cadavre
+                WHERE cadavre.id_cadavre = :id_cadavre
+                GROUP BY cadavre.id_cadavre,  contribution.ordre_soumission";
+
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':id_cadavre', $idcadavre);
+        $sth->execute();
+
+        return $sth->fetchAll();
+    }
+    public function getContributionAleatoireTexte($id, $idcadavre)
+    {
+        $sql = "SELECT ca.num_contribution, co.texte_contribution
+            FROM contribution_aléatoire AS ca
+            INNER JOIN contribution AS co ON ca.id_cadavre = co.id_cadavre AND ca.num_contribution = co.ordre_soumission
+            WHERE ca.id_joueur = :id AND ca.id_cadavre = :id_cadavre";
 
         $sth = self::$dbh->prepare($sql);
         $sth->bindParam(':id', $id);
+        $sth->bindParam(':id_cadavre', $idcadavre);
         $sth->execute();
 
-        $entreprises = [];
-        while ($row = $sth->fetch()) {
-            $id_entreprise = $row['id_entreprise'];
-            if (!isset($entreprises[$id_entreprise])) {
-                $entreprises[$id_entreprise] = [
-                    'id_entreprise' => $row['id_entreprise'],
-                    'nom_entreprise' => $row['nom_entreprise'],
-                    'dpt_entreprise' => $row['dpt_entreprise'],
-                    'fichiers_offre' => [],
-                ];
-            }
-            if ($row['fichier_offre']) {
-                $entreprises[$id_entreprise]['fichiers_offre'][] = $row['fichier_offre'];
-            }
-        }
-        return $entreprises;
+        return $sth->fetchAll();
     }
-
-    public function supprimerEntretien($idEntreprise, $idEtudiant)
+    public function insererContribution($texteContribution, $ordreSoumission, $dateSoumission, $idcadavre, $id)
     {
-        $sql = "DELETE FROM souhaiter_entretien WHERE id_entreprise = :idEntreprise AND id_etudiant = :idEtudiant";
+        $sql = "INSERT INTO contribution (texte_contribution, ordre_soumission, date_soumission, id_cadavre, id_joueur)
+            VALUES (:texteContribution, :ordreSoumission, :dateSoumission, :idCadavre, :idJoueur)";
 
         $sth = self::$dbh->prepare($sql);
-        $sth->bindParam(':idEntreprise', $idEntreprise);
-        $sth->bindParam(':idEtudiant', $idEtudiant);
+        $sth->bindParam(':texteContribution', $texteContribution);
+        $sth->bindParam(':ordreSoumission', $ordreSoumission);
+        $sth->bindParam(':dateSoumission', $dateSoumission);
+        $sth->bindParam(':idCadavre', $idcadavre);
+        $sth->bindParam(':idJoueur', $id);
         $sth->execute();
     }
-
-    public function ajouterEntretien($idEntreprise, $idEtudiant)
+    public function getContributionByIds($id, $idcadavre)
     {
-        $sql = "INSERT INTO souhaiter_entretien (id_entreprise, id_etudiant) VALUES (:idEntreprise, :idEtudiant)";
+        $sql = "SELECT ordre_soumission, texte_contribution
+            FROM contribution
+            WHERE id_joueur = :idJoueur AND id_cadavre = :idCadavre";
 
         $sth = self::$dbh->prepare($sql);
-        $sth->bindParam(':idEntreprise', $idEntreprise);
-        $sth->bindParam(':idEtudiant', $idEtudiant);
-        $sth->execute();
-    }
-    public function getDateParameters($id)
-    {
-        $sql = "SELECT DATE_FORMAT(f.date_deb_insc, '%Y-%m-%d') AS date_deb_insc, DATE_FORMAT(f.date_fin_insc, '%Y-%m-%d') AS date_fin_insc, f.nb_max_entretiens
-                FROM formation f
-                INNER JOIN etudiant e ON f.id_formation = e.id_formation
-                WHERE e.id_etudiant = :id";
-
-        $sth = self::$dbh->prepare($sql);
-        $sth->bindParam(':id', $id);
+        $sth->bindParam(':idJoueur', $id);
+        $sth->bindParam(':idCadavre', $idcadavre);
         $sth->execute();
 
         return $sth->fetch();

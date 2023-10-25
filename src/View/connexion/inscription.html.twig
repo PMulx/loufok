@@ -4,10 +4,9 @@
 {% endblock %}
 {% block content %}
 	<body>
-		<link href="assets/styles/main.css" rel="stylesheet" type="text/css"/>
 		<header>
 			<div class="header">
-				<div>
+				<div class="header__logo">
 					<?xml version="1.0" encoding="UTF-8"?>
 					<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 248">
 					<defs>
@@ -33,38 +32,85 @@
 					<polygon class="cls-1" points="93 156 104 187 128 164 93 156"/>
 					<path class="cls-1" d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"/>
 					</svg>
-					<h1>Loufok</h1>
+					<a href="/"><h1>Loufok</h1></a>
 				</div>
 				<p>Créez, inspirez, délirez</p>
 			</div>
 		</header>
-		<section>
-            <h2> Inscription </h2>
-			<form action="/inscription" method="POST">
-                    <label for="nomPlume">Nom Plume:</label>
-                    <input type="text" name="nomPlume" required>
+		<section class="section">
+            <h2 class="section__h2"> Inscription </h2>
+			<form class="section__form" action="/inscription" method="POST">
+                    <label for="nomPlume">Votre nom de plume</label>
+                    <input placeholder="Marcel Pagnol" type="text" name="nomPlume" required>
 
-                    <label for="email">Adresse e-mail:</label>
-                    <input type="email" name="email" required>
+                    <label for="email">Votre adresse e-mail</label>
+                    <input placeholder="adressemail@gmail.com" type="email" name="email" required>
 
-                    <label for="sexe">Sexe:</label>
-                    <select name="sexe">
-                        <option value="homme">Homme</option>
-                        <option value="femme">Femme</option>
-                        <option value="">Ne se prononce pas</option>
-                    </select>
+					<label for="sexe">Sexe</label>
+					<div id="sexe">
+						<input type="radio" name="sexe" id="homme" value="homme">
+						<label for="homme">Homme</label>
 
-                    <label for="ddn">Date de naissance:</label>
+						<input type="radio" name="sexe" id="femme" value="femme">
+						<label for="femme">Femme</label>
+
+						<input type="radio" name="sexe" id="ne-se-prononce-pas" value="Null">
+						<label for="ne-se-prononce-pas">Se prononce pas</label>
+					</div>
+
+                    <label for="ddn">Date de naissance</label>
                     <input type="date" name="ddn" required>
 
-                    <label for="motDePasse">Mot de passe:</label>
+                    <label for="motDePasse"> Votre mot de passe</label>
                     <input type="password" name="motDePasse" required>
 
-				<button type="submit" class="disabled" id="btnValider"> Créer un compte </button>
+				<button type="submit" class="button__disabled" id="btnValider"> Créer un compte </button>
 			</form>
 		</section>
 	</body>
 	{% block scripts %}
-	    <script>
-    	</script>
+<script>
+    const form = document.querySelector('.section__form');
+    const btnValider = document.getElementById('btnValider');
+    const inputs = form.querySelectorAll('input');
+    const select = form.querySelector('select');
+
+    // Vérifier si tous les champs du formulaire sont remplis
+    function checkForm() {
+        let isFormValid = true;
+        inputs.forEach(input => {
+            if (input.type !== 'radio' && input.value.trim() === '') {
+                isFormValid = false;
+            }
+        });
+
+        if (select && select.value === '') {
+            isFormValid = false;
+        }
+
+        // Activer ou désactiver le bouton en fonction de l'état du formulaire
+        if (isFormValid) {
+            btnValider.classList.remove('button__disabled');
+            btnValider.classList.add('button__validate');
+            btnValider.removeAttribute('disabled');
+        } else {
+            btnValider.classList.remove('button__validate');
+            btnValider.classList.add('button__disabled');
+            btnValider.setAttribute('disabled', 'true');
+        }
+    }
+
+    // Écouter les événements de saisie pour vérifier le formulaire
+    inputs.forEach(input => {
+        input.addEventListener('input', checkForm);
+    });
+
+    if (select) {
+        select.addEventListener('input', checkForm);
+    }
+
+    // Vérifier l'état initial du formulaire au chargement de la page
+    checkForm();
+</script>
+
 {% endblock %} {% endblock %}

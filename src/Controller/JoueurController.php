@@ -7,74 +7,29 @@ namespace App\Controller;
 session_start();
 
 use App\Helper\HTTP;
-use App\Model\Etudiant;
+use App\Model\Joueur;
 
-class EtudiantController extends Controller
+class JoueurController extends Controller
 {
     public function index($id)
     {
         if (isset($_SESSION['role'])) {
             $role = $_SESSION['role'];
 
-            if ($role === 'responsable') {
-                HTTP::redirect("/responsable/{$id}");
+            if ($role === 'administrateur') {
+                HTTP::redirect("/administrateur/{$id}");
             } else {
-                $formation = Etudiant::getInstance()->getDateParameters($id);
-                $etudiant = Etudiant::getInstance()->etudiantData($id);
-                $sesentretiens = Etudiant::getInstance()->sesEntretiens($id);
-                $potentielEntretiens = Etudiant::getInstance()->potentielEntretiens($id);
-
-                $entreprisesSesEntretiens = [];
-                $fichiersOffreSesEntretiens = [];
-
-
-                foreach ($sesentretiens as $sesentretien) {
-                    $entrepriseData = [
-                        'id_entreprise' => $sesentretien['id_entreprise'],
-                        'nom_entreprise' => $sesentretien['nom_entreprise'],
-                        'dpt_entreprise' => $sesentretien['dpt_entreprise'],
-                    ];
-
-                    $entreprisesSesEntretiens[] = $entrepriseData;
-
-                    if (isset($sesentretien['fichiers_offre']) && is_array($sesentretien['fichiers_offre'])) {
-                        $fichiersOffreSesEntretiens[] = $sesentretien['fichiers_offre'];
-                    } else {
-                        $fichiersOffreSesEntretiens[] = [];
-                    }
-                }
-
-                $entreprisesPotentielEntretiens = [];
-                $fichiersOffrePotentielEntretiens = [];
-
-                foreach ($potentielEntretiens as $potentielEntretien) {
-                    $entrepriseData = [
-                        'id_entreprise' => $potentielEntretien['id_entreprise'],
-                        'nom_entreprise' => $potentielEntretien['nom_entreprise'],
-                        'dpt_entreprise' => $potentielEntretien['dpt_entreprise'],
-                    ];
-
-                    $entreprisesPotentielEntretiens[] = $entrepriseData;
-
-                    if (isset($potentielEntretien['fichiers_offre']) && is_array($potentielEntretien['fichiers_offre'])) {
-                        $fichiersOffrePotentielEntretiens[] = $potentielEntretien['fichiers_offre'];
-                    } else {
-                        $fichiersOffrePotentielEntretiens[] = [];
-                    }
-                }
+                $cadavres = Joueur::getInstance()->getContributionCount();
+                $id = $_SESSION['user_id'];
 
                 $dateActuelle = date("Y-m-d");
 
                 $this->display(
-                    'etudiants/entretiens.html.twig',
+                    'joueur/listes.html.twig',
                     [
                         'dateActuelle' => $dateActuelle,
-                        'formation' => $formation,
-                        'etudiant' => $etudiant,
-                        'entreprisesSesEntretiens' => $entreprisesSesEntretiens,
-                        'fichiersOffreSesEntretiens' => $fichiersOffreSesEntretiens,
-                        'entreprisesPotentielEntretiens' => $entreprisesPotentielEntretiens,
-                        'fichiersOffrePotentielEntretiens' => $fichiersOffrePotentielEntretiens,
+                        'cadavres' => $cadavres,
+                        'id' => $id,
                     ]
                 );
             }
@@ -82,34 +37,71 @@ class EtudiantController extends Controller
             HTTP::redirect('/');
         }
     }
-
-    public function delete($idEntreprise, $idEtudiant)
+    public function insertaleatoire($id)
     {
+        if (isset($_SESSION['role'])) {
+            $role = $_SESSION['role'];
 
-        Etudiant::getInstance()->supprimerEntretien($idEntreprise, $idEtudiant);
+            if ($role === 'administrateur') {
+                HTTP::redirect("/administrateur/{$id}");
+            } else {
+                $id = $_SESSION['user_id'];
+                $idCadavre = $_POST['cadavreEnCoursID'];
+                $nbAleatoire = $_POST['nbAleatoire'];
 
-        HTTP::redirect("/etudiant/{$idEtudiant}");
+                Joueur::getInstance()->ajouterAleatoire($nbAleatoire, $id, $idCadavre);
+
+                HTTP::redirect("/joueur/cadavre/{$id}/{$idCadavre}");
+            }
+        } else {
+            HTTP::redirect('/');
+        }
     }
-
-    public function add($idEntreprise, $idEtudiant)
+    public function cadavre($id, $idcadavre)
     {
+        if (isset($_SESSION['role'])) {
+            $role = $_SESSION['role'];
 
-        Etudiant::getInstance()->ajouterEntretien($idEntreprise, $idEtudiant);
+            if ($role === 'administrateur') {
+                HTTP::redirect("/administrateur/{$id}");
+            } else {
+                $id = $_SESSION['user_id'];
+                $contributions = Joueur::getInstance()->getCadavreInfo($idcadavre);
+                $contributionAleatoire = Joueur::getInstance()->getContributionAleatoireTexte($id, $idcadavre);
+                $hiscontribution = Joueur::getInstance()->getContributionByIds($id, $idcadavre);
 
-        HTTP::redirect("/etudiant/{$idEtudiant}");
+                $this->display(
+                    'joueur/cadavre.html.twig',
+                    [
+                        'contributions' => $contributions,
+                        'contributionAleatoire' => $contributionAleatoire,
+                        'id' => $id,
+                        'hiscontribution' => $hiscontribution,
+                    ]
+                );
+            }
+        } else {
+            HTTP::redirect('/');
+        }
     }
-
-    public function profil($id)
+    public function insertcontribution($id, $idcadavre)
     {
-        $id = $_SESSION['user_id'];
+        if (isset($_SESSION['role'])) {
+            $role = $_SESSION['role'];
 
-        $etudiant = Etudiant::getInstance()->etudiantData($id);
+            if ($role === 'administrateur') {
+                HTTP::redirect("/administrateur/{$id}");
+            } else {
+                $texteContribution = $_POST['texteContribution'];
+                $ordreSoumission = $_POST['ordreSoumission'];
+                $dateSoumission = date("Y-m-d");
 
-        $this->display(
-            'etudiants/profil.html.twig',
-            [
-                'etudiant' => $etudiant,
-            ]
-        );
+                Joueur::getInstance()->insererContribution($texteContribution, $ordreSoumission, $dateSoumission, $idcadavre, $id);
+
+                HTTP::redirect("/joueur/{$id}");
+            }
+        } else {
+            HTTP::redirect('/');
+        }
     }
 }

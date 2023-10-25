@@ -4,10 +4,9 @@
 {% endblock %}
 {% block content %}
 	<body>
-		<link href="assets/styles/main.css" rel="stylesheet" type="text/css"/>
 		<header>
 			<div class="header">
-				<div>
+				<div class="header__logo">
 					<?xml version="1.0" encoding="UTF-8"?>
 					<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 248">
 					<defs>
@@ -35,18 +34,18 @@
 					</svg>
 					<h1>Loufok</h1>
 				</div>
-				<p>Créez, inspirez, délirez</p>
+				<h3>Créez, inspirez, délirez</h3>
 			</div>
 		</header>
-		<section>
-			<form action="/connexion" method="POST">
+		<section class="section">
+			<form class="section__form" action="/connexion" method="POST">
 				<label for="email"> Votre adresse mail </label>
 				<input placeholder="exemple@gmail.com" type="email" id="email" name="email" required>
 				<label for="mdp"> Votre mot de passe </label>
 				<input type="password" id="mdp" name="mdp" required>
-				<button type="submit" class="disabled" id="btnValider" disabled> Connexion </button>
+				<button type="submit" class="button__disabled" id="btnValider" disabled> Connexion <span class="material-icons">arrow_right</span> </button>
 			</form>
-			<a href="/inscription"> Créer un compte </a>
+			<a class="section__a" href="/inscription"> Créer un compte </a>
 		</section>
 	</body>
 	{% block scripts %}
@@ -63,7 +62,9 @@
 				if (emailField.value.trim() !== "" && passwordField.value.trim() !== "") {
 					btnValider.classList.remove("disabled");
 					btnValider.removeAttribute("disabled");
+					btnValider.classList.add("button__validate");
 				} else {
+					btnValider.classList.remove("button__validate");
 					btnValider.classList.add("disabled");
 					btnValider.setAttribute("disabled", "disabled");
 				}

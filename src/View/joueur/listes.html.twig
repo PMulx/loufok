@@ -1,0 +1,65 @@
+{% extends 'layout.html.twig' %}
+{% block title %}Listes des cadavres exquis
+	{{ parent() }}
+{% endblock %}
+{% block content %}
+
+	<link href="../assets/styles/main.css" rel="stylesheet" type="text/css"/>
+	
+	<section>
+
+		<h2> Listes des cadavres exquis en cours </h2>
+		{% set cadavreEnCours = false %}
+		{% set cadavreEnCoursID = null %}
+		{% set nmbContribution = null %}
+		{% for cadavre in cadavres %}
+			{% if dateActuelle >= cadavre.date_debut_cadavre and dateActuelle <= cadavre.date_fin_cadavre %}
+				{% set cadavreEnCours = true %}
+				{% set cadavreEnCoursID = cadavre.id_cadavre %}
+				{% set nmbContribution = cadavre.contribution_count %}
+			{% endif %}
+		{% endfor %}
+
+		{% if cadavreEnCours %}
+			<div>
+				<p> Cadavre Exquis {{ cadavreEnCoursID }}</p>
+				<a href="#" id="lienVersInsert"> Voir </a>
+			</div>
+		{% else %}
+				<h3> Aucun cadavre exquis est en cours. Veuillez revenir plus tard. </h3>
+		{% endif %}
+	</section>
+
+	{% block scripts %}
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			$("#lienVersInsert").click(function(e) {
+				e.preventDefault();
+
+				// Obtenez un nombre aléatoire entre 1 et nmbContribution
+				var nbAleatoire = Math.floor(Math.random() * {{ nmbContribution }}) + 1;
+
+				var form = $('<form></form>');
+				form.attr('method', 'post');
+				form.attr('action', '{{ url('/joueur/insert/' ~ id ) }}');
+
+				var inputCadavreID = $('<input>');
+				inputCadavreID.attr('type', 'hidden');
+				inputCadavreID.attr('name', 'cadavreEnCoursID');
+				inputCadavreID.attr('value', '{{ cadavreEnCoursID }}');
+
+				var inputNbAleatoire = $('<input>');
+				inputNbAleatoire.attr('type', 'hidden');
+				inputNbAleatoire.attr('name', 'nbAleatoire');
+				inputNbAleatoire.attr('value', nbAleatoire);
+
+				form.append(inputCadavreID);
+				form.append(inputNbAleatoire);
+
+				form.appendTo('body').submit();
+			});
+		});
+	</script>
+	{% endblock %}
+{% endblock %}
