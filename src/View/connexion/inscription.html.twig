@@ -41,7 +41,10 @@
             <h2 class="section__h2"> Inscription </h2>
 			<form class="section__form" action="/inscription" method="POST">
                     <label for="nomPlume">Votre nom de plume</label>
-                    <input placeholder="Marcel Pagnol" type="text" name="nomPlume" required>
+                    <input placeholder="Marcel Pagnol" type="text" name="nomPlume" id="nomPlumeInput" required>
+
+					<!-- Ajoutez un élément pour afficher le message d'erreur -->
+					<div id="errorMessage" style="color: red;"></div>
 
                     <label for="email">Votre adresse e-mail</label>
                     <input placeholder="adressemail@gmail.com" type="email" name="email" required>
@@ -52,7 +55,7 @@
 						<label for="homme">Homme</label>
 
 						<input type="radio" name="sexe" id="femme" value="femme">
-						<label for="femme">Femme</label>
+						<label for "femme">Femme</label>
 
 						<input type="radio" name="sexe" id="ne-se-prononce-pas" value="Null">
 						<label for="ne-se-prononce-pas">Se prononce pas</label>
@@ -61,34 +64,58 @@
                     <label for="ddn">Date de naissance</label>
                     <input type="date" name="ddn" required>
 
-                    <label for="motDePasse"> Votre mot de passe</label>
+                    <label for="motDePasse">Votre mot de passe</label>
                     <input type="password" name="motDePasse" required>
 
-				<button type="submit" class="button__disabled" id="btnValider"> Créer un compte </button>
+				<button type="submit" class="button__disabled" id="btnValider">Créer un compte</button>
 			</form>
 		</section>
+		<div class="hidden">
+			{% for allplume in allplumes %}	
+				<p class="plumes">{{ allplume.nom_plume }}</p>
+			{% endfor %}
+		</div>
 	</body>
 	{% block scripts %}
-<script>
-    const form = document.querySelector('.section__form');
-    const btnValider = document.getElementById('btnValider');
-    const inputs = form.querySelectorAll('input');
-    const select = form.querySelector('select');
+	<script>
+		const form = document.querySelector('.section__form');
+		const btnValider = document.getElementById('btnValider');
+		const nomPlumeInput = document.getElementById('nomPlumeInput');
+		const errorMessage = document.getElementById('errorMessage');
+		const plumes = document.querySelectorAll('.plumes');
 
-    // Vérifier si tous les champs du formulaire sont remplis
+		    function checkNomPlume() {
+        const enteredNomPlume = nomPlumeInput.value.trim();
+        const plumeExists = Array.from(plumes).some(plume => plume.textContent === enteredNomPlume);
+
+        if (plumeExists) {
+            errorMessage.textContent = "Le nom de plume existe déjà.";
+            errorMessage.style.display = "block";
+
+            btnValider.classList.remove('button__validate');
+            btnValider.classList.add('button__disabled');
+            btnValider.disabled = true;
+        } else {
+            errorMessage.style.display = "none";
+            checkForm();
+        }
+    }
+
     function checkForm() {
         let isFormValid = true;
+        const inputs = form.querySelectorAll('input');
+
         inputs.forEach(input => {
             if (input.type !== 'radio' && input.value.trim() === '') {
                 isFormValid = false;
             }
         });
 
+        const select = form.querySelector('select');
         if (select && select.value === '') {
             isFormValid = false;
         }
 
-        // Activer ou désactiver le bouton en fonction de l'état du formulaire
         if (isFormValid) {
             btnValider.classList.remove('button__disabled');
             btnValider.classList.add('button__validate');
@@ -96,21 +123,21 @@
         } else {
             btnValider.classList.remove('button__validate');
             btnValider.classList.add('button__disabled');
-            btnValider.setAttribute('disabled', 'true');
+            btnValider.disabled = true;
         }
     }
 
-    // Écouter les événements de saisie pour vérifier le formulaire
+    const inputs = form.querySelectorAll('input');
     inputs.forEach(input => {
-        input.addEventListener('input', checkForm);
+        input.addEventListener('input', checkNomPlume);
     });
 
+    const select = form.querySelector('select');
     if (select) {
         select.addEventListener('input', checkForm);
     }
 
-    // Vérifier l'état initial du formulaire au chargement de la page
     checkForm();
-</script>
-
-{% endblock %} {% endblock %}
+	</script>
+	{% endblock %}
+{% endblock %}

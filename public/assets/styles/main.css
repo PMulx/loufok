@@ -31,10 +31,14 @@ p {
 
 p,
 label,
-a,
-::placeholder {
+a {
   font-family: "Arvo", serif;
   color: var(--dark);
+}
+
+::placeholder {
+  font-family: "Arvo", serif;
+  color: var(--grey);
 }
 
 hr {
@@ -43,6 +47,10 @@ hr {
 
 a {
   text-decoration: none;
+}
+
+body {
+  background-color: var(--white);
 }
 
 i {
@@ -75,7 +83,12 @@ i {
   display: flex;
   align-items: center;
 }
-
+.hidden {
+  display: none;
+}
+.show {
+  display: block;
+}
 /* ========================= DEBUT DU CSS PAR PAGE ========================= */
 
 /* =========== SECTION 1 : LOGIN + INSCRIPTION =========== */
@@ -194,4 +207,46 @@ i {
 }
 #compteur {
   text-align: end;
+}
+
+/* =========== SECTION 2 : PAGE JOUEUR =========== */
+
+.contribution {
+  width: 100%;
+  margin: 0rem 2rem;
+}
+
+.contribution__title {
+  text-align: center;
+  font-weight: 700;
+}
+.contribution__div {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 2rem;
+  border: 1px var(--grey) solid;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.material-icons {
+  text-align: end;
+}
+.contribution__div--title {
+  margin: 0;
+}
+.contribution__div--txt {
+  margin-bottom: 0;
+  border-top: 1px solid var(--grey);
+  padding-top: 1rem;
+  width: 100%;
+}
+.contribution .section__form textarea {
+  margin-bottom: 2rem;
+}
+.num__contribution {
+  font-weight: 800;
 }

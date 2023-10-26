@@ -18,7 +18,7 @@ class Joueur extends Model
     }
     public function getContributionCount()
     {
-        $sql = "SELECT c.id_cadavre, c.date_debut_cadavre, c.date_fin_cadavre, COUNT(co.id_contribution) AS contribution_count
+        $sql = "SELECT c.id_cadavre, c.date_debut_cadavre, c.date_fin_cadavre, c.nb_contributions, COUNT(co.id_contribution) AS contribution_count
             FROM cadavre c
             LEFT JOIN contribution co ON c.id_cadavre = co.id_cadavre
             GROUP BY c.id_cadavre, c.date_debut_cadavre, c.date_fin_cadavre";

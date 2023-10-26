@@ -30,7 +30,7 @@
 					<path class="cls-1" d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"/>
 					</svg>
 					<h1>Loufok</h1>
-                    <a class="disconnect" href="#"> <span class="material-icons">logout</span> </a>
+                    <a class="disconnect" href="/disconnect"> <span class="material-icons">logout</span> </a>
 				</div>
 			</div>
 		</header>
@@ -175,7 +175,6 @@
         const isTextValid = longueurTexte >= minCaracteres && longueurTexte <= maxCaracteres;
         const isDateValid = dateDebutValue <= dateFinValue;
 
-        // Si tous les champs sont valides, activer le bouton
         if (isTextValid && isDateValid) {
             btnValider.classList.remove("disabled");
             btnValider.removeAttribute("disabled");
@@ -187,12 +186,10 @@
         }
         }
 
-        // Écoutez les changements dans tous les champs
         textarea.addEventListener("input", isFormValid);
         dateDebut.addEventListener("change", isFormValid);
         dateFin.addEventListener("change", isFormValid);
 
-        // Appeler la fonction pour vérifier le formulaire lors du chargement de la page
         isFormValid();
     </script>
 {% endblock %} {% endblock %}

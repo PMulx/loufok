@@ -49,4 +49,14 @@ class Connexion extends Model
         $sth->bindParam(':motDePasse', $motDePasse);
         $sth->execute();
     }
+
+    public function getAllNomPlume()
+    {
+        $sql = "SELECT nom_plume FROM joueur";
+
+        $sth = self::$dbh->prepare($sql);
+        $sth->execute();
+
+        return $sth->fetchAll();
+    }
 }

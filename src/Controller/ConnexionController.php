@@ -45,8 +45,14 @@ class ConnexionController extends Controller
 
     public function inscription()
     {
+
+        $allPlumes = Connexion::getInstance()->getAllNomPlume();
+
         $this->display(
             'connexion/inscription.html.twig',
+            [
+                'allplumes' => $allPlumes,
+            ]
         );
     }
 

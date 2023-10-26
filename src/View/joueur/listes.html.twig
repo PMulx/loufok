@@ -4,11 +4,43 @@
 {% endblock %}
 {% block content %}
 
-	<link href="../assets/styles/main.css" rel="stylesheet" type="text/css"/>
-	
-	<section>
+		<header class="admin">
+			<div class="header">
+				<div class="header__logo">
+					<?xml version="1.0" encoding="UTF-8"?>
+					<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 248">
+					<defs>
+						<style>
+						svg {
+							width:20%;
+						}
+						.cls-1 {
+							fill: #fefffe;
+						}
 
-		<h2> Listes des cadavres exquis en cours </h2>
+						.cls-1, .cls-2 {
+							stroke-width: 0px;
+						}
+
+						.cls-2 {
+							fill: #101a31;
+						}
+						</style>
+					</defs>
+					<circle class="cls-2" cx="124" cy="124" r="124"/>
+					<path class="cls-1" d="m96,46h21.68l-10.84,58.78s-5.84,22.22,14.16,23.22c0,0,19,3,26-15l10-46h-24s6.37-21,22.18-21h27.64l-11.83,62s-4,22-34,47l-46-10s-7-17-7-23c0,0-3-20,12-76Z"/>
+					<polygon class="cls-1" points="93 156 104 187 128 164 93 156"/>
+					<path class="cls-1" d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"/>
+					</svg>
+					<h1>Loufok</h1>
+                    <a class="disconnect" href="/disconnect"> <span class="material-icons">logout</span> </a>
+				</div>
+			</div>
+		</header>
+	
+	<section class="cadavres">
+
+		<h3> Cadavres exquis en cours </h3>
 		{% set cadavreEnCours = false %}
 		{% set cadavreEnCoursID = null %}
 		{% set nmbContribution = null %}
@@ -18,17 +50,22 @@
 				{% set cadavreEnCoursID = cadavre.id_cadavre %}
 				{% set nmbContribution = cadavre.contribution_count %}
 			{% endif %}
+			{% if nmbContribution >= cadavre.nb_contributions %}
+				{% set cadavreEnCours = false %}
+			{% endif %}
 		{% endfor %}
 
 		{% if cadavreEnCours %}
-			<div>
-				<p> Cadavre Exquis {{ cadavreEnCoursID }}</p>
-				<a href="#" id="lienVersInsert"> Voir </a>
+			<div class="cadavres__pres">
+				<h4 class="cadavres__pres--p"> Cadavre Exquis {{ cadavreEnCoursID }}</h4>
+				<a class="cadavres__pres--a" href="#" id="lienVersInsert"> Voir </a>
 			</div>
 		{% else %}
-				<h3> Aucun cadavre exquis est en cours. Veuillez revenir plus tard. </h3>
+				<p> Aucun cadavre exquis est en cours. Veuillez revenir plus tard. </p>
 		{% endif %}
 	</section>
+
+	<hr>
 
 	{% block scripts %}
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
