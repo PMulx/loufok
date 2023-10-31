@@ -1,6 +1,7 @@
 {% extends 'layout.html.twig' %} {% block title %} Administrateur
 {{ parent() }}
 {% endblock %} {% block content %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
 		<header class="admin">
 			<div class="header">
 				<div class="header__logo">
@@ -38,19 +39,8 @@
 
         <section class="creaCadavre">
             <h3 class="creaCadavre__h3"> Création d'un nouveau cadavre Exquis </h3>
-
-            {% set cadavreEnCours = false %}
-            {% for cadavre in cadavres %}
-                {% if dateActuelle >= cadavre.date_debut_cadavre and dateActuelle <= cadavre.date_fin_cadavre %}
-                    {% set cadavreEnCours = true %}
-                {% endif %}
-            {% endfor %}
-
-            {% if cadavreEnCours %}
-                <div>
-                    <p> Un cadavre exquis est encore en cours. Un seul à la fois est accepté. </p>
-                </div>
-            {% else %}
+            
+            <div id="calendar"></div>
 
                 <form class="section__form" action="/administrateur/{{ id }}/add" method="post">
                     <input type="hidden" name="id" value="{{ id }}">
@@ -84,112 +74,44 @@
 
                     <button type="submit" class="button__disabled" id="btnValider" disabled>Valider</button>
                 </form>
-
-            {% endif %}
         </section>
 
-        <hr>
-
-        <section class="cadavres">
-            {% for cadavre in cadavres %}
-            <div class="cadavres__pres">
-                <h4 class="cadavres__pres--p"> Cadavre Exquis {{ cadavre.id_cadavre }} </h4>
-                <a class="cadavres__pres--a" href=""> Voir </a>
-            </div>
-            {% endfor %}
-        </section> 
 
 {% block scripts %}
  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var periodes = {{ periodes|json_encode|raw }};
+        var dateActuelle = new Date("{{ dateActuelle }}");
 
-        const textarea = document.getElementById("texteContribution");
-        const dateDebut = document.getElementById("dateDebut");
-        const dateFin = document.getElementById("dateFin");
-        const compteur = document.getElementById("compteur");
-        const messageErreur = document.getElementById("messageErreur");
-        const btnValider = document.getElementById("btnValider");
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                start: 'title',
+                end: 'prev,next',
+            },
+            // Options du calendrier
+            firstDay: 1,
+            locale: 'fr',
+            initialView: 'dayGridMonth',
 
-        const minCaracteres = 50;
-        const maxCaracteres = 280;
-
-        textarea.addEventListener("input", function () {
-            const texte = textarea.value;
-            const longueurTexte = texte.length;
-
-            if (longueurTexte >= minCaracteres && longueurTexte <= maxCaracteres && !messageErreur.textContent) {
-                btnValider.classList.remove("disabled");
-                btnValider.removeAttribute("disabled");
-                btnValider.classList.add("button__validate");
-            } else {
-                btnValider.classList.remove("button__validate");
-                btnValider.classList.add("disabled");
-                btnValider.setAttribute("disabled", true);
-            }
-
-            compteur.textContent = `${longueurTexte}/${maxCaracteres}`;
-            if (longueurTexte < minCaracteres || longueurTexte > maxCaracteres) {
-                compteur.style.color = "red";
-            } else {
-                compteur.style.color = "black";
-            }
+            events: periodes.map(function(periode) {
+                var endDate = new Date(periode.end);
+                endDate.setDate(endDate.getDate() + 1);
+                return {
+                    start: periode.start,
+                    end: endDate.getFullYear() + '-' + 
+                     ('0' + (endDate.getMonth() + 1)).slice(-2) + '-' + 
+                     ('0' + endDate.getDate()).slice(-2),
+                    color: '#a4fa82',
+                    display: 'background'
+                };
+            }),
         });
 
-        dateDebut.addEventListener("change", () => {
-            const dateDebutValue = new Date(dateDebut.value);
-            const dateFinValue = new Date(dateFin.value);
+        calendar.render();
+    });
+</script>
 
-            if (dateDebutValue > dateFinValue) {
-                messageErreur.textContent = "La date de début ne peut pas être supérieure à la date de fin.";
-                btnValider.classList.add("disabled");
-                btnValider.setAttribute("disabled", true);
-            } else {
-                messageErreur.textContent = "";
-                if (textarea.value.length >= minCaracteres && textarea.value.length <= maxCaracteres) {
-                    btnValider.classList.remove("disabled");
-                    btnValider.removeAttribute("disabled");
-                }
-            }
-        });
 
-        dateFin.addEventListener("change", () => {
-            const dateDebutValue = new Date(dateDebut.value);
-            const dateFinValue = new Date(dateFin.value);
-
-            if (dateDebutValue > dateFinValue) {
-                messageErreur.textContent = "La date de début ne peut pas être supérieure à la date de fin.";
-                btnValider.classList.add("disabled");
-                btnValider.setAttribute("disabled", true);
-            } else {
-                messageErreur.textContent = "";
-                if (textarea.value.length >= minCaracteres && textarea.value.length <= maxCaracteres) {
-                    btnValider.classList.remove("disabled");
-                    btnValider.removeAttribute("disabled");
-                }
-            }
-        });
-        function isFormValid() {
-        const longueurTexte = textarea.value.length;
-        const dateDebutValue = new Date(dateDebut.value);
-        const dateFinValue = new Date(dateFin.value);
-
-        const isTextValid = longueurTexte >= minCaracteres && longueurTexte <= maxCaracteres;
-        const isDateValid = dateDebutValue <= dateFinValue;
-
-        if (isTextValid && isDateValid) {
-            btnValider.classList.remove("disabled");
-            btnValider.removeAttribute("disabled");
-            btnValider.classList.add("button__validate");
-        } else {
-            btnValider.classList.remove("button__validate");
-            btnValider.classList.add("disabled");
-            btnValider.setAttribute("disabled", true);
-        }
-        }
-
-        textarea.addEventListener("input", isFormValid);
-        dateDebut.addEventListener("change", isFormValid);
-        dateFin.addEventListener("change", isFormValid);
-
-        isFormValid();
-    </script>
+</script>
 {% endblock %} {% endblock %}

@@ -1,34 +1,47 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace App\Controller;
 
-session_start();
-
+use App\Model\AdministrateurModel;
+use App\Model\CadavreModel;
 use App\Helper\HTTP;
-use App\Model\Administrateur;
 
 class AdministrateurController extends Controller
 {
   public function index($id)
   {
+    session_start();
+
     if (isset($_SESSION['role'])) {
       $role = $_SESSION['role'];
 
       if ($role === 'joueur') {
         HTTP::redirect("/joueur/{$id}");
       } else {
-        $cadavres = Administrateur::getInstance()->getAllCadavre();
+        $dateActuelle = date("Y-m-d");
+
         $id = $_SESSION['user_id'];
 
-        $dateActuelle = date("Y-m-d");
+        $cadavreModel = new CadavreModel();
+        $periodesModel = $cadavreModel->getPeriodes();
+
+        $periodes = [];
+        foreach ($periodesModel as $periodeModel) {
+          $dateParts = explode(" | ", $periodeModel['periode']);
+          $periodes[] = [
+            'start' => $dateParts[0],
+            'end' => $dateParts[1],
+          ];
+        }
+
 
         $this->display(
           'administrateur/admin.html.twig',
           [
+            'periodes' => $periodes,
             'dateActuelle' => $dateActuelle,
-            'cadavres' => $cadavres,
             'id' => $id,
           ]
         );
@@ -37,9 +50,9 @@ class AdministrateurController extends Controller
       HTTP::redirect('/');
     }
   }
+
   public function add($id)
   {
-
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $titre = $_POST['titre'];
       $dateDebut = $_POST['dateDebut'];
@@ -48,9 +61,10 @@ class AdministrateurController extends Controller
       $nbJaime = $_POST['nbJaime'];
       $texteContribution = $_POST['texteContribution'];
 
-      $idCadavre = Administrateur::getInstance()->ajouterCadavre($titre, $dateDebut, $dateFin, $nbContributions, $nbJaime, $id);
+      $administrateurModel = new AdministrateurModel();
+      $idCadavre = $administrateurModel->ajouterCadavre($titre, $dateDebut, $dateFin, $nbContributions, $nbJaime);
 
-      Administrateur::getInstance()->ajouterContribution($texteContribution, $id, $idCadavre);
+      $administrateurModel->ajouterContribution($texteContribution, $idCadavre);
 
       HTTP::redirect("/administrateur/{$id}");
     } else {
