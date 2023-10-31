@@ -125,7 +125,7 @@
     const contenuTextarea = textarea.value;
 
     // Comptez le nombre de caractères (en excluant les espaces)
-    const nombreCaracteres = contenuTextarea.replace(/\s/g, '').length;
+    const nombreCaracteres = contenuTextarea.length;
 
     // Mise à jour du compteur de caractères
     compteurCaracteres.textContent = `${nombreCaracteres}/280`;

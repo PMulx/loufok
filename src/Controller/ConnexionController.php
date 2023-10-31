@@ -43,34 +43,6 @@ class ConnexionController extends Controller
         );
     }
 
-    public function inscription()
-    {
-
-        $allPlumes = Connexion::getInstance()->getAllNomPlume();
-
-        $this->display(
-            'connexion/inscription.html.twig',
-            [
-                'allplumes' => $allPlumes,
-            ]
-        );
-    }
-
-    public function createUser()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nomPlume = $_POST['nomPlume'];
-            $email = $_POST['email'];
-            $sexe = $_POST['sexe'];
-            $ddn = $_POST['ddn'];
-            $motDePasse = $_POST['motDePasse'];
-
-            Connexion::getInstance()->createUser($nomPlume, $email, $sexe, $ddn, $motDePasse);
-
-            HTTP::redirect("/");
-        }
-    }
-
     public function disconnect()
     {
         $_SESSION['role'] = NULL;
