@@ -1,195 +1,201 @@
 {% extends 'layout.html.twig' %} {% block title %} Administrateur
 {{ parent() }}
 {% endblock %} {% block content %}
-		<header class="admin">
-			<div class="header">
-				<div class="header__logo">
-					<?xml version="1.0" encoding="UTF-8"?>
-					<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 248">
-					<defs>
-						<style>
-						svg {
-							width:20%;
-						}
-						.cls-1 {
-							fill: #fefffe;
-						}
+<header class="admin">
+  <div class="header">
+    <div class="header__logo">
+      <?xml version="1.0" encoding="UTF-8"?>
+      <svg
+        id="Calque_1"
+        data-name="Calque 1"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 248 248"
+      >
+        <defs>
+          <style>
+            svg {
+              width: 20%;
+            }
+            .cls-1 {
+              fill: #fefffe;
+            }
 
-						.cls-1, .cls-2 {
-							stroke-width: 0px;
-						}
+            .cls-1,
+            .cls-2 {
+              stroke-width: 0px;
+            }
 
-						.cls-2 {
-							fill: #101a31;
-						}
-						</style>
-					</defs>
-					<circle class="cls-2" cx="124" cy="124" r="124"/>
-					<path class="cls-1" d="m96,46h21.68l-10.84,58.78s-5.84,22.22,14.16,23.22c0,0,19,3,26-15l10-46h-24s6.37-21,22.18-21h27.64l-11.83,62s-4,22-34,47l-46-10s-7-17-7-23c0,0-3-20,12-76Z"/>
-					<polygon class="cls-1" points="93 156 104 187 128 164 93 156"/>
-					<path class="cls-1" d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"/>
-					</svg>
-					<h1>Loufok</h1>
-                    <a class="disconnect" href="/disconnect"> <span class="material-icons">logout</span> </a>
-				</div>
-			</div>
-		</header>
+            .cls-2 {
+              fill: #101a31;
+            }
+          </style>
+        </defs>
+        <circle class="cls-2" cx="124" cy="124" r="124" />
+        <path
+          class="cls-1"
+          d="m96,46h21.68l-10.84,58.78s-5.84,22.22,14.16,23.22c0,0,19,3,26-15l10-46h-24s6.37-21,22.18-21h27.64l-11.83,62s-4,22-34,47l-46-10s-7-17-7-23c0,0-3-20,12-76Z"
+        />
+        <polygon class="cls-1" points="93 156 104 187 128 164 93 156" />
+        <path
+          class="cls-1"
+          d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"
+        />
+      </svg>
+      <h1>Loufok</h1>
+      <a class="disconnect" href="/disconnect">
+        <span class="material-icons">logout</span>
+      </a>
+    </div>
+  </div>
+</header>
 
+<section class="creaCadavre">
+  <h3 class="creaCadavre__h3">Création d'un nouveau cadavre Exquis</h3>
 
-        <section class="creaCadavre">
-            <h3 class="creaCadavre__h3"> Création d'un nouveau cadavre Exquis </h3>
+  {% set cadavreEnCours = false %} {% for cadavre in cadavres %} {% if
+  dateActuelle >= cadavre.date_debut_cadavre and dateActuelle <=
+  cadavre.date_fin_cadavre %} {% set cadavreEnCours = true %} {% endif %} {%
+  endfor %} {% if cadavreEnCours %}
+  <div>
+    <p>Un cadavre exquis est encore en cours. Un seul à la fois est accepté.</p>
+  </div>
+  {% else %}
 
-            {% set cadavreEnCours = false %}
-            {% for cadavre in cadavres %}
-                {% if dateActuelle >= cadavre.date_debut_cadavre and dateActuelle <= cadavre.date_fin_cadavre %}
-                    {% set cadavreEnCours = true %}
-                {% endif %}
-            {% endfor %}
+  <form
+    class="section__form"
+    action="/administrateur/{{ id }}/add"
+    method="post"
+  >
+    <input type="hidden" name="id" value="{{ id }}" />
 
-            {% if cadavreEnCours %}
-                <div>
-                    <p> Un cadavre exquis est encore en cours. Un seul à la fois est accepté. </p>
-                </div>
-            {% else %}
+    <label for="texteContribution">Contribution</label>
+    <textarea
+      name="texteContribution"
+      id="texteContribution"
+      required
+    ></textarea>
+    <div id="compteur">0/280</div>
 
-                <form class="section__form" action="/administrateur/{{ id }}/add" method="post">
-                    <input type="hidden" name="id" value="{{ id }}">
+    <label for="titre">Titre du Cadavre Exquis</label>
+    <input type="text" name="titre" id="titre" required />
 
-                    <label for="texteContribution">Contribution</label>
-                    <textarea name="texteContribution" id="texteContribution" required></textarea>
-                    <div id="compteur">0/280</div>
-                    
-                    <label for="titre">Titre du Cadavre Exquis</label>
-                    <input type="text" name="titre" id="titre" required>
+    <label for="nbContributions">Nombres de contributions</label>
+    <input type="number" name="nbContributions" id="nbContributions" required />
 
-                    <label for="nbContributions">Nombres de contributions</label>
-                    <input type="number" name="nbContributions" id="nbContributions" required>
+    <input type="hidden" name="nbJaime" value="0" />
 
-                    <input type="hidden" name="nbJaime" value="0">
-                    
-                    <label>Période de jeu</label>
-                    <div class="form__date">
-                        <div class="form__date--debut">
-                            <label for="dateDebut">Début</label>
-                            <input type="date" name="dateDebut" id="dateDebut" required>
-                        </div>
+    <label>Période de jeu</label>
+    <div class="form__date">
+      <div class="form__date--debut">
+        <label for="dateDebut">Début</label>
+        <input type="date" name="dateDebut" id="dateDebut" required />
+      </div>
 
-                        <div class="form__date--fin">
-                            <label for="dateFin">Fin</label>
-                            <input type="date" name="dateFin" id="dateFin" required>
-                        </div>
-                    </div>
+      <div class="form__date--fin">
+        <label for="dateFin">Fin</label>
+        <input type="date" name="dateFin" id="dateFin" required />
+      </div>
+    </div>
 
-                    <span id="messageErreur" style="color: red;"></span>
+    <span id="messageErreur" style="color: red"></span>
 
-                    <button type="submit" class="button__disabled" id="btnValider" disabled>Valider</button>
-                </form>
+    <button type="submit" class="button__disabled" id="btnValider" disabled>
+      Valider
+    </button>
+  </form>
 
-            {% endif %}
-        </section>
+  {% endif %}
+</section>
 
-        <hr>
+<hr />
 
-        <section class="cadavres">
-            {% for cadavre in cadavres %}
-            <div class="cadavres__pres">
-                <h4 class="cadavres__pres--p"> Cadavre Exquis {{ cadavre.id_cadavre }} </h4>
-                <a class="cadavres__pres--a" href=""> Voir </a>
-            </div>
-            {% endfor %}
-        </section> 
+<section class="cadavres">
+  {% for cadavre in cadavres %}
+  <div class="cadavres__pres">
+    <h4 class="cadavres__pres--p">Cadavre Exquis {{ cadavre.id_cadavre }}</h4>
+    <a class="cadavres__pres--a" href=""> Voir </a>
+  </div>
+  {% endfor %}
+</section>
 
 {% block scripts %}
- <script>
+<script src="/assets/js/script.js"></script>
+<script>
+  const textarea = document.getElementById("texteContribution");
+  const dateDebut = document.getElementById("dateDebut");
+  const dateFin = document.getElementById("dateFin");
+  const compteur = document.getElementById("compteur");
+  const messageErreur = document.getElementById("messageErreur");
+  const btnValider = document.getElementById("btnValider");
 
-        const textarea = document.getElementById("texteContribution");
-        const dateDebut = document.getElementById("dateDebut");
-        const dateFin = document.getElementById("dateFin");
-        const compteur = document.getElementById("compteur");
-        const messageErreur = document.getElementById("messageErreur");
-        const btnValider = document.getElementById("btnValider");
+  const minCaracteres = 50;
+  const maxCaracteres = 280;
 
-        const minCaracteres = 50;
-        const maxCaracteres = 280;
+  dateDebut.addEventListener("change", () => {
+    const dateDebutValue = new Date(dateDebut.value);
+    const dateFinValue = new Date(dateFin.value);
 
-        textarea.addEventListener("input", function () {
-            const texte = textarea.value;
-            const longueurTexte = texte.length;
+    if (dateDebutValue > dateFinValue) {
+      messageErreur.textContent =
+        "La date de début ne peut pas être supérieure à la date de fin.";
+      btnValider.classList.add("disabled");
+      btnValider.setAttribute("disabled", true);
+    } else {
+      messageErreur.textContent = "";
+      if (
+        textarea.value.length >= minCaracteres &&
+        textarea.value.length <= maxCaracteres
+      ) {
+        btnValider.classList.remove("disabled");
+        btnValider.removeAttribute("disabled");
+      }
+    }
+  });
 
-            if (longueurTexte >= minCaracteres && longueurTexte <= maxCaracteres && !messageErreur.textContent) {
-                btnValider.classList.remove("disabled");
-                btnValider.removeAttribute("disabled");
-                btnValider.classList.add("button__validate");
-            } else {
-                btnValider.classList.remove("button__validate");
-                btnValider.classList.add("disabled");
-                btnValider.setAttribute("disabled", true);
-            }
+  dateFin.addEventListener("change", () => {
+    const dateDebutValue = new Date(dateDebut.value);
+    const dateFinValue = new Date(dateFin.value);
 
-            compteur.textContent = `${longueurTexte}/${maxCaracteres}`;
-            if (longueurTexte < minCaracteres || longueurTexte > maxCaracteres) {
-                compteur.style.color = "red";
-            } else {
-                compteur.style.color = "black";
-            }
-        });
+    if (dateDebutValue > dateFinValue) {
+      messageErreur.textContent =
+        "La date de début ne peut pas être supérieure à la date de fin.";
+      btnValider.classList.add("disabled");
+      btnValider.setAttribute("disabled", true);
+    } else {
+      messageErreur.textContent = "";
+      if (
+        textarea.value.length >= minCaracteres &&
+        textarea.value.length <= maxCaracteres
+      ) {
+        btnValider.classList.remove("disabled");
+        btnValider.removeAttribute("disabled");
+      }
+    }
+  });
+  function isFormValid() {
+    const longueurTexte = textarea.value.length;
+    const dateDebutValue = new Date(dateDebut.value);
+    const dateFinValue = new Date(dateFin.value);
 
-        dateDebut.addEventListener("change", () => {
-            const dateDebutValue = new Date(dateDebut.value);
-            const dateFinValue = new Date(dateFin.value);
+    const isTextValid =
+      longueurTexte >= minCaracteres && longueurTexte <= maxCaracteres;
+    const isDateValid = dateDebutValue <= dateFinValue;
 
-            if (dateDebutValue > dateFinValue) {
-                messageErreur.textContent = "La date de début ne peut pas être supérieure à la date de fin.";
-                btnValider.classList.add("disabled");
-                btnValider.setAttribute("disabled", true);
-            } else {
-                messageErreur.textContent = "";
-                if (textarea.value.length >= minCaracteres && textarea.value.length <= maxCaracteres) {
-                    btnValider.classList.remove("disabled");
-                    btnValider.removeAttribute("disabled");
-                }
-            }
-        });
+    if (isTextValid && isDateValid) {
+      btnValider.classList.remove("disabled");
+      btnValider.removeAttribute("disabled");
+      btnValider.classList.add("button__validate");
+    } else {
+      btnValider.classList.remove("button__validate");
+      btnValider.classList.add("disabled");
+      btnValider.setAttribute("disabled", true);
+    }
+  }
 
-        dateFin.addEventListener("change", () => {
-            const dateDebutValue = new Date(dateDebut.value);
-            const dateFinValue = new Date(dateFin.value);
+  textarea.addEventListener("input", isFormValid);
+  dateDebut.addEventListener("change", isFormValid);
+  dateFin.addEventListener("change", isFormValid);
 
-            if (dateDebutValue > dateFinValue) {
-                messageErreur.textContent = "La date de début ne peut pas être supérieure à la date de fin.";
-                btnValider.classList.add("disabled");
-                btnValider.setAttribute("disabled", true);
-            } else {
-                messageErreur.textContent = "";
-                if (textarea.value.length >= minCaracteres && textarea.value.length <= maxCaracteres) {
-                    btnValider.classList.remove("disabled");
-                    btnValider.removeAttribute("disabled");
-                }
-            }
-        });
-        function isFormValid() {
-        const longueurTexte = textarea.value.length;
-        const dateDebutValue = new Date(dateDebut.value);
-        const dateFinValue = new Date(dateFin.value);
-
-        const isTextValid = longueurTexte >= minCaracteres && longueurTexte <= maxCaracteres;
-        const isDateValid = dateDebutValue <= dateFinValue;
-
-        if (isTextValid && isDateValid) {
-            btnValider.classList.remove("disabled");
-            btnValider.removeAttribute("disabled");
-            btnValider.classList.add("button__validate");
-        } else {
-            btnValider.classList.remove("button__validate");
-            btnValider.classList.add("disabled");
-            btnValider.setAttribute("disabled", true);
-        }
-        }
-
-        textarea.addEventListener("input", isFormValid);
-        dateDebut.addEventListener("change", isFormValid);
-        dateFin.addEventListener("change", isFormValid);
-
-        isFormValid();
-    </script>
+  isFormValid();
+</script>
 {% endblock %} {% endblock %}
