@@ -62,6 +62,7 @@
   {% else %}
 
   <form
+    id="form"
     class="section__form"
     action="/administrateur/{{ id }}/add"
     method="post"
@@ -99,7 +100,12 @@
 
     <span id="messageErreur" style="color: red"></span>
 
-    <button type="submit" class="button__disabled" id="btnValider" disabled>
+    <button
+      type="submit"
+      class="button button__disabled"
+      id="btnValider"
+      disabled
+    >
       Valider
     </button>
   </form>
@@ -120,82 +126,84 @@
 
 {% block scripts %}
 <script src="/assets/js/script.js"></script>
+
 <script>
-  const textarea = document.getElementById("texteContribution");
-  const dateDebut = document.getElementById("dateDebut");
-  const dateFin = document.getElementById("dateFin");
-  const compteur = document.getElementById("compteur");
-  const messageErreur = document.getElementById("messageErreur");
-  const btnValider = document.getElementById("btnValider");
+  //   const textarea = document.getElementById("texteContribution");
+  //   const dateDebut = document.getElementById("dateDebut");
+  //   const dateFin = document.getElementById("dateFin");
+  //   const compteur = document.getElementById("compteur");
+  //   const messageErreur = document.getElementById("messageErreur");
+  //   const btnValider = document.getElementById("btnValider");
 
-  const minCaracteres = 50;
-  const maxCaracteres = 280;
+  //   const minCaracteres = 50;
+  //   const maxCaracteres = 280;
 
-  dateDebut.addEventListener("change", () => {
-    const dateDebutValue = new Date(dateDebut.value);
-    const dateFinValue = new Date(dateFin.value);
+  //   dateDebut.addEventListener("change", () => {
+  //     const dateDebutValue = new Date(dateDebut.value);
+  //     const dateFinValue = new Date(dateFin.value);
 
-    if (dateDebutValue > dateFinValue) {
-      messageErreur.textContent =
-        "La date de début ne peut pas être supérieure à la date de fin.";
-      btnValider.classList.add("disabled");
-      btnValider.setAttribute("disabled", true);
-    } else {
-      messageErreur.textContent = "";
-      if (
-        textarea.value.length >= minCaracteres &&
-        textarea.value.length <= maxCaracteres
-      ) {
-        btnValider.classList.remove("disabled");
-        btnValider.removeAttribute("disabled");
-      }
-    }
-  });
+  //     if (dateDebutValue > dateFinValue) {
+  //       messageErreur.textContent =
+  //         "La date de début ne peut pas être supérieure à la date de fin.";
+  //       btnValider.classList.add("disabled");
+  //       btnValider.setAttribute("disabled", true);
+  //     } else {
+  //       messageErreur.textContent = "";
+  //       if (
+  //         textarea.value.length >= minCaracteres &&
+  //         textarea.value.length <= maxCaracteres
+  //       ) {
+  //         btnValider.classList.remove("disabled");
+  //         btnValider.removeAttribute("disabled");
+  //       }
+  //     }
+  //   });
 
-  dateFin.addEventListener("change", () => {
-    const dateDebutValue = new Date(dateDebut.value);
-    const dateFinValue = new Date(dateFin.value);
+  //   dateFin.addEventListener("change", () => {
+  //     const dateDebutValue = new Date(dateDebut.value);
+  //     const dateFinValue = new Date(dateFin.value);
 
-    if (dateDebutValue > dateFinValue) {
-      messageErreur.textContent =
-        "La date de début ne peut pas être supérieure à la date de fin.";
-      btnValider.classList.add("disabled");
-      btnValider.setAttribute("disabled", true);
-    } else {
-      messageErreur.textContent = "";
-      if (
-        textarea.value.length >= minCaracteres &&
-        textarea.value.length <= maxCaracteres
-      ) {
-        btnValider.classList.remove("disabled");
-        btnValider.removeAttribute("disabled");
-      }
-    }
-  });
-  function isFormValid() {
-    const longueurTexte = textarea.value.length;
-    const dateDebutValue = new Date(dateDebut.value);
-    const dateFinValue = new Date(dateFin.value);
+  //     if (dateDebutValue > dateFinValue) {
+  //       messageErreur.textContent =
+  //         "La date de début ne peut pas être supérieure à la date de fin.";
+  //       btnValider.classList.add("disabled");
+  //       btnValider.setAttribute("disabled", true);
+  //     } else {
+  //       messageErreur.textContent = "";
+  //       if (
+  //         textarea.value.length >= minCaracteres &&
+  //         textarea.value.length <= maxCaracteres
+  //       ) {
+  //         btnValider.classList.remove("disabled");
+  //         btnValider.removeAttribute("disabled");
+  //       }
+  //     }
+  //   });
+  //   function isFormValid() {
+  //     const longueurTexte = textarea.value.length;
+  //     const dateDebutValue = new Date(dateDebut.value);
+  //     const dateFinValue = new Date(dateFin.value);
 
-    const isTextValid =
-      longueurTexte >= minCaracteres && longueurTexte <= maxCaracteres;
-    const isDateValid = dateDebutValue <= dateFinValue;
+  //     const isTextValid =
+  //       longueurTexte >= minCaracteres && longueurTexte <= maxCaracteres;
+  //     const isDateValid = dateDebutValue <= dateFinValue;
 
-    if (isTextValid && isDateValid) {
-      btnValider.classList.remove("disabled");
-      btnValider.removeAttribute("disabled");
-      btnValider.classList.add("button__validate");
-    } else {
-      btnValider.classList.remove("button__validate");
-      btnValider.classList.add("disabled");
-      btnValider.setAttribute("disabled", true);
-    }
-  }
+  //     if (isTextValid && isDateValid) {
+  //       btnValider.classList.remove("disabled");
+  //       btnValider.removeAttribute("disabled");
+  //       btnValider.classList.add("button__validate");
+  //     } else {
+  //       btnValider.classList.remove("button__validate");
+  //       btnValider.classList.add("disabled");
+  //       btnValider.setAttribute("disabled", true);
+  //     }
+  //   }
 
-  textarea.addEventListener("input", isFormValid);
-  dateDebut.addEventListener("change", isFormValid);
-  dateFin.addEventListener("change", isFormValid);
+  //   textarea.addEventListener("input", isFormValid);
+  //   dateDebut.addEventListener("change", isFormValid);
+  //   dateFin.addEventListener("change", isFormValid);
 
-  isFormValid();
+  //   isFormValid();
+  //
 </script>
 {% endblock %} {% endblock %}
