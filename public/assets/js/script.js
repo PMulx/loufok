@@ -35,7 +35,6 @@
           App.desactiver_button();
         } else if (App.longueur <= App.maxCaracteres) {
           App.DOM.compteur.style.color = "black";
-          App.activer_button();
         } else {
           App.DOM.compteur.style.color = "red";
           App.desactiver_button();
