@@ -8,11 +8,19 @@ session_start();
 
 use App\Helper\HTTP;
 use App\Model\Joueur;
+use App\Model\CadavreModel;
 
 class JoueurController extends Controller
 {
     public function index($id)
     {
+
+        $cadavreModel = new CadavreModel();
+
+        $currentCadavre = $cadavreModel->getCurrentCadavre();
+        var_dump($currentCadavre);
+        exit();
+
         if (isset($_SESSION['role'])) {
             $role = $_SESSION['role'];
 

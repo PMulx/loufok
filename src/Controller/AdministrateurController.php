@@ -8,11 +8,12 @@ use App\Model\AdministrateurModel;
 use App\Model\CadavreModel;
 use App\Helper\HTTP;
 
+session_start();
+
 class AdministrateurController extends Controller
 {
   public function index($id)
   {
-    session_start();
 
     if (isset($_SESSION['role'])) {
       $role = $_SESSION['role'];
@@ -25,7 +26,10 @@ class AdministrateurController extends Controller
         $id = $_SESSION['user_id'];
 
         $cadavreModel = new CadavreModel();
-        $periodesModel = $cadavreModel->getPeriodes();
+
+        $currentCadavre = $cadavreModel->getCurrentCadavre();
+        $periodesModel = $cadavreModel->getAllPeriods();
+        $titles = $cadavreModel->getAllTitles();
 
         $periodes = [];
         foreach ($periodesModel as $periodeModel) {
@@ -40,6 +44,8 @@ class AdministrateurController extends Controller
         $this->display(
           'administrateur/admin.html.twig',
           [
+            'titles' => $titles,
+            'currentCadavre' => $currentCadavre,
             'periodes' => $periodes,
             'dateActuelle' => $dateActuelle,
             'id' => $id,

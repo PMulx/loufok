@@ -4,17 +4,15 @@ namespace App\Model;
 
 class CadavreModel extends Model
 {
-    protected $tableName = APP_TABLE_PREFIX . 'cadavre';
-
-    protected $id_cadavre;
-    protected $titre_cadavre;
-    protected $date_debut_cadavre;
-    protected $date_fin_cadavre;
-    protected $nb_contributions;
-    protected $nb_jaime;
-    protected $id_administrateur;
+    protected $cadavretableName = APP_TABLE_PREFIX . 'cadavre';
+    protected $contributiontableName = APP_TABLE_PREFIX . 'contribution';
+    protected $joueurtableName = APP_TABLE_PREFIX . 'joueur';
 
     protected static $instance;
+
+    protected function checkTextSize($text)
+    {
+    }
 
     public static function getInstance()
     {
@@ -25,84 +23,84 @@ class CadavreModel extends Model
         return self::$instance;
     }
 
-    public function getIdCadavre(): ?int
+    public function getCurrentCadavre()
     {
-        return $this->id_cadavre;
+        $role = $_SESSION['role'];
+        $id_joueur = $_SESSION['user_id'];
+
+        if ($role === 'administrateur') {
+            $sql = "SELECT
+                    CASE
+                        WHEN c.id_joueur IS NOT NULL THEN j.nom_plume
+                        ELSE 'Administrateur'
+                    END AS nom_plume,
+                    c.texte_contribution,
+                    c.ordre_soumission
+                FROM {$this->contributiontableName} c
+                LEFT JOIN {$this->cadavretableName} ca ON c.id_cadavre = ca.id_cadavre
+                LEFT JOIN {$this->joueurtableName} j ON c.id_joueur = j.id_joueur
+                WHERE ca.date_debut_cadavre <= CURDATE() AND ca.date_fin_cadavre >= CURDATE()
+                AND :role = 'administrateur'";
+        } elseif ($role === 'joueur') {
+            $sql = "SELECT 
+            CASE 
+                WHEN cont.id_joueur = :id_joueur THEN cont.texte_contribution
+                WHEN cr.num_contribution = cont.ordre_soumission THEN cont.texte_contribution
+                ELSE NULL
+            END AS texte_contribution,
+            cont.ordre_soumission
+        FROM cadavre cad
+        LEFT JOIN contribution_aléatoire cr ON cad.id_cadavre = cr.id_cadavre AND cr.id_joueur = :id_joueur
+        LEFT JOIN contribution cont ON cad.id_cadavre = cont.id_cadavre
+        WHERE 
+            CURDATE() BETWEEN cad.date_debut_cadavre AND cad.date_fin_cadavre
+        ORDER BY cad.id_cadavre, cont.ordre_soumission";
+        }
+
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':role', $role);
+        $alreadyPlayed = false;
+
+        if ($role === 'joueur') {
+            $sth->bindParam(':id_joueur', $id_joueur);
+            $playedContributions = 0;
+
+            while ($row = $sth->fetch()) {
+                if ($row['texte_contribution'] !== null) {
+                    $playedContributions++;
+                }
+            }
+
+            if ($playedContributions = 2) {
+                $alreadyPlayed = true;
+            }
+        }
+
+        $sth->execute();
+
+        return
+            [
+                "data" => $sth->fetchAll(),
+                "played" => $alreadyPlayed,
+            ];
     }
 
-    public function getTitreCadavre(): ?string
+    public function insertCadavreContribution($datas)
     {
-        return $this->titre_cadavre;
     }
 
-    public function getDateDebutCadavre(): ?string
+    public function getAllTitles()
     {
-        return $this->date_debut_cadavre;
+        $sql = "SELECT titre_cadavre
+        FROM cadavre";
+
+        $sth = self::$dbh->prepare($sql);
+        $sth->execute();
+
+        return $sth->fetchAll();
     }
 
-    public function getDateFinCadavre(): ?string
-    {
-        return $this->date_fin_cadavre;
-    }
-
-    public function getNbContributions(): ?int
-    {
-        return $this->nb_contributions;
-    }
-
-    public function getNbJaime(): ?int
-    {
-        return $this->nb_jaime;
-    }
-
-    public function getIdAdministrateur(): ?int
-    {
-        return $this->id_administrateur;
-    }
-
-    public function setIdCadavre(int $id_cadavre): self
-    {
-        $this->id_cadavre = $id_cadavre;
-        return $this;
-    }
-
-    public function setTitreCadavre(string $titre_cadavre): self
-    {
-        $this->titre_cadavre = $titre_cadavre;
-        return $this;
-    }
-
-    public function setDateDebutCadavre(string $date_debut_cadavre): self
-    {
-        $this->date_debut_cadavre = $date_debut_cadavre;
-        return $this;
-    }
-
-    public function setDateFinCadavre(string $date_fin_cadavre): self
-    {
-        $this->date_fin_cadavre = $date_fin_cadavre;
-        return $this;
-    }
-
-    public function setNbContributions(int $nb_contributions): self
-    {
-        $this->nb_contributions = $nb_contributions;
-        return $this;
-    }
-
-    public function setNbJaime(int $nb_jaime): self
-    {
-        $this->nb_jaime = $nb_jaime;
-        return $this;
-    }
-
-    public function setIdAdministrateur(int $id_administrateur): self
-    {
-        $this->id_administrateur = $id_administrateur;
-        return $this;
-    }
-
-    public function getPeriodes()
+    public function getAllPeriods()
     {
         $sql = "SELECT id_cadavre, CONCAT(date_debut_cadavre, ' | ', date_fin_cadavre) AS periode
                 FROM cadavre";

@@ -5,7 +5,7 @@ namespace App\Model;
 class Connexion extends Model
 {
     protected $tableJoueur = APP_TABLE_PREFIX . 'joueur';
-    protected $tableAdministration = APP_TABLE_PREFIX . 'administration';
+    protected $tableAdministration = APP_TABLE_PREFIX . 'administrateur';
 
     protected static $instance;
 
