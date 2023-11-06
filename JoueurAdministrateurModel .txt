@@ -1,0 +1,53 @@
+JoueurAdministrateurModel :
+Méthode 1 - addContributionJoueur($texte, $ordreSoumission, $joueurId, $cadavreId)
+
+
+Méthode 2 - checkLogin($email, $password)
+
+
+Méthode 3 - getLastCadavre($userId)
+
+{
+	$sql = SELECT c.titre_cadavre, co.texte_contribution
+	FROM " . $this->tableCadavre . "
+	INNER JOIN " . $this->tableContribution . " co ON c.id_cadavre = co.id_cadavre
+	WHERE co.date_contribution = (SELECT MAX(date_contribution) FROM " . $this->tableContribution . " WHERE id_joueur = co.id_joueur);
+
+ 
+}
+
+. CadavreContributionModel
+
+Méthode 1 - getCurrentCadavre()
+
+{
+        $sql = "SELECT * FROM " . $this->tableCadavre . " WHERE DATE() > :date_debut_cadavre AND DATE() < :date_fin_cadavre";
+
+        return $results;
+    }
+
+
+Méthode 2 - getNextSubmissionOrder($cadavreId)
+ {
+        $sql = "SELECT COUNT(*) FROM " . $this->tableContribution . " WHERE id_cadavre = :id_cadavre";
+
+
+        $result = $this->query($sql, [':id_cadavre' => $id_cadavre])->fetchColumn();
+
+
+        $result = strval($result);
+
+        return $result;
+    }
+
+
+Méthode 3 - addCadavreContribution($titre, $dateDebut, $dateFin, $adminId, $texte, $nbContributions)
+
+
+Méthode 4 - getAllCadavresInfo()
+ {
+        $sql = "SELECT * FROM " . $this->tableCadavre;
+        $results = $this->query($sql);
+
+        return $results;
+    }

@@ -7,21 +7,20 @@ namespace App\Controller;
 session_start();
 
 use App\Helper\HTTP;
-use App\Model\Connexion;
+use App\Model\JoueurAdministrateur;
 
 class ConnexionController extends Controller
 {
-
     public function index()
     {
         $errorMessage = null;
-        $_SESSION['role'] = NULL;
+        $_SESSION['role'] = null;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'];
             $password = $_POST['mdp'];
 
-            $user = Connexion::getInstance()->authenticateUser($email, $password);
+            $user = JoueurAdministrateur::getInstance()->checkLogin($email, $password);
 
             if ($user) {
                 $_SESSION['user_id'] = $user['id'];
@@ -34,7 +33,7 @@ class ConnexionController extends Controller
                     HTTP::redirect("/administrateur/{$user['id']}");
                 }
             } else {
-                $errorMessage = "Adresse e-mail ou mot de passe incorrect.";
+                $errorMessage = 'Adresse e-mail ou mot de passe incorrect.';
             }
         }
         $this->display(
@@ -43,11 +42,10 @@ class ConnexionController extends Controller
         );
     }
 
-    public function disconnect()
+    public function logout()
     {
-        $_SESSION['role'] = NULL;
-        $_SESSION['user_id'] = NULL;
+        $user = JoueurAdministrateur::getInstance()->logout();
 
-        HTTP::redirect("/");
+        HTTP::redirect('/');
     }
 }
