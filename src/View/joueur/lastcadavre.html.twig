@@ -1,4 +1,4 @@
-{% extends 'layout.html.twig' %} {% block title %}Listes des cadavres exquis
+{% extends 'layout.html.twig' %} {% block title %}Réalisation d'une contribution
 {{ parent() }}
 {% endblock %} {% block content %}
 
@@ -42,7 +42,7 @@
           d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"
         />
       </svg>
-      <h1>Loufok</h1>
+      <a href="/joueur/{{ id }}"><h1>Loufok</h1></a>
       <a class="disconnect" href="/disconnect">
         <span class="material-icons">logout</span>
       </a>
@@ -50,31 +50,11 @@
   </div>
 </header>
 
-<section class="cadavres">
-  <a
-    class="cadavres__pres--a"
-    href="/joueur/lastcadavre/{{ id }}"
-    id="lienVersLast"
-  >
-    Dernier cadavre réalisé
-  </a>
-  <h3>Cadavres exquis en cours</h3>
-  {% set cadavreEnCours = false %} {% set cadavreEnCoursID = null %} {% set
-  nmbContribution = null %} {% for cadavre in cadavres %} {% if dateActuelle >=
-  cadavre.date_debut_cadavre and dateActuelle <= cadavre.date_fin_cadavre %} {%
-  set cadavreEnCours = true %} {% set cadavreEnCoursID = cadavre.id_cadavre %}
-  {% set nmbContribution = cadavre.contribution_count %} {% endif %} {% if
-  nmbContribution >= cadavre.nb_contributions %} {% set cadavreEnCours = false
-  %} {% endif %} {% endfor %} {% if cadavreEnCours %}
-  <div class="cadavres__pres">
-    <h4 class="cadavres__pres--p">Cadavre Exquis {{ cadavreEnCoursID }}</h4>
-    <a class="cadavres__pres--a" href="#" id="lienVersInsert"> Voir </a>
-  </div>
-  {% else %}
-  <p>Aucun cadavre exquis est en cours. Veuillez revenir plus tard.</p>
-  {% endif %}
+<section class="contribution">
+  <h2 class="contribution__title">Dernière participation</h2>
 </section>
 
-<hr />
+{% block scripts %}
 
-{% endblock %}
+<script src="/assets/js/script.js"></script>
+{% endblock %} {% endblock %}

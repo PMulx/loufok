@@ -1,129 +1,170 @@
 (function () {
-    const App = {
-    
-      // les éléments du DOM
-      DOM: {
-        articles: document.querySelector(".articles"),
-        load: document.querySelector("#load"),
-        article_buttons: document.querySelector(".articles"),
-        article_wrapper: document.querySelector(".article-wrapper"),
-        close: document.querySelector(".article-wrapper .close"),
-      },
-      /**
-       * Initialisation de l'application.
-       */
-      app_init: function () {
-        App.app_handlers();
-      },
-      /**
-       * Mise en place des gestionnaires d'évènements.
-       */
-      app_handlers: function () {
-        App.DOM.load.addEventListener("click", App.loadArticles);
-        // à compléter
-      },
-      /**
-       * Charger les articles à partir de l'API.
-       * @param {object} ev
-       */
-      loadArticles: (ev) => {
-        fetch(
-          `${App.URL}?q=maroc&from=2023-09-05&sortBy=popularity&apiKey=${App.API_KEY}`
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            App.DOM.load.style.display = "none";
-  
-            data.articles.forEach((article) => {
-              const articleElement = document.createElement("div");
-              articleElement.classList.add("article");
-  
-              const titleElement = document.createElement("h2");
-              titleElement.textContent = article.title;
-  
-              const sourceElement = document.createElement("p");
-              sourceElement.textContent = `${article.source.name}`;
-  
-              const imageElement = document.createElement("img");
-              imageElement.src = article.urlToImage;
-              imageElement.alt = article.title;
-  
-              imageElement.setAttribute("loading", "lazy");
-  
-              const readMoreButton = document.createElement("button");
-              readMoreButton.textContent = "En lire plus";
-              readMoreButton.addEventListener("click", () => {
-                App.viewArticleContent(article);
-              });
-  
-              articleElement.appendChild(titleElement);
-              articleElement.appendChild(sourceElement);
-              articleElement.appendChild(imageElement);
-              articleElement.appendChild(readMoreButton);
-  
-              App.DOM.articles.appendChild(articleElement);
-            });
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      },
-      /**
-       
-       * @param {object} article
-       */
-      viewArticleContent: (article) => {
-        App.DOM.articles.style.display = "none";
-  
-        const fullscreenDiv = document.createElement("div");
-        fullscreenDiv.classList.add("fullscreen-article");
-  
-        const titleElement = document.createElement("h2");
-        titleElement.textContent = article.title;
-  
-        const urlElement = document.createElement("a");
-        urlElement.textContent = "Aller voir l'article";
-        urlElement.href = article.url;
-        urlElement.target = "_blank";
-  
-        const authorElement = document.createElement("h4");
-        authorElement.textContent = article.author;
-  
-        const descriptionElement = document.createElement("p");
-        descriptionElement.textContent = article.description;
-  
-        fullscreenDiv.appendChild(titleElement);
-        fullscreenDiv.appendChild(urlElement);
-        fullscreenDiv.appendChild(authorElement);
-        fullscreenDiv.appendChild(descriptionElement);
-  
-        document.body.appendChild(fullscreenDiv);
-  
-        fullscreenDiv.style.width = "80%";
-        fullscreenDiv.style.marginTop = "20px";
-        fullscreenDiv.style.marginTop = "20px";
-        fullscreenDiv.style.fontFamily = "gabriela";
-        fullscreenDiv.style.height = "100%";
-        fullscreenDiv.style.marginLeft = "auto";
-        fullscreenDiv.style.marginRight = "auto";
-        fullscreenDiv.style.display = "flex";
-        fullscreenDiv.style.flexDirection = "column";
-        fullscreenDiv.style.justifyContent = "space-around";
-        urlElement.style.color = "rgb(102, 204, 153)";
-        urlElement.style.marginTop = "10px";
-        urlElement.style.marginBottom = "10px";
-        authorElement.style.marginBottom = "10px";
-  
-        const closeButton = document.createElement("button");
-        closeButton.textContent = "Fermer";
-        fullscreenDiv.appendChild(closeButton);
-  
-        closeButton.addEventListener("click", () => {
-          App.DOM.articles.style.display = "grid";
-          document.body.removeChild(fullscreenDiv);
-        });
-      },
-    };
-    window.addEventListener("DOMContentLoaded", App.app_init);
-  })();
-  
+  const App = {
+    DOM: {
+      compteur: document.querySelector("#compteur"),
+      textarea: document.querySelector("#texteContribution"),
+      btnValider: document.querySelector(".button"),
+      oeil_barre: document.getElementById("off"),
+      oeil: document.getElementById("on"),
+      contribution: document.querySelector(".contribution__div--txt"),
+      dateDebut: document.getElementById("dateDebut"),
+      dateFin: document.getElementById("dateFin"),
+      messageErreur: document.getElementById("messageErreur"),
+      formulaire: document.querySelector("#form"),
+    },
+    longueur: 0,
+    minCaracteres: 50,
+    maxCaracteres: 280,
+    dateDebutValue: null,
+    dateFinValue: null,
+    dateDuJour: null,
+    app_init: function () {
+      App.compteur_contribution();
+      App.periode_cadavre();
+      App.isFormValid();
+      App.contribution_visible();
+      App.contribution_invisible();
+    },
+    compteur_contribution: function () {
+      App.DOM.textarea.addEventListener("input", function () {
+        App.longueur = App.DOM.textarea.value.length;
+        App.DOM.compteur.textContent = App.longueur + " / 280 caractères";
+
+        if (App.longueur < App.minCaracteres) {
+          App.DOM.compteur.style.color = "red";
+          App.desactiver_button();
+        } else if (App.longueur <= App.maxCaracteres) {
+          App.DOM.compteur.style.color = "black";
+        } else {
+          App.DOM.compteur.style.color = "red";
+          App.desactiver_button();
+        }
+        App.isFormValid();
+      });
+    },
+    periode_cadavre: function () {
+      App.DOM.dateDebut.addEventListener("change", function () {
+        App.dateDebutValue = new Date(App.DOM.dateDebut.value);
+        App.dateFinValue = new Date(App.DOM.dateFin.value);
+        App.dateDuJour = new Date();
+        // Extraction du jour, du mois et de l'année
+        const jourDuJour = App.dateDuJour.getDate();
+        const moisDuJour = App.dateDuJour.getMonth();
+        const anneeDuJour = App.dateDuJour.getFullYear();
+
+        const jourDebut = App.dateDebutValue.getDate();
+        const moisDebut = App.dateDebutValue.getMonth();
+        const anneeDebut = App.dateDebutValue.getFullYear();
+
+        if (App.dateDebutValue > App.dateFinValue) {
+          App.DOM.messageErreur.textContent =
+            "La date de début ne peut pas être supérieure à la date de fin.";
+        } else if (
+          anneeDuJour === anneeDebut &&
+          moisDuJour === moisDebut &&
+          jourDuJour === jourDebut
+        ) {
+          App.activer_button();
+          App.DOM.messageErreur.textContent = "";
+        } else if (App.dateDebutValue < App.dateDuJour) {
+          App.DOM.messageErreur.textContent =
+            "La date de début ne peut pas être antérieure à la date du jour.";
+        } else {
+          App.DOM.messageErreur.textContent = "";
+        }
+
+        App.isFormValid();
+      });
+
+      App.DOM.dateFin.addEventListener("change", function () {
+        App.dateDebutValue = new Date(App.DOM.dateDebut.value);
+        App.dateFinValue = new Date(App.DOM.dateFin.value);
+        App.dateDuJour = new Date();
+        App.isFormValid();
+        if (App.dateDebutValue > App.dateFinValue) {
+          App.DOM.messageErreur.textContent =
+            "La date de début ne peut pas être supérieure à la date de fin.";
+        } else if (App.dateDebutValue < App.dateDuJour) {
+          App.DOM.messageErreur.textContent =
+            "La date de début ne peut pas être antérieure à la date du jour.";
+        } else {
+          App.DOM.messageErreur.textContent = "";
+        }
+      });
+    },
+    isFormValid: function () {
+      const inputs = App.DOM.formulaire.querySelectorAll("input");
+      const textarea = App.DOM.textarea;
+      let tousLesChampsRemplis = true;
+      // Extraction du jour, du mois et de l'année
+      const jourDuJour = App.dateDuJour.getDate();
+      const moisDuJour = App.dateDuJour.getMonth();
+      const anneeDuJour = App.dateDuJour.getFullYear();
+
+      const jourDebut = App.dateDebutValue.getDate();
+      const moisDebut = App.dateDebutValue.getMonth();
+      const anneeDebut = App.dateDebutValue.getFullYear();
+
+      inputs.forEach(function (input) {
+        if (input.value.trim() === "") {
+          tousLesChampsRemplis = false;
+          return;
+        }
+      });
+
+      if (textarea.value.trim() === "") {
+        tousLesChampsRemplis = false;
+      }
+
+      const isDateValid =
+        anneeDuJour === anneeDebut &&
+        moisDuJour === moisDebut &&
+        jourDuJour === jourDebut;
+      App.dateDebutValue <= App.dateFinValue &&
+        App.dateDebutValue > App.dateDuJour;
+
+      if (
+        tousLesChampsRemplis &&
+        App.longueur >= App.minCaracteres &&
+        App.longueur <= App.maxCaracteres &&
+        isDateValid
+      ) {
+        App.activer_button();
+        App.DOM.messageErreur.textContent = "";
+      } else {
+        App.desactiver_button();
+      }
+      console.log(App.dateDebutValue);
+      console.log(App.dateFinValue);
+      console.log(App.dateDuJour);
+    },
+    activer_button: function () {
+      App.DOM.btnValider.removeAttribute("disabled");
+      App.DOM.btnValider.classList.remove("button__disabled");
+      App.DOM.btnValider.classList.add("button__validate");
+    },
+    desactiver_button: function () {
+      App.DOM.btnValider.classList.add("button__disabled");
+      App.DOM.btnValider.setAttribute("disabled", "disabled");
+      App.DOM.btnValider.classList.remove("button__validate");
+    },
+    contribution_visible: function () {
+      App.DOM.oeil_barre.addEventListener("click", function () {
+        App.DOM.contribution.classList.remove("hidden");
+        App.DOM.contribution.classList.add("show");
+        App.DOM.oeil_barre.classList.add("hidden");
+        App.DOM.oeil.classList.remove("hidden");
+      });
+    },
+    contribution_invisible: function () {
+      App.DOM.oeil.addEventListener("click", function () {
+        App.DOM.contribution.classList.add("hidden");
+        App.DOM.contribution.classList.remove("show");
+        App.DOM.oeil_barre.classList.remove("hidden");
+        App.DOM.oeil.classList.add("hidden");
+      });
+    },
+  };
+
+  window.addEventListener("DOMContentLoaded", App.app_init);
+})();
