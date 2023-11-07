@@ -6,12 +6,46 @@ class CadavreModel extends Model
 {
     protected $cadavretableName = APP_TABLE_PREFIX . 'cadavre';
     protected $contributiontableName = APP_TABLE_PREFIX . 'contribution';
+    protected $randomcontributiontableName = APP_TABLE_PREFIX . 'contribution_aléatoire';
     protected $joueurtableName = APP_TABLE_PREFIX . 'joueur';
 
     protected static $instance;
 
     protected function checkTextSize($text)
     {
+        $textLength = strlen($text);
+        return ($textLength >= 50 && $textLength <= 280);
+    }
+
+    protected function isTitleUnique($title)
+    {
+        $sql = "SELECT COUNT(*) as title_count FROM {$this->cadavretableName} WHERE titre_cadavre = :title";
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':title', $title);
+        $sth->execute();
+        $result = $sth->fetch();
+        $titleCount = $result['title_count'];
+
+        return $titleCount;
+    }
+
+    protected function isPeriodValid($dateStart, $dateEnd)
+    {
+        $sql = "SELECT COUNT(*) FROM {$this->cadavretableName} WHERE
+                (date_debut_cadavre BETWEEN :dateStart AND :dateEnd) OR
+                (date_fin_cadavre BETWEEN :dateStart AND :dateEnd)";
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':dateStart', $dateStart);
+        $sth->bindParam(':dateEnd', $dateEnd);
+        $sth->execute();
+        $count = $sth->fetchColumn();
+
+        return $count;
+    }
+
+    protected function isNbMaxContributionsValid($nbMaxContributions)
+    {
+        return $nbMaxContributions > 1;
     }
 
     public static function getInstance()
@@ -49,9 +83,9 @@ class CadavreModel extends Model
                 ELSE NULL
             END AS texte_contribution,
             cont.ordre_soumission
-        FROM cadavre cad
-        LEFT JOIN contribution_aléatoire cr ON cad.id_cadavre = cr.id_cadavre AND cr.id_joueur = :id_joueur
-        LEFT JOIN contribution cont ON cad.id_cadavre = cont.id_cadavre
+        FROM {$this->cadavretableName} cad
+        LEFT JOIN {$this->randomcontributiontableName} cr ON cad.id_cadavre = cr.id_cadavre AND cr.id_joueur = :id_joueur
+        LEFT JOIN {$this->contributiontableName} cont ON cad.id_cadavre = cont.id_cadavre
         WHERE 
             CURDATE() BETWEEN cad.date_debut_cadavre AND cad.date_fin_cadavre
         ORDER BY cad.id_cadavre, cont.ordre_soumission";
@@ -87,6 +121,48 @@ class CadavreModel extends Model
 
     public function insertCadavreContribution($datas)
     {
+        $title = $datas['title'];
+        $dateStart = $datas['dateStart'];
+        $dateEnd = $datas['dateEnd'];
+        $text = $datas['text'];
+        $adminId = $datas['adminId'];
+        $nbMaxContributions = $datas['nbMaxContributions'];
+
+        if (!$this->checkTextSize($text)) {
+            return "La longueur du texte n'est pas bonne.";
+        }
+
+        if ($this->isTitleUnique($title)) {
+            return "Le titre n'est pas unique.";
+        }
+
+        if ($this->isPeriodValid($dateStart, $dateEnd)) {
+            return "La période se chevauche avec un autre cadavre.";
+        }
+
+        if (!$this->isNbMaxContributionsValid($nbMaxContributions)) {
+            return "Le nombre maximum de contributions doit être supérieur à 1.";
+        }
+
+        $sql = "INSERT INTO {$this->cadavretableName} (titre_cadavre, date_debut_cadavre, date_fin_cadavre, nb_contributions, nb_jaime, id_administrateur)
+            VALUES (:title, :dateStart, :dateEnd, :nbMaxContributions, 0, :adminId)";
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':title', $title);
+        $sth->bindParam(':dateStart', $dateStart);
+        $sth->bindParam(':dateEnd', $dateEnd);
+        $sth->bindParam(':nbMaxContributions', $nbMaxContributions);
+        $sth->bindParam(':adminId', $adminId);
+        $sth->execute();
+
+        $cadavreId = self::$dbh->lastInsertId();
+
+        $sql = "INSERT INTO {$this->contributiontableName} (texte_contribution, ordre_soumission, date_soumission, id_administrateur, id_cadavre)
+            VALUES (:text, 1, NOW(), :adminId, :cadavreId)";
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':text', $text);
+        $sth->bindParam(':adminId', $adminId);
+        $sth->bindParam(':cadavreId', $cadavreId);
+        $sth->execute();
     }
 
     public function getAllTitles()

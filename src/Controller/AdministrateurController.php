@@ -60,14 +60,20 @@ class AdministrateurController extends Controller
   public function add($id)
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      $titre = $_POST['titre'];
-      $dateDebut = $_POST['dateDebut'];
-      $dateFin = $_POST['dateFin'];
-      $nbContributions = $_POST['nbContributions'];
-      $nbJaime = $_POST['nbJaime'];
-      $texteContribution = $_POST['texteContribution'];
 
-      $administrateurModel = new JoueurAdministrateurModel();
+      $datas = [
+        'title' => $_POST['titre'],
+        'dateStart' => $_POST['dateDebut'],
+        'dateEnd' => $_POST['dateFin'],
+        'adminId' => $id,
+        'text' => $_POST['texteContribution'],
+        'nbMaxContributions' => $_POST['nbContributions']
+      ];
+
+      $cadavreModel = new CadavreModel();
+      $InsertCadavreContribution = $cadavreModel->insertCadavreContribution($datas);
+
+      var_dump($InsertCadavreContribution);
 
       HTTP::redirect("/administrateur/{$id}");
     } else {
