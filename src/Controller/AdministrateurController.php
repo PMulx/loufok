@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Model\AdministrateurModel;
+use App\Model\JoueurAdministrateurModel;
 use App\Model\CadavreModel;
 use App\Helper\HTTP;
 
@@ -67,10 +67,7 @@ class AdministrateurController extends Controller
       $nbJaime = $_POST['nbJaime'];
       $texteContribution = $_POST['texteContribution'];
 
-      $administrateurModel = new AdministrateurModel();
-      $idCadavre = $administrateurModel->ajouterCadavre($titre, $dateDebut, $dateFin, $nbContributions, $nbJaime);
-
-      $administrateurModel->ajouterContribution($texteContribution, $idCadavre);
+      $administrateurModel = new JoueurAdministrateurModel();
 
       HTTP::redirect("/administrateur/{$id}");
     } else {

@@ -37,52 +37,40 @@
 			</div>
 		</header>
 
-
         <section class="creaCadavre">
             <h3 class="creaCadavre__h3"> Création d'un nouveau cadavre Exquis </h3>
 
-            {% set cadavreEnCours = false %}
-            {% for cadavre in cadavres %}
-                {% if dateActuelle >= cadavre.date_debut_cadavre and dateActuelle <= cadavre.date_fin_cadavre %}
-                    {% set cadavreEnCours = true %}
-                {% endif %}
-            {% endfor %}
-
-            {% if cadavreEnCours %}
-                <div>
-                    <p> Un cadavre exquis est encore en cours. Un seul à la fois est accepté. </p>
-                </div>
-            {% else %}
+            <div id="calendar"></div>
 
                 <form class="section__form" action="/administrateur/{{ id }}/add" method="post">
                     <input type="hidden" name="id" value="{{ id }}">
 
                     <label for="texteContribution">Contribution</label>
-                    <textarea name="texteContribution" id="texteContribution" required></textarea>
+                    <textarea name="texteContribution" id="texteContribution" placeholder="Vous avez entre 50 et 280 caractères d’autorisées" required></textarea>
                     <div id="compteur">0/280</div>
                     
                     <label for="titre">Titre du Cadavre Exquis</label>
-                    <input type="text" name="titre" id="titre" required>
+                    <input type="text" placeholder="Le titre du Cadavre Exquis doit être unique" name="titre" id="titre" required>
 
-    <label for="nbContributions">Nombres de contributions</label>
-    <input type="number" name="nbContributions" id="nbContributions" required />
+                    <label for="nbContributions">Nombres de contributions</label>
+                    <input type="number" placeholder="12" name="nbContributions" id="nbContributions" required />
 
-    <input type="hidden" name="nbJaime" value="0" />
+                    <input type="hidden" name="nbJaime" value="0" />
 
-    <label>Période de jeu</label>
-    <div class="form__date">
-      <div class="form__date--debut">
-        <label for="dateDebut">Début</label>
-        <input type="date" name="dateDebut" id="dateDebut" required />
-      </div>
+                    <label>Période de jeu</label>
+                    <div class="form__date">
+                      <div class="form__date--debut">
+                        <label for="dateDebut">Début</label>
+                        <input type="date" name="dateDebut" id="dateDebut" required />
+                      </div>
 
-      <div class="form__date--fin">
-        <label for="dateFin">Fin</label>
-        <input type="date" name="dateFin" id="dateFin" required />
-      </div>
-    </div>
+                      <div class="form__date--fin">
+                        <label for="dateFin">Fin</label>
+                        <input type="date" name="dateFin" id="dateFin" required />
+                      </div>
+                    </div>
 
-    <span id="messageErreur" style="color: red"></span>
+                    <span id="messageErreur" style="color: red"></span>
 
                     <button type="submit" class="button__disabled" id="btnValider" disabled>Valider</button>
                 </form>

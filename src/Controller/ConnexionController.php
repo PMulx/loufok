@@ -7,7 +7,7 @@ namespace App\Controller;
 session_start();
 
 use App\Helper\HTTP;
-use App\Model\JoueurAdministrateur;
+use App\Model\JoueurAdministrateurModel;
 
 class ConnexionController extends Controller
 {
@@ -20,7 +20,7 @@ class ConnexionController extends Controller
             $email = $_POST['email'];
             $password = $_POST['mdp'];
 
-            $user = JoueurAdministrateur::getInstance()->checkLogin($email, $password);
+            $user = JoueurAdministrateurModel::getInstance()->checkLogin($email, $password);
 
             if ($user) {
                 $_SESSION['user_id'] = $user['id'];
@@ -44,7 +44,7 @@ class ConnexionController extends Controller
 
     public function logout()
     {
-        $user = JoueurAdministrateur::getInstance()->logout();
+        $user = JoueurAdministrateurModel::getInstance()->logout();
 
         HTTP::redirect('/');
     }

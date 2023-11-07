@@ -7,29 +7,24 @@ namespace App\Controller;
 session_start();
 
 use App\Helper\HTTP;
-use App\Model\Joueur;
 use App\Model\CadavreModel;
-use App\Model\JoueurAdministrateur;
+use App\Model\JoueurAdministrateurModel;
 
 class JoueurController extends Controller
 {
     public function index($id)
     {
-
-        $cadavreModel = new CadavreModel();
-
-        $currentCadavre = $cadavreModel->getCurrentCadavre();
-        var_dump($currentCadavre);
-        exit();
-
         if (isset($_SESSION['role'])) {
             $role = $_SESSION['role'];
 
             if ($role === 'administrateur') {
                 HTTP::redirect("/administrateur/{$id}");
             } else {
-                $cadavres = Joueur::getInstance()->getContributionCount();
                 $id = $_SESSION['user_id'];
+
+                $cadavreModel = new CadavreModel();
+
+                $currentCadavre = $cadavreModel->getCurrentCadavre();
 
                 $dateActuelle = date('Y-m-d');
 
@@ -37,7 +32,6 @@ class JoueurController extends Controller
                     'joueur/listes.html.twig',
                     [
                         'dateActuelle' => $dateActuelle,
-                        'cadavres' => $cadavres,
                         'id' => $id,
                     ]
                 );
@@ -59,8 +53,6 @@ class JoueurController extends Controller
                 $idCadavre = $_POST['cadavreEnCoursID'];
                 $nbAleatoire = $_POST['nbAleatoire'];
 
-                Joueur::getInstance()->ajouterAleatoire($nbAleatoire, $id, $idCadavre);
-
                 HTTP::redirect("/joueur/cadavre/{$id}/{$idCadavre}");
             }
         } else {
@@ -77,18 +69,10 @@ class JoueurController extends Controller
                 HTTP::redirect("/administrateur/{$id}");
             } else {
                 $id = $_SESSION['user_id'];
-                $contributions = Joueur::getInstance()->getCadavreInfo($idcadavre);
-                $contributionAleatoire = Joueur::getInstance()->getContributionAleatoireTexte($id, $idcadavre);
-                $hiscontribution = Joueur::getInstance()->getContributionByIds($id, $idcadavre);
 
                 $this->display(
                     'joueur/cadavre.html.twig',
-                    [
-                        'contributions' => $contributions,
-                        'contributionAleatoire' => $contributionAleatoire,
-                        'id' => $id,
-                        'hiscontribution' => $hiscontribution,
-                    ]
+                    []
                 );
             }
         } else {
@@ -108,8 +92,6 @@ class JoueurController extends Controller
                 $ordreSoumission = $_POST['ordreSoumission'];
                 $dateSoumission = date('Y-m-d');
 
-                Joueur::getInstance()->insererContribution($texteContribution, $ordreSoumission, $dateSoumission, $idcadavre, $id);
-
                 HTTP::redirect("/joueur/{$id}");
             }
         } else {
@@ -127,7 +109,7 @@ class JoueurController extends Controller
             } else {
                 $id = $_SESSION['user_id'];
 
-                $lastCadavre = JoueurAdministrateur::getInstance()->getLastFinishedCadavre($id);
+                $lastCadavre = JoueurAdministrateurModel::getInstance()->getLastFinishedCadavre($id);
                 var_dump($lastCadavre);
                 if ($lastCadavre) {
                     // Le dernier cadavre terminé a été trouvé, vous pouvez l'afficher ou effectuer d'autres actions
