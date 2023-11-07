@@ -119,11 +119,16 @@ class JoueurController extends Controller
             } else {
                 $id = $_SESSION['user_id'];
 
-                $lastCadavre = JoueurAdministrateur::getInstance()->getLastCadavre($id);
+                $lastCadavre = JoueurAdministrateur::getInstance()->getLastFinishedCadavre($id);
                 var_dump($lastCadavre);
-                $this->display(
-                    'joueur/lastcadavre.html.twig',
-                );
+                if ($lastCadavre) {
+                    // Le dernier cadavre terminé a été trouvé, vous pouvez l'afficher ou effectuer d'autres actions
+                    var_dump($lastCadavre);
+                    $this->display('joueur/lastcadavre.html.twig');
+                } else {
+                    // Aucun cadavre terminé n'a été trouvé, vous pouvez gérer cette situation selon vos besoins
+                    $this->display('joueur/lastcadavre.html.twig');
+                }
             }
         } else {
             HTTP::redirect('/');

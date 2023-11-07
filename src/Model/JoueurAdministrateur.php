@@ -44,32 +44,56 @@ class JoueurAdministrateur extends Model
         session_write_close();
     }
 
-    public function getLastCadavre($id)
+    public function getLastFinishedCadavre($id)
     {
-        // Étape 1 : Récupérer l'ID du dernier cadavre
-        $sql1 = 'SELECT co.id_cadavre
-            FROM '.$this->tableContribution.' co
-            WHERE co.id_joueur = :id_joueur
-            ORDER BY co.date_soumission DESC
-            LIMIT 1';
+        // Sélectionner le dernier cadavre terminé
+        $sql = 'SELECT co.id_cadavre
+                FROM '.$this->tableContribution.' co
+                WHERE co.id_joueur = :id_joueur
+                ORDER BY co.date_soumission DESC
+                LIMIT 1';
 
-        $sth1 = self::$dbh->prepare($sql1);
-        $sth1->bindParam(':id_joueur', $id);
-        $sth1->execute();
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':id_joueur', $id);
+        $sth->execute();
 
-        $cadavreId = $sth1->fetchColumn();
+        $cadavreId = $sth->fetchColumn();
 
-        // Étape 2 : Récupérer les "nom_plume" et les "texte_contribution" associés à ce cadavre
-        $sql2 = 'SELECT j.nom_plume, co.texte_contribution
-            FROM '.$this->tableContribution.' co
-            LEFT JOIN '.$this->tableJoueur.' j ON co.id_joueur = j.id_joueur
-            WHERE co.id_cadavre = :cadavre_id';
+        // Vérifier si le cadavre est terminé
+        if ($this->isCadavreFinished($cadavreId)) {
+            // Le cadavre est terminé, récupérer ses détails avec getLastCadavre
+            return $this->getLastCadavre($id);
+        } else {
+            return null; // Aucun cadavre terminé n'a été trouvé
+        }
+    }
 
-        $sth2 = self::$dbh->prepare($sql2);
-        $sth2->bindParam(':cadavre_id', $cadavreId);
-        $sth2->execute();
+    public function isCadavreFinished($cadavreId)
+    {
+        $sql = 'SELECT date_fin_cadavre, nb_contributions
+            FROM '.$this->tableCadavre.'
+            WHERE id_cadavre = :cadavre_id';
 
-        return $sth2->fetchAll();
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':cadavre_id', $cadavreId);
+        $sth->execute();
+
+        $cadavreInfo = $sth->fetch();
+
+        if (!$cadavreInfo) {
+            // Cadavre non trouvé, vous pouvez gérer cette situation selon vos besoins
+            return false;
+        }
+
+        $currentDate = date('Y-m-d');
+        $endDate = $cadavreInfo['date_fin_cadavre'];
+        $nbContributions = $cadavreInfo['nb_contributions'];
+
+        if ($currentDate > $endDate || $nbContributions <= 0) {
+            return true; // Le cadavre est terminé
+        } else {
+            return false; // Le cadavre n'est pas terminé
+        }
     }
 
     public function insertCadavre($titre, $dateDebut, $dateFin, $nbContributions, $nbJaime, $id)
