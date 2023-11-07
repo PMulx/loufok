@@ -20,7 +20,7 @@ return [
   ['GET', '/joueur/cadavre/{id}/{idcadavre}', 'joueur@cadavre'],
   ['POST', '/joueur/contribution/{id}/{idcadavre}', 'joueur@insertcontribution'],
 
-  ['POST', '/administrateur/{id:\d+}/add', 'administrateur@add'],
+  ['POST', '/administrateur/{id}/add', 'administrateur@add'],
   ['GET', '/administrateur/{id}', 'administrateur@index'],
 
 ];
