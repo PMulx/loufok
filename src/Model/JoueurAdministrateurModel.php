@@ -4,10 +4,10 @@ namespace App\Model;
 
 class JoueurAdministrateurModel extends Model
 {
-    protected $tableAdminstrateur = APP_TABLE_PREFIX . 'administrateur';
-    protected $tableJoueur = APP_TABLE_PREFIX . 'joueur';
-    protected $tableContribution = APP_TABLE_PREFIX . 'contribution';
-    protected $tableCadavre = APP_TABLE_PREFIX . 'cadavre';
+    protected $tableAdminstrateur = APP_TABLE_PREFIX.'administrateur';
+    protected $tableJoueur = APP_TABLE_PREFIX.'joueur';
+    protected $tableContribution = APP_TABLE_PREFIX.'contribution';
+    protected $tableCadavre = APP_TABLE_PREFIX.'cadavre';
     protected static $instance;
 
     public static function getInstance()
@@ -22,11 +22,11 @@ class JoueurAdministrateurModel extends Model
     public function checkLogin($email, $password)
     {
         $sql = "SELECT id_joueur AS id, ad_mail_joueur AS email, mot_de_passe_joueur AS mot_de_passe, 'joueur' AS type
-        FROM " . $this->tableJoueur . "
+        FROM ".$this->tableJoueur."
         WHERE ad_mail_joueur = :email AND mot_de_passe_joueur = :password
         UNION
         SELECT id_administrateur AS id, ad_mail_administrateur AS email, mot_de_passe_administrateur AS mot_de_passe, 'administrateur' AS type
-        FROM " . $this->tableAdminstrateur . '
+        FROM ".$this->tableAdminstrateur.'
         WHERE ad_mail_administrateur = :email AND mot_de_passe_administrateur = :password';
 
         $sth = self::$dbh->prepare($sql);
@@ -47,54 +47,79 @@ class JoueurAdministrateurModel extends Model
     public function getLastFinishedCadavre($id)
     {
         // Sélectionner le dernier cadavre terminé
-        $sql = 'SELECT co.id_cadavre
-                FROM ' . $this->tableContribution . ' co
-                WHERE co.id_joueur = :id_joueur
-                ORDER BY co.date_soumission DESC
-                LIMIT 1';
+        $sql = 'SELECT c.id_cadavre
+            FROM '.$this->tableCadavre.' c
+            JOIN contribution co ON c.id_cadavre = co.id_cadavre
+            WHERE (c.date_fin_cadavre < CURDATE() OR c.nb_contributions <= (SELECT COUNT(ordre_soumission) FROM '.$this->tableContribution.' WHERE id_cadavre = c.id_cadavre))
+            AND co.id_joueur = :id_joueur
+            ORDER BY c.date_fin_cadavre DESC
+            LIMIT 1';
 
         $sth = self::$dbh->prepare($sql);
         $sth->bindParam(':id_joueur', $id);
         $sth->execute();
 
-        $cadavreId = $sth->fetchColumn();
+        $id_cadavre = $sth->fetchColumn();
 
-        // Vérifier si le cadavre est terminé
-        if ($this->isCadavreFinished($cadavreId)) {
-            // Le cadavre est terminé, récupérer ses détails avec getLastCadavre
-            return $this->getLastFinishedCadavre($id);
+        if ($id_cadavre) {
+            return $id_cadavre;
         } else {
-            return null; // Aucun cadavre terminé n'a été trouvé
+            return null; // Aucun cadavre trouvé pour cet utilisateur
         }
     }
 
-    public function isCadavreFinished($cadavreId)
+    public function getCompleteCadavreInfo($id)
     {
-        $sql = 'SELECT date_fin_cadavre, nb_contributions
-            FROM ' . $this->tableCadavre . '
-            WHERE id_cadavre = :cadavre_id';
+        // Utilisez la méthode getLastFinishedCadavre pour obtenir l'id_cadavre
+        $id_cadavre = $this->getLastFinishedCadavre($id);
 
-        $sth = self::$dbh->prepare($sql);
-        $sth->bindParam(':cadavre_id', $cadavreId);
-        $sth->execute();
+        // Si vous obtenez un id_cadavre valide, vous pouvez récupérer les informations souhaitées
+        if ($id_cadavre) {
+            $sql = 'SELECT c.*, co.*, IFNULL(j.nom_plume, "Administrateur") AS nom_plume
+            FROM cadavre c
+            JOIN contribution co ON c.id_cadavre = co.id_cadavre
+            LEFT JOIN joueur j ON co.id_joueur = j.id_joueur
+            WHERE c.id_cadavre = :id_cadavre';
 
-        $cadavreInfo = $sth->fetch();
+            $sth = self::$dbh->prepare($sql);
+            $sth->bindParam(':id_cadavre', $id_cadavre);
+            $sth->execute();
 
-        if (!$cadavreInfo) {
-            // Cadavre non trouvé, vous pouvez gérer cette situation selon vos besoins
-            return false;
-        }
-
-        $currentDate = date('Y-m-d');
-        $endDate = $cadavreInfo['date_fin_cadavre'];
-        $nbContributions = $cadavreInfo['nb_contributions'];
-
-        if ($currentDate > $endDate || $nbContributions <= 0) {
-            return true; // Le cadavre est terminé
+            // Vous obtiendrez un ensemble de résultats avec toutes les informations souhaitées
+            return $sth->fetchAll();
         } else {
-            return false; // Le cadavre n'est pas terminé
+            // Traitez le cas où l'id_cadavre est nul ou inexistant
+            return null;
         }
     }
+
+    // public function isCadavreFinished($cadavreId)
+    // {
+    //     $sql = 'SELECT date_fin_cadavre, nb_contributions
+    //         FROM '.$this->tableCadavre.'
+    //         WHERE id_cadavre = :cadavre_id';
+
+    //     $sth = self::$dbh->prepare($sql);
+    //     $sth->bindParam(':cadavre_id', $cadavreId);
+    //     $sth->execute();
+
+    //     $cadavreInfo = $sth->fetch();
+
+    //     if (!$cadavreInfo) {
+    //         // Cadavre non trouvé, vous pouvez gérer cette situation selon vos besoins
+    //         return false;
+    //     }
+
+    //     $currentDate = date('Y-m-d');
+    //     $endDate = $cadavreInfo['date_fin_cadavre'];
+    //     $nbContributions = $cadavreInfo['nb_contributions'];
+
+    //     if ($currentDate > $endDate || $nbContributions <= 0) {
+    //         return true; // Le cadavre est terminé
+    //     } else {
+    //         return false; // Le cadavre n'est pas terminé
+    //     }
+    // }
 
     public function insertCadavre($titre, $dateDebut, $dateFin, $nbContributions, $nbJaime, $id)
     {

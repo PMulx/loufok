@@ -109,8 +109,8 @@ class JoueurController extends Controller
             } else {
                 $id = $_SESSION['user_id'];
 
-                $lastCadavre = JoueurAdministrateurModel::getInstance()->getLastFinishedCadavre($id);
-                var_dump($lastCadavre);
+                $lastCadavre = JoueurAdministrateurModel::getInstance()->getCompleteCadavreInfo($id);
+
                 if ($lastCadavre) {
                     // Le dernier cadavre terminé a été trouvé, vous pouvez l'afficher ou effectuer d'autres actions
                     var_dump($lastCadavre);
