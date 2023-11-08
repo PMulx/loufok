@@ -57,6 +57,18 @@ class CadavreModel extends Model
         return self::$instance;
     }
 
+    public function getCurrentCadavreId()
+    {
+        $sql = "SELECT c.id_cadavre
+        FROM cadavre c
+        WHERE CURDATE() BETWEEN c.date_debut_cadavre AND c.date_fin_cadavre  AND c.nb_contributions > (SELECT COUNT(co.ordre_soumission) FROM contribution co WHERE co.id_cadavre = c.id_cadavre)";
+        $sth = self::$dbh->prepare($sql);
+        $sth->execute();
+        $result = $sth->fetch();
+
+        return $result;
+    }
+
     public function getCurrentCadavre()
     {
         $role = $_SESSION['role'];
@@ -119,18 +131,8 @@ class CadavreModel extends Model
             ];
     }
 
-    public function insertCadavreContribution($datas)
+    public function createCadavre($title, $dateStart, $dateEnd, $adminId, $nbMaxContributions)
     {
-        $title = $datas['title'];
-        $dateStart = $datas['dateStart'];
-        $dateEnd = $datas['dateEnd'];
-        $text = $datas['text'];
-        $adminId = $datas['adminId'];
-        $nbMaxContributions = $datas['nbMaxContributions'];
-
-        if (!$this->checkTextSize($text)) {
-            return "La longueur du texte n'est pas bonne.";
-        }
 
         if ($this->isTitleUnique($title)) {
             return "Le titre n'est pas unique.";
@@ -145,7 +147,7 @@ class CadavreModel extends Model
         }
 
         $sql = "INSERT INTO {$this->cadavretableName} (titre_cadavre, date_debut_cadavre, date_fin_cadavre, nb_contributions, nb_jaime, id_administrateur)
-            VALUES (:title, :dateStart, :dateEnd, :nbMaxContributions, 0, :adminId)";
+        VALUES (:title, :dateStart, :dateEnd, :nbMaxContributions, 0, :adminId)";
         $sth = self::$dbh->prepare($sql);
         $sth->bindParam(':title', $title);
         $sth->bindParam(':dateStart', $dateStart);
@@ -154,16 +156,39 @@ class CadavreModel extends Model
         $sth->bindParam(':adminId', $adminId);
         $sth->execute();
 
-        $cadavreId = self::$dbh->lastInsertId();
+        return self::$dbh->lastInsertId();
+    }
+
+    public function addFirstContribution($cadavreId, $adminId, $text)
+    {
+
+        if (!$this->checkTextSize($text)) {
+            return "La longueur du texte n'est pas bonne.";
+        }
 
         $sql = "INSERT INTO {$this->contributiontableName} (texte_contribution, ordre_soumission, date_soumission, id_administrateur, id_cadavre)
-            VALUES (:text, 1, NOW(), :adminId, :cadavreId)";
+        VALUES (:text, 1, NOW(), :adminId, :cadavreId)";
         $sth = self::$dbh->prepare($sql);
         $sth->bindParam(':text', $text);
         $sth->bindParam(':adminId', $adminId);
         $sth->bindParam(':cadavreId', $cadavreId);
         $sth->execute();
     }
+
+    public function insertCadavreContribution($datas)
+    {
+        $title = $datas['title'];
+        $dateStart = $datas['dateStart'];
+        $dateEnd = $datas['dateEnd'];
+        $text = $datas['text'];
+        $adminId = $datas['adminId'];
+        $nbMaxContributions = $datas['nbMaxContributions'];
+
+        $cadavreId = $this->createCadavre($title, $dateStart, $dateEnd, $adminId, $nbMaxContributions);
+
+        $this->addFirstContribution($cadavreId, $adminId, $text);
+    }
+
 
     public function getAllTitles()
     {

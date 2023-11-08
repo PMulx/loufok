@@ -71,9 +71,7 @@ class AdministrateurController extends Controller
       ];
 
       $cadavreModel = new CadavreModel();
-      $InsertCadavreContribution = $cadavreModel->insertCadavreContribution($datas);
-
-      var_dump($InsertCadavreContribution);
+      $cadavreModel->insertCadavreContribution($datas);
 
       HTTP::redirect("/administrateur/{$id}");
     } else {
