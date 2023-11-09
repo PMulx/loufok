@@ -27,7 +27,6 @@ class AdministrateurController extends Controller
 
         $cadavreModel = new CadavreModel();
 
-        $currentCadavre = $cadavreModel->getCurrentCadavre();
         $periodesModel = $cadavreModel->getAllPeriods();
         $titles = $cadavreModel->getAllTitles();
 
@@ -45,9 +44,35 @@ class AdministrateurController extends Controller
           'administrateur/admin.html.twig',
           [
             'titles' => $titles,
-            'currentCadavre' => $currentCadavre,
             'periodes' => $periodes,
             'dateActuelle' => $dateActuelle,
+            'id' => $id,
+          ]
+        );
+      }
+    } else {
+      HTTP::redirect('/');
+    }
+  }
+
+  public function currentcadavre($id)
+  {
+    if (isset($_SESSION['role'])) {
+      $role = $_SESSION['role'];
+
+      if ($role === 'joueur') {
+        HTTP::redirect("/joueur/{$id}");
+      } else {
+        $id = $_SESSION['user_id'];
+
+        $cadavreModel = new CadavreModel();
+
+        $currentCadavres = $cadavreModel->getCurrentCadavre();
+
+        $this->display(
+          'administrateur/currentcadavre.html.twig',
+          [
+            'currentCadavres' => $currentCadavres,
             'id' => $id,
           ]
         );

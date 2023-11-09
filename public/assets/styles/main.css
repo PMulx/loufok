@@ -13,7 +13,6 @@
 }
 
 body {
-  width: clamp(320px, 50%, 1200px);
   margin: 0;
 }
 
@@ -107,7 +106,6 @@ i {
 }
 
 .section {
-  width: 100%;
   margin: 2rem;
 }
 .section__h2 {
@@ -154,9 +152,33 @@ i {
 .admin .header__logo span {
   font-size: 2rem;
 }
-
+.currentCadavre__title {
+  text-align: center;
+}
+.currentCadavre__div--title {
+  margin: 0px;
+  text-align: end;
+}
+.currentCadavre__div--p {
+  margin: 0px;
+  text-align: justify;
+}
+.currentCadavre__div {
+  padding: 0.5rem;
+}
+.currentCadavre__btn--a {
+  width: 80%;
+  margin: 3rem auto;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 1rem 1.5rem;
+  border-radius: 2rem;
+  border: none;
+  background-color: var(--green);
+  font-weight: 600;
+  display: block;
+}
 .cadavres {
-  width: 100%;
   margin: 0rem 2rem;
 }
 .cadavres__pres {
@@ -173,11 +195,31 @@ i {
   font-weight: 600;
   display: block;
 }
+/* CALENDRIER */
+#calendar {
+  margin: 1rem 0rem;
+}
+.fc .fc-toolbar {
+  align-items: end;
+}
+.fc-toolbar-title {
+  text-transform: capitalize;
+  font-size: 1.5rem !important;
+}
+.fc-theme-standard .fc-scrollgrid,
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border-color: var(--dark);
+}
+.fc .fc-daygrid-day-number {
+  color: var(--dark);
+}
 .creaCadavre {
   width: 100vw;
   padding: 1rem;
 }
 .creaCadavre__h3 {
+  margin: 0px;
   text-align: center;
 }
 .form__date {

@@ -81,7 +81,8 @@ class CadavreModel extends Model
                         ELSE 'Administrateur'
                     END AS nom_plume,
                     c.texte_contribution,
-                    c.ordre_soumission
+                    c.ordre_soumission,
+                    ca.titre_cadavre
                 FROM {$this->contributiontableName} c
                 LEFT JOIN {$this->cadavretableName} ca ON c.id_cadavre = ca.id_cadavre
                 LEFT JOIN {$this->joueurtableName} j ON c.id_joueur = j.id_joueur

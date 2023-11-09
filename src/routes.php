@@ -22,4 +22,5 @@ return [
 
   ['POST', '/administrateur/{id}/add', 'administrateur@add'],
   ['GET', '/administrateur/{id}', 'administrateur@index'],
+  ['GET', '/administrateur/{id}/currentCadavre', 'administrateur@currentCadavre'],
 ];
