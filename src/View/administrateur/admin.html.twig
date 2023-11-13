@@ -52,10 +52,6 @@
 
                 <form class="section__form" action="/administrateur/{{ id }}/add" method="post">
                     <input type="hidden" name="id" value="{{ id }}">
-
-                    <label for="texteContribution">Contribution</label>
-                    <textarea name="texteContribution" id="texteContribution" placeholder="Vous avez entre 50 et 280 caractères d’autorisées" required></textarea>
-                    <div id="compteur">0/280</div>
                     
                     <label for="titre">Titre du Cadavre Exquis</label>
                     <input type="text" placeholder="Le titre du Cadavre Exquis doit être unique" name="titre" id="titre" required>
@@ -77,6 +73,10 @@
                         <input type="date" name="dateFin" id="dateFin" required />
                       </div>
                     </div>
+
+                    <label for="texteContribution">Contribution</label>
+                    <textarea name="texteContribution" id="texteContribution" placeholder="Vous avez entre 50 et 280 caractères d’autorisées" required></textarea>
+                    <div id="compteur">0/280</div>
 
                     <span id="messageErreur" style="color: red"></span>
 
