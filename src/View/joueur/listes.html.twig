@@ -51,26 +51,25 @@
 </header>
 
 <section class="cadavres">
-  <a class="cadavres__pres--a" href="/joueur/lastcadavre/{{ id }}" id="lienVersLast">
-  Dernier cadavre exquis réalisé
+  <a
+    class="cadavres__pres--a"
+    href="/joueur/lastcadavre/{{ id }}"
+    id="lienVersLast"
+  >
+    Dernier cadavre exquis réalisé
   </a>
 
-<hr />
+  <hr />
 
   <h3>Cadavres exquis en cours</h3>
-  {% set cadavreEnCours = false %} {% set cadavreEnCoursID = null %} {% set
-  nmbContribution = null %} {% for cadavre in cadavres %} {% if dateActuelle >=
-  cadavre.date_debut_cadavre and dateActuelle <= cadavre.date_fin_cadavre %} {%
-  set cadavreEnCours = true %} {% set cadavreEnCoursID = cadavre.id_cadavre %}
-  {% set nmbContribution = cadavre.contribution_count %} {% endif %} {% if
-  nmbContribution >= cadavre.nb_contributions %} {% set cadavreEnCours = false
-  %} {% endif %} {% endfor %} {% if cadavreEnCours %}
+
+  {% if cadavre is not null %}
   <div class="cadavres__pres">
-    <h4 class="cadavres__pres--p">Cadavre Exquis {{ cadavreEnCoursID }}</h4>
+    <h4 class="cadavres__pres--p">Cadavre Exquis {{ cadavre.id_cadavre }}</h4>
     <a class="cadavres__pres--a" href="#" id="lienVersInsert"> Voir </a>
   </div>
   {% else %}
-  <p>Aucun cadavre exquis est en cours. Veuillez revenir plus tard.</p>
+  <p>Aucun cadavre exquis en cours. Veuillez revenir plus tard.</p>
   {% endif %}
 </section>
 

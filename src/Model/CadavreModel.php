@@ -4,17 +4,18 @@ namespace App\Model;
 
 class CadavreModel extends Model
 {
-    protected $cadavretableName = APP_TABLE_PREFIX . 'cadavre';
-    protected $contributiontableName = APP_TABLE_PREFIX . 'contribution';
-    protected $randomcontributiontableName = APP_TABLE_PREFIX . 'contribution_aléatoire';
-    protected $joueurtableName = APP_TABLE_PREFIX . 'joueur';
+    protected $cadavretableName = APP_TABLE_PREFIX.'cadavre';
+    protected $contributiontableName = APP_TABLE_PREFIX.'contribution';
+    protected $randomcontributiontableName = APP_TABLE_PREFIX.'contribution_aléatoire';
+    protected $joueurtableName = APP_TABLE_PREFIX.'joueur';
 
     protected static $instance;
 
     protected function checkTextSize($text)
     {
         $textLength = strlen($text);
-        return ($textLength >= 50 && $textLength <= 280);
+
+        return $textLength >= 50 && $textLength <= 280;
     }
 
     protected function isTitleUnique($title)
@@ -59,14 +60,57 @@ class CadavreModel extends Model
 
     public function getCurrentCadavreId()
     {
-        $sql = "SELECT c.id_cadavre
+        $sql = 'SELECT c.id_cadavre
         FROM cadavre c
-        WHERE CURDATE() BETWEEN c.date_debut_cadavre AND c.date_fin_cadavre  AND c.nb_contributions > (SELECT COUNT(co.ordre_soumission) FROM contribution co WHERE co.id_cadavre = c.id_cadavre)";
+        WHERE CURDATE() BETWEEN c.date_debut_cadavre AND c.date_fin_cadavre  AND c.nb_contributions > (SELECT COUNT(co.ordre_soumission) FROM contribution co WHERE co.id_cadavre = c.id_cadavre)';
         $sth = self::$dbh->prepare($sql);
         $sth->execute();
         $result = $sth->fetch();
 
         return $result;
+    }
+
+    public function getCurrentSubmissionOrder()
+    {
+        $currentCadavreId = $this->getCurrentCadavreId();
+
+        if (!$currentCadavreId) {
+            return 0; // Le cadavre actuel n'existe pas
+        }
+
+        $sql = 'SELECT COUNT(ordre_soumission)
+        FROM '.$this->contributiontableName.'
+        WHERE id_cadavre = :id_cadavre';
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':id_cadavre', $currentCadavreId['id_cadavre']);
+        $sth->execute();
+        $result = $sth->fetchColumn();
+
+        return $result;
+    }
+
+    public function addJoueurContribution($cadavreId, $joueurId, $text)
+    {
+        if (!$this->checkTextSize($text)) {
+            return "La longueur du texte n'est pas bonne.";
+        }
+
+        $currentCadavreId = $this->getCurrentCadavreId();
+        $currentSubmissionOrder = $this->getCurrentSubmissionOrder();
+        $nextSubmissionOrder = $currentSubmissionOrder + 1;
+
+        if ($currentCadavreId !== $cadavreId) {
+            return "Le cadavre sélectionné n'est pas valide pour cette contribution.";
+        }
+
+        $sql = "INSERT INTO {$this->contributiontableName} (texte_contribution, ordre_soumission, date_soumission, id_joueur, id_cadavre)
+    VALUES (:text, 1, NOW(), :joueurId, :cadavreId)";
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':text', $text);
+
+        $sth->bindParam(':joueurId', $joueurId);
+        $sth->bindParam(':cadavreId', $cadavreId);
+        $sth->execute();
     }
 
     public function getCurrentCadavre()
@@ -113,7 +157,7 @@ class CadavreModel extends Model
 
             while ($row = $sth->fetch()) {
                 if ($row['texte_contribution'] !== null) {
-                    $playedContributions++;
+                    ++$playedContributions;
                 }
             }
 
@@ -126,24 +170,23 @@ class CadavreModel extends Model
 
         return
             [
-                "data" => $sth->fetchAll(),
-                "played" => $alreadyPlayed,
+                'data' => $sth->fetchAll(),
+                'played' => $alreadyPlayed,
             ];
     }
 
     public function createCadavre($title, $dateStart, $dateEnd, $adminId, $nbMaxContributions)
     {
-
         if ($this->isTitleUnique($title)) {
             return "Le titre n'est pas unique.";
         }
 
         if ($this->isPeriodValid($dateStart, $dateEnd)) {
-            return "La période se chevauche avec un autre cadavre.";
+            return 'La période se chevauche avec un autre cadavre.';
         }
 
         if (!$this->isNbMaxContributionsValid($nbMaxContributions)) {
-            return "Le nombre maximum de contributions doit être supérieur à 1.";
+            return 'Le nombre maximum de contributions doit être supérieur à 1.';
         }
 
         $sql = "INSERT INTO {$this->cadavretableName} (titre_cadavre, date_debut_cadavre, date_fin_cadavre, nb_contributions, nb_jaime, id_administrateur)
@@ -161,7 +204,6 @@ class CadavreModel extends Model
 
     public function addFirstContribution($cadavreId, $adminId, $text)
     {
-
         if (!$this->checkTextSize($text)) {
             return "La longueur du texte n'est pas bonne.";
         }
@@ -189,11 +231,10 @@ class CadavreModel extends Model
         $this->addFirstContribution($cadavreId, $adminId, $text);
     }
 
-
     public function getAllTitles()
     {
-        $sql = "SELECT titre_cadavre
-        FROM cadavre";
+        $sql = 'SELECT titre_cadavre
+        FROM cadavre';
 
         $sth = self::$dbh->prepare($sql);
         $sth->execute();
