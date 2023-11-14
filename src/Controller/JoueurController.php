@@ -23,6 +23,9 @@ class JoueurController extends Controller
                 $id = $_SESSION['user_id'];
 
                 $cadavreModel = new CadavreModel();
+                $randomContribution = $cadavreModel::getInstance()->getRandomContribution();
+
+                $maxOrdre = $cadavreModel::getInstance()->getCurrentSubmissionOrder();
 
                 $currentCadavreContributions = $cadavreModel->getCurrentCadavre($role, $id);
 
@@ -42,24 +45,41 @@ class JoueurController extends Controller
         }
     }
 
-    public function insertaleatoire($id)
-    {
-        if (isset($_SESSION['role'])) {
-            $role = $_SESSION['role'];
+    // public function insertAleatoire($id)
+    // {
+    //     if (isset($_SESSION['role'])) {
+    //         $role = $_SESSION['role'];
+    //         $cadavre = Cadavre::getInstance()->getCurrentCadavreId();
 
-            if ($role === 'administrateur') {
-                HTTP::redirect("/administrateur/{$id}");
-            } else {
-                $id = $_SESSION['user_id'];
-                $idCadavre = $_POST['cadavreEnCoursID'];
-                $nbAleatoire = $_POST['nbAleatoire'];
+    //         if ($role === 'administrateur') {
+    //             HTTP::redirect("/administrateur/{$id}");
+    //         } else {
+    //             $existingContributionAleatoire = ContributionAleatoire::getInstance()->findby([
+    //                 'id_joueur' => $_SESSION['user_id'],
+    //                 'id_cadavre' => $cadavre,
+    //             ]);
 
-                HTTP::redirect("/joueur/cadavre/{$id}/{$idCadavre}");
-            }
-        } else {
-            HTTP::redirect('/');
-        }
-    }
+    //             if (empty($existingContributionAleatoire)) {
+    //                 $maxOrdre = Contribution::getInstance()->getMaxOrdreContributionForCadavre($cadavre);
+
+    //                 if ($maxOrdre >= 1) {
+    //                     $numContributionAleatoire = mt_rand(1, $maxOrdre);
+
+    //                     ContributionAleatoire::getInstance()->create([
+    //                         'id_joueur' => $_SESSION['user_id'],
+    //                         'id_cadavre' => $cadavre,
+    //                         'num_contribution' => $numContributionAleatoire,
+    //                     ]);
+    //                 } else {
+    //                     $errors = 'Le nombre maximum de contributions pour ce cadavre est invalide.';
+    //                 }
+    //             }
+    //             HTTP::redirect("/joueur/cadavre/{$id}/{$cadavre}");
+    //         }
+    //     } else {
+    //         HTTP::redirect('/');
+    //     }
+    // }
 
     public function cadavre($id, $idcadavre)
     {

@@ -4,10 +4,10 @@ namespace App\Model;
 
 class CadavreModel extends Model
 {
-    protected $cadavretableName = APP_TABLE_PREFIX . 'cadavre';
-    protected $contributiontableName = APP_TABLE_PREFIX . 'contribution';
-    protected $randomcontributiontableName = APP_TABLE_PREFIX . 'contribution_aléatoire';
-    protected $joueurtableName = APP_TABLE_PREFIX . 'joueur';
+    protected $cadavretableName = APP_TABLE_PREFIX.'cadavre';
+    protected $contributiontableName = APP_TABLE_PREFIX.'contribution';
+    protected $randomcontributiontableName = APP_TABLE_PREFIX.'contribution_aléatoire';
+    protected $joueurtableName = APP_TABLE_PREFIX.'joueur';
 
     protected static $instance;
 
@@ -58,16 +58,59 @@ class CadavreModel extends Model
         return self::$instance;
     }
 
+    public function getRandomContribution()
+    {
+        // Obtenez le résultat de getCurrentCadavreId
+        $cadavreResult = $this->getCurrentCadavreId();
+
+        if ($cadavreResult) {
+            $id_cadavre = $cadavreResult;
+            $id_joueur = $_SESSION['user_id'];
+
+            $sql = "SELECT rc.id_cadavre, rc.id_joueur
+                    FROM {$this->randomcontributiontableName} rc
+                    WHERE rc.id_cadavre = :id_cadavre AND rc.id_joueur = :id_joueur";
+
+            $sth = self::$dbh->prepare($sql);
+            $sth->bindParam(':id_cadavre', $id_cadavre, \PDO::PARAM_INT);
+            $sth->bindParam(':id_joueur', $id_joueur, \PDO::PARAM_INT);
+            $sth->execute();
+            $result = $sth->fetch();
+
+            return $result;
+        }
+
+        return null; // Ou faites quelque chose d'autre en cas d'échec pour obtenir le cadavre
+    }
+
+    public function assignRandomContribution($id_cadavre, $id_joueur, $numContributionAleatoire)
+    {
+        // Insérer la contribution aléatoire dans la base de données
+        $sql = "INSERT INTO {$this->randomcontributiontableName} (id_joueur, id_cadavre, num_contribution) VALUES (:id_joueur, :id_cadavre, :num_contribution)";
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':id_joueur', $id_joueur);
+        $sth->bindParam(':id_cadavre', $id_cadavre);
+        $sth->bindParam(':num_contribution', $numContributionAleatoire);
+        $sth->execute();
+    }
+
     public function getCurrentCadavreId()
     {
         $sql = "SELECT c.id_cadavre
-        FROM {$this->cadavretableName} c
-        WHERE CURDATE() BETWEEN c.date_debut_cadavre AND c.date_fin_cadavre  AND c.nb_contributions > (SELECT COUNT(co.ordre_soumission) FROM {$this->contributiontableName} co WHERE co.id_cadavre = c.id_cadavre)";
+            FROM {$this->cadavretableName} c
+            WHERE CURDATE() BETWEEN c.date_debut_cadavre AND c.date_fin_cadavre  AND c.nb_contributions > (SELECT COUNT(co.ordre_soumission) FROM {$this->contributiontableName} co WHERE co.id_cadavre = c.id_cadavre)";
         $sth = self::$dbh->prepare($sql);
         $sth->execute();
         $result = $sth->fetch();
 
-        return $result;
+        // Vérifiez si le résultat est un tableau non vide et que 'id_cadavre' est numérique
+        if ($result && is_array($result) && is_numeric($result['id_cadavre'])) {
+            // Retournez l'ID de cadavre en tant que chaîne
+            return (string) $result['id_cadavre'];
+        }
+
+        // Si le résultat n'est pas conforme aux attentes, vous pouvez renvoyer null ou effectuer d'autres actions appropriées
+        return null;
     }
 
     public function getCurrentSubmissionOrder()
@@ -82,7 +125,7 @@ class CadavreModel extends Model
         FROM {$this->contributiontableName}
         WHERE id_cadavre = :id_cadavre";
         $sth = self::$dbh->prepare($sql);
-        $sth->bindParam(':id_cadavre', $currentCadavreId['id_cadavre']);
+        $sth->bindParam(':id_cadavre', $currentCadavreId);
         $sth->execute();
         $result = $sth->fetchColumn();
 

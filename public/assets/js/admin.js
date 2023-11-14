@@ -70,7 +70,6 @@
         dateValidation === "ok" &&
         nbContributionsValidation === "ok"
       ) {
-        console.log("Formulaire valide");
         App.activer_button();
       } else {
         // console.log("Formulaire non valide");
@@ -94,10 +93,19 @@
     const titreError = document.getElementById("titreError");
     titreError.textContent = ""; // Réinitialiser le message d'erreur
 
-    // Vérifier si le nouveau titre est déjà présent dans la liste des titres
-    if (!newTitle.trim()) {
+    // Normaliser la nouvelle chaîne en minuscules et sans espaces
+    const normalizedNewTitle = newTitle.trim().toLowerCase();
+
+    // Vérifier si la nouvelle chaîne est déjà présente dans la liste des titres
+    if (!normalizedNewTitle) {
       return "error";
-    } else if (titles.some((titleObj) => titleObj.titre_cadavre === newTitle)) {
+    } else if (
+      titles.some(
+        (titleObj) =>
+          titleObj.titre_cadavre.toLowerCase().replace(/\s/g, "") ===
+          normalizedNewTitle
+      )
+    ) {
       titreError.textContent =
         "Ce titre est déjà utilisé. Veuillez choisir un titre unique.";
       return "error";
@@ -151,13 +159,10 @@
     App.DOM.compteur.textContent = App.longueur + " / 280 caractères";
 
     if (App.longueur < App.minCaracteres) {
-      App.DOM.compteur.style.color = "red";
       return "error";
     } else if (App.longueur <= App.maxCaracteres) {
-      App.DOM.compteur.style.color = "black";
       return "ok";
     } else {
-      App.DOM.compteur.style.color = "red";
       return "error";
     }
   }

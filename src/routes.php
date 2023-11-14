@@ -9,8 +9,10 @@ les routes
 
 return [
   ['GET', '/', 'connexion@index'],
+  ['GET', '/connexion', 'connexion@index'],
   ['POST', '/connexion', 'connexion@index'],
   ['GET', '/inscription', 'connexion@inscription'],
+
   ['POST', '/inscription', 'connexion@createUser'],
   ['GET', '/disconnect', 'connexion@logout', 'logout'],
 
