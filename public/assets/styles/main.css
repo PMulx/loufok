@@ -166,7 +166,7 @@ i {
 .currentCadavre__div {
   padding: 0.5rem;
 }
-.currentCadavre__btn--a {
+.section__link--a {
   width: 80%;
   margin: 3rem auto;
   text-align: center;
@@ -177,6 +177,7 @@ i {
   background-color: var(--green);
   font-weight: 600;
   display: block;
+  font-size: 0.9rem;
 }
 .cadavres {
   margin: 0rem 2rem;
@@ -252,27 +253,60 @@ i {
 }
 
 /* =========== SECTION 2 : PAGE JOUEUR =========== */
-
-.contribution {
-  width: 100%;
-  margin: 0rem 2rem;
+.lastcadavre {
+  margin: 1rem;
 }
-
+.lastcadavre__title {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.lastcadavre__p {
+  text-align: justify;
+}
+.lastcadavre__writers {
+  margin-top: 3rem;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.contribution {
+  position: relative;
+  margin: 2rem 2rem;
+}
+.contribution__msg {
+  position: absolute;
+  top: -2.5rem;
+  color: rgb(249, 85, 85);
+  font-weight: 700;
+}
 .contribution__title {
   text-align: center;
   font-weight: 700;
 }
-.contribution__div {
-  text-align: center;
-  padding: 1rem;
-  border-radius: 2rem;
-  border: 1px var(--grey) solid;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+.contribution__all-div__firstspan,
+.contribution__all-div__secondspan {
+  height: 0.05rem;
+  width: 100%;
+  background-color: var(--dark);
+  margin: 0.5rem 0rem;
+}
+.contribution__all-div__lastspan {
+  height: 0.05rem;
+  width: 40%;
+  background-color: var(--dark);
+  margin: 0.5rem 0rem;
+}
+.contribution__all--div {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  border: 1px var(--grey) solid;
+  margin: 1rem 0rem;
+}
+.contribution__all--div h4,
+.contribution__all--div p {
+  margin: 0.5rem 0rem;
 }
 .material-icons {
   text-align: end;

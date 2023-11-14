@@ -4,10 +4,10 @@ namespace App\Model;
 
 class JoueurAdministrateurModel extends Model
 {
-    protected $tableAdminstrateur = APP_TABLE_PREFIX.'administrateur';
-    protected $tableJoueur = APP_TABLE_PREFIX.'joueur';
-    protected $tableContribution = APP_TABLE_PREFIX.'contribution';
-    protected $tableCadavre = APP_TABLE_PREFIX.'cadavre';
+    protected $tableAdminstrateur = APP_TABLE_PREFIX . 'administrateur';
+    protected $tableJoueur = APP_TABLE_PREFIX . 'joueur';
+    protected $tableContribution = APP_TABLE_PREFIX . 'contribution';
+    protected $tableCadavre = APP_TABLE_PREFIX . 'cadavre';
     protected static $instance;
 
     public static function getInstance()
@@ -22,12 +22,12 @@ class JoueurAdministrateurModel extends Model
     public function checkLogin($email, $password)
     {
         $sql = "SELECT id_joueur AS id, ad_mail_joueur AS email, mot_de_passe_joueur AS mot_de_passe, 'joueur' AS type
-        FROM ".$this->tableJoueur."
+        FROM {$this->tableJoueur}
         WHERE ad_mail_joueur = :email AND mot_de_passe_joueur = :password
         UNION
         SELECT id_administrateur AS id, ad_mail_administrateur AS email, mot_de_passe_administrateur AS mot_de_passe, 'administrateur' AS type
-        FROM ".$this->tableAdminstrateur.'
-        WHERE ad_mail_administrateur = :email AND mot_de_passe_administrateur = :password';
+        FROM {$this->tableAdminstrateur}
+        WHERE ad_mail_administrateur = :email AND mot_de_passe_administrateur = :password";
 
         $sth = self::$dbh->prepare($sql);
         $sth->bindParam(':email', $email);
@@ -47,13 +47,13 @@ class JoueurAdministrateurModel extends Model
     public function getLastFinishedCadavre($id)
     {
         // Sélectionner le dernier cadavre terminé
-        $sql = 'SELECT c.id_cadavre
-            FROM '.$this->tableCadavre.' c
-            JOIN contribution co ON c.id_cadavre = co.id_cadavre
-            WHERE (c.date_fin_cadavre < CURDATE() OR c.nb_contributions <= (SELECT COUNT(ordre_soumission) FROM '.$this->tableContribution.' WHERE id_cadavre = c.id_cadavre))
+        $sql = "SELECT c.id_cadavre
+            FROM {$this->tableCadavre} c
+            JOIN {$this->tableContribution} co ON c.id_cadavre = co.id_cadavre
+            WHERE (c.date_fin_cadavre < CURDATE() OR c.nb_contributions <= (SELECT COUNT(ordre_soumission) FROM {$this->tableContribution} WHERE id_cadavre = c.id_cadavre))
             AND co.id_joueur = :id_joueur
             ORDER BY c.date_fin_cadavre DESC
-            LIMIT 1';
+            LIMIT 1";
 
         $sth = self::$dbh->prepare($sql);
         $sth->bindParam(':id_joueur', $id);
@@ -75,11 +75,11 @@ class JoueurAdministrateurModel extends Model
 
         // Si vous obtenez un id_cadavre valide, vous pouvez récupérer les informations souhaitées
         if ($id_cadavre) {
-            $sql = 'SELECT c.*, co.*, IFNULL(j.nom_plume, "Administrateur") AS nom_plume
-            FROM cadavre c
-            JOIN contribution co ON c.id_cadavre = co.id_cadavre
-            LEFT JOIN joueur j ON co.id_joueur = j.id_joueur
-            WHERE c.id_cadavre = :id_cadavre';
+            $sql = "SELECT c.*, co.*, IFNULL(j.nom_plume, 'Administrateur') AS nom_plume
+            FROM {$this->tableCadavre} c
+            JOIN {$this->tableContribution} co ON c.id_cadavre = co.id_cadavre
+            LEFT JOIN {$this->tableJoueur} j ON co.id_joueur = j.id_joueur
+            WHERE c.id_cadavre = :id_cadavre";
 
             $sth = self::$dbh->prepare($sql);
             $sth->bindParam(':id_cadavre', $id_cadavre);
@@ -93,38 +93,10 @@ class JoueurAdministrateurModel extends Model
         }
     }
 
-    // public function isCadavreFinished($cadavreId)
-    // {
-    //     $sql = 'SELECT date_fin_cadavre, nb_contributions
-    //         FROM '.$this->tableCadavre.'
-    //         WHERE id_cadavre = :cadavre_id';
-
-    //     $sth = self::$dbh->prepare($sql);
-    //     $sth->bindParam(':cadavre_id', $cadavreId);
-    //     $sth->execute();
-
-    //     $cadavreInfo = $sth->fetch();
-
-    //     if (!$cadavreInfo) {
-    //         // Cadavre non trouvé, vous pouvez gérer cette situation selon vos besoins
-    //         return false;
-    //     }
-
-    //     $currentDate = date('Y-m-d');
-    //     $endDate = $cadavreInfo['date_fin_cadavre'];
-    //     $nbContributions = $cadavreInfo['nb_contributions'];
-
-    //     if ($currentDate > $endDate || $nbContributions <= 0) {
-    //         return true; // Le cadavre est terminé
-    //     } else {
-    //         return false; // Le cadavre n'est pas terminé
-    //     }
-    // }
-
     public function insertCadavre($titre, $dateDebut, $dateFin, $nbContributions, $nbJaime, $id)
     {
-        $sql = 'INSERT INTO cadavre (titre_cadavre, date_debut_cadavre, date_fin_cadavre, nb_contributions, nb_jaime, id_administrateur)
-                VALUES (:titre, :dateDebut, :dateFin, :nbContributions, :nbJaime, :id)';
+        $sql = "INSERT INTO cadavre (titre_cadavre, date_debut_cadavre, date_fin_cadavre, nb_contributions, nb_jaime, id_administrateur)
+                VALUES (:titre, :dateDebut, :dateFin, :nbContributions, :nbJaime, :id)";
 
         $sth = self::$dbh->prepare($sql);
         $sth->bindParam(':titre', $titre);
@@ -140,13 +112,13 @@ class JoueurAdministrateurModel extends Model
         return $idCadavre;
     }
 
-    public function ajouterContribution($texteContribution, $idAdmin, $idCadavre)
+    public function addContribution($texteContribution, $idAdmin, $idCadavre)
     {
         $ordreSoumission = 1;
         $dateSoumission = date('Y-m-d');
 
-        $sqlContribution = 'INSERT INTO contribution (texte_contribution, ordre_soumission, date_soumission, id_administrateur, id_cadavre)
-            VALUES (:texteContribution, :ordreSoumission, :dateSoumission, :idAdmin, :idCadavre)';
+        $sqlContribution = "INSERT INTO contribution (texte_contribution, ordre_soumission, date_soumission, id_administrateur, id_cadavre)
+            VALUES (:texteContribution, :ordreSoumission, :dateSoumission, :idAdmin, :idCadavre)";
 
         $sthContribution = self::$dbh->prepare($sqlContribution);
         $sthContribution->bindParam(':texteContribution', $texteContribution);

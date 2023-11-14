@@ -50,27 +50,69 @@
   </div>
 </header>
 
-<section class="cadavres">
+<section class="section__link">
   <a
-    class="cadavres__pres--a"
+    class="section__link--a"
     href="/joueur/lastcadavre/{{ id }}"
     id="lienVersLast"
   >
     Dernier cadavre exquis réalisé
   </a>
+</section>
 
   <hr />
 
-  <h3>Cadavres exquis en cours</h3>
+  <section class="contribution">
 
-  {% if cadavre is not null %}
-  <div class="cadavres__pres">
-    <h4 class="cadavres__pres--p">Cadavre Exquis {{ cadavre.id_cadavre }}</h4>
-    <a class="cadavres__pres--a" href="#" id="lienVersInsert"> Voir </a>
+  <h3 class="contribution__title">Cadavres exquis en cours</h3>
+
+  <div class="contribution__all">
+  {% for contribution in currentCadavreContributions.data %}
+    {% if contribution.texte_contribution is null %}
+      <div class="contribution__all--div">
+      <h4> Contribution masquée </h4>
+        <span class="contribution__all-div__firstspan"> </span>
+        <span class="contribution__all-div__secondspan"> </span>
+        <span class="contribution__all-div__lastspan"> </span>
+      </div>
+    {% else %}
+      <div class="contribution__all--div">
+        <h4> Contribution n°{{ contribution.ordre_soumission}} </h4>
+        <p> {{ contribution.texte_contribution }} </p>
+      </div>
+    {% endif %}
+  {% endfor %}
   </div>
-  {% else %}
-  <p>Aucun cadavre exquis en cours. Veuillez revenir plus tard.</p>
-  {% endif %}
-</section>
+
+  {% if not currentCadavreContributions.played %}
+  <form
+      class="section__form"
+      action="{{ url('/joueur/contribution/' ~ id ~ '/' ~ idcadavre) }}"
+      method="post"
+    >
+      <input
+        type="hidden"
+        name="ordreSoumission"
+        value="{{ nextOrdreSoumission }}"
+      />
+      <label for="texteContribution"> Contribution </label>
+      <textarea
+        id="texteContribution"
+        placeholder="Vous avez entre 50 et 280 caractères d'autorisées"
+        name="texteContribution"
+        minlength="50"
+        maxlength="280"
+        required
+      ></textarea>
+      <span id="compteur">0/280</span>
+      <button class="button button__disabled" type="submit" disabled>
+        Valider
+      </button>
+    </form>
+    {% else %}
+      <p class="contribution__msg"> Merci d'avoir participé à ce Cadavre Exquis ! </p>
+    {% endif %}
+
+  </section>
 
 {% endblock %}

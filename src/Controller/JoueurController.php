@@ -24,8 +24,7 @@ class JoueurController extends Controller
 
                 $cadavreModel = new CadavreModel();
 
-                $currentCadavre = $cadavreModel->getCurrentCadavre();
-                var_dump($currentCadavre);
+                $currentCadavreContributions = $cadavreModel->getCurrentCadavre($role, $id);
 
                 $dateActuelle = date('Y-m-d');
 
@@ -34,7 +33,7 @@ class JoueurController extends Controller
                     [
                         'dateActuelle' => $dateActuelle,
                         'id' => $id,
-                        'cadavre' => $currentCadavre,
+                        'currentCadavreContributions' => $currentCadavreContributions,
                     ]
                 );
             }
@@ -112,14 +111,16 @@ class JoueurController extends Controller
                 $id = $_SESSION['user_id'];
 
                 $lastCadavre = JoueurAdministrateurModel::getInstance()->getCompleteCadavreInfo($id);
-                var_dump($lastCadavre);
                 if ($lastCadavre) {
-                    // Le dernier cadavre terminé a été trouvé, vous pouvez l'afficher ou effectuer d'autres actions
-
-                    $this->display('joueur/lastcadavre.html.twig');
+                    $this->display(
+                        'joueur/lastcadavre.html.twig',
+                        [
+                            'lastcadavre' => $lastCadavre,
+                            'id' => $id,
+                        ]
+                    );
                 } else {
-                    // Aucun cadavre terminé n'a été trouvé, vous pouvez gérer cette situation selon vos besoins
-                    $this->display('joueur/lastcadavre.html.twig');
+                    HTTP::redirect("/joueur/{$id}");
                 }
             }
         } else {

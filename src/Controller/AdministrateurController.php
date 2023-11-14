@@ -67,7 +67,7 @@ class AdministrateurController extends Controller
 
         $cadavreModel = new CadavreModel();
 
-        $currentCadavres = $cadavreModel->getCurrentCadavre();
+        $currentCadavres = $cadavreModel->getCurrentCadavre($role, $id);
 
         $this->display(
           'administrateur/currentcadavre.html.twig',

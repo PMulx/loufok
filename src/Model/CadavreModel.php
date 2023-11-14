@@ -4,10 +4,10 @@ namespace App\Model;
 
 class CadavreModel extends Model
 {
-    protected $cadavretableName = APP_TABLE_PREFIX.'cadavre';
-    protected $contributiontableName = APP_TABLE_PREFIX.'contribution';
-    protected $randomcontributiontableName = APP_TABLE_PREFIX.'contribution_aléatoire';
-    protected $joueurtableName = APP_TABLE_PREFIX.'joueur';
+    protected $cadavretableName = APP_TABLE_PREFIX . 'cadavre';
+    protected $contributiontableName = APP_TABLE_PREFIX . 'contribution';
+    protected $randomcontributiontableName = APP_TABLE_PREFIX . 'contribution_aléatoire';
+    protected $joueurtableName = APP_TABLE_PREFIX . 'joueur';
 
     protected static $instance;
 
@@ -79,7 +79,7 @@ class CadavreModel extends Model
         }
 
         $sql = 'SELECT COUNT(ordre_soumission)
-        FROM '.$this->contributiontableName.'
+        FROM ' . $this->contributiontableName . '
         WHERE id_cadavre = :id_cadavre';
         $sth = self::$dbh->prepare($sql);
         $sth->bindParam(':id_cadavre', $currentCadavreId['id_cadavre']);
@@ -113,10 +113,9 @@ class CadavreModel extends Model
         $sth->execute();
     }
 
-    public function getCurrentCadavre()
+    public function getCurrentCadavre($role, $id)
     {
-        $role = $_SESSION['role'];
-        $id_joueur = $_SESSION['user_id'];
+        $id_joueur = $id;
 
         if ($role === 'administrateur') {
             $sql = "SELECT
@@ -156,13 +155,15 @@ class CadavreModel extends Model
             $sth->bindParam(':id_joueur', $id_joueur);
             $playedContributions = 0;
 
+            $sth->execute();
+
             while ($row = $sth->fetch()) {
                 if ($row['texte_contribution'] !== null) {
                     ++$playedContributions;
                 }
             }
 
-            if ($playedContributions = 2) {
+            if ($playedContributions === 2) {
                 $alreadyPlayed = true;
             }
         }
