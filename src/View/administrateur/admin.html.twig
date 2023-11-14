@@ -1,122 +1,173 @@
 {% extends 'layout.html.twig' %} {% block title %} Administrateur
 {{ parent() }}
 {% endblock %} {% block content %}
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
-		<header class="admin">
-			<div class="header">
-				<div class="header__logo">
-					<?xml version="1.0" encoding="UTF-8"?>
-					<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 248">
-					<defs>
-						<style>
-						svg {
-							width:20%;
-						}
-						.cls-1 {
-							fill: #fefffe;
-						}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+<header class="admin">
+  <div class="header">
+    <div class="header__logo">
+      <?xml version="1.0" encoding="UTF-8"?>
+      <svg
+        id="Calque_1"
+        data-name="Calque 1"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 248 248"
+      >
+        <defs>
+          <style>
+            svg {
+              width: 20%;
+            }
+            .cls-1 {
+              fill: #fefffe;
+            }
 
             .cls-1,
             .cls-2 {
               stroke-width: 0px;
             }
 
-						.cls-2 {
-							fill: #101a31;
-						}
-						</style>
-					</defs>
-					<circle class="cls-2" cx="124" cy="124" r="124"/>
-					<path class="cls-1" d="m96,46h21.68l-10.84,58.78s-5.84,22.22,14.16,23.22c0,0,19,3,26-15l10-46h-24s6.37-21,22.18-21h27.64l-11.83,62s-4,22-34,47l-46-10s-7-17-7-23c0,0-3-20,12-76Z"/>
-					<polygon class="cls-1" points="93 156 104 187 128 164 93 156"/>
-					<path class="cls-1" d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"/>
-					</svg>
-					<h1>Loufok</h1>
-                    <a class="disconnect" href="/disconnect"> <span class="material-icons">logout</span> </a>
-				</div>
-			</div>
-		</header>
+            .cls-2 {
+              fill: #101a31;
+            }
+          </style>
+        </defs>
+        <circle class="cls-2" cx="124" cy="124" r="124" />
+        <path
+          class="cls-1"
+          d="m96,46h21.68l-10.84,58.78s-5.84,22.22,14.16,23.22c0,0,19,3,26-15l10-46h-24s6.37-21,22.18-21h27.64l-11.83,62s-4,22-34,47l-46-10s-7-17-7-23c0,0-3-20,12-76Z"
+        />
+        <polygon class="cls-1" points="93 156 104 187 128 164 93 156" />
+        <path
+          class="cls-1"
+          d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"
+        />
+      </svg>
+      <h1>Loufok</h1>
+      <a class="disconnect" href="/disconnect">
+        <span class="material-icons">logout</span>
+      </a>
+    </div>
+  </div>
+</header>
 
-    <section class="currentCadavre__btn">
-        <a class="currentCadavre__btn--a" href="/administrateur/{{ id }}/currentCadavre">
-          Cadavre Exquis en cours
-        </a>
-    </section>
+<section class="currentCadavre__btn">
+  <a
+    class="currentCadavre__btn--a"
+    href="/administrateur/{{ id }}/currentCadavre"
+  >
+    Cadavre Exquis en cours
+  </a>
+</section>
 
-    <hr/>
+<hr />
 
-        <section class="creaCadavre">
-            <h3 class="creaCadavre__h3"> Création d'un nouveau cadavre Exquis </h3>
+<section class="creaCadavre">
+  <h3 class="creaCadavre__h3">Création d'un nouveau cadavre Exquis</h3>
 
-            <div id="calendar"></div>
+  <div id="calendar"></div>
 
-                <form class="section__form" action="/administrateur/{{ id }}/add" method="post">
-                    <input type="hidden" name="id" value="{{ id }}">
-                    
-                    <label for="titre">Titre du Cadavre Exquis</label>
-                    <input type="text" placeholder="Le titre du Cadavre Exquis doit être unique" name="titre" id="titre" required>
+  <form
+    class="section__form"
+    action="/administrateur/{{ id }}/add"
+    method="post"
+  >
+    <input type="hidden" name="id" value="{{ id }}" />
 
-                    <label for="nbContributions">Nombres de contributions</label>
-                    <input type="number" placeholder="12" name="nbContributions" id="nbContributions" required />
+    <label for="titre">Titre du Cadavre Exquis</label>
+    <input
+      type="text"
+      placeholder="Le titre du Cadavre Exquis doit être unique"
+      name="titre"
+      id="titre"
+      required
+    /><span id="titreError" style="color: red"></span>
 
-                    <input type="hidden" name="nbJaime" value="0" />
+    <label for="nbContributions">Nombre de contributions</label>
 
-                    <label>Période de jeu</label>
-                    <div class="form__date">
-                      <div class="form__date--debut">
-                        <label for="dateDebut">Début</label>
-                        <input type="date" name="dateDebut" id="dateDebut" required />
-                      </div>
+    <input
+      type="number"
+      placeholder="12"
+      name="nbContributions"
+      id="nbContributions"
+      required
+    />
 
-                      <div class="form__date--fin">
-                        <label for="dateFin">Fin</label>
-                        <input type="date" name="dateFin" id="dateFin" required />
-                      </div>
-                    </div>
+    <span id="ContributionsErreur" style="color: red"></span>
 
-                    <label for="texteContribution">Contribution</label>
-                    <textarea name="texteContribution" id="texteContribution" placeholder="Vous avez entre 50 et 280 caractères d’autorisées" required></textarea>
-                    <div id="compteur">0/280</div>
+    <input type="hidden" name="nbJaime" value="0" />
 
-                    <span id="messageErreur" style="color: red"></span>
+    <label>Période de jeu</label>
+    <div class="form__date">
+      <div class="form__date--debut">
+        <label for="dateDebut">Début</label>
+        <input type="date" name="dateDebut" id="dateDebut" required />
+      </div>
 
-                    <button type="submit" class="button__disabled" id="btnValider" disabled>Valider</button>
-                </form>
-        </section>
+      <div class="form__date--fin">
+        <label for="dateFin">Fin</label>
+        <input type="date" name="dateFin" id="dateFin" required />
+      </div>
+    </div>
+    <span id="messageErreur" style="color: red"></span>
 
+    <label for="texteContribution">Contribution</label>
+    <textarea
+      name="texteContribution"
+      id="texteContribution"
+      placeholder="Vous avez entre 50 et 280 caractères d’autorisées"
+      required
+      spellcheck="true"
+    ></textarea>
+    <div id="compteur">0/280</div>
+
+    <button
+      type="submit"
+      class="button__disabled button"
+      id="btnValider"
+      disabled
+    >
+      Valider
+    </button>
+  </form>
+</section>
 
 {% block scripts %}
- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var periodes = {{ periodes|json_encode|raw }};
-        var dateActuelle = new Date("{{ dateActuelle }}");
-
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            headerToolbar: {
-                start: 'title',
-                end: 'prev,next',
-            },
-            // Options du calendrier
-            firstDay: 1,
-            locale: 'fr',
-            initialView: 'dayGridMonth',
-
-            events: periodes.map(function(periode) {
-                var endDate = new Date(periode.end);
-                endDate.setDate(endDate.getDate() + 1);
-                return {
-                    start: periode.start,
-                    end: endDate.getFullYear() + '-' + 
-                     ('0' + (endDate.getMonth() + 1)).slice(-2) + '-' + 
-                     ('0' + endDate.getDate()).slice(-2),
-                    color: '#a4fa82',
-                    display: 'background'
-                };
-            }),
-        });
-
-        calendar.render();
-    });
+<script>
+  var titles = {{ titles | raw }};
+  var periodes = {{ periodes|json_encode|raw }};
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      var periodes = {{ periodes|json_encode|raw }};
+      var dateActuelle = new Date("{{ dateActuelle }}");
+
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+          headerToolbar: {
+              start: 'title',
+              end: 'prev,next',
+          },
+          // Options du calendrier
+          firstDay: 1,
+          locale: 'fr',
+          initialView: 'dayGridMonth',
+
+          events: periodes.map(function(periode) {
+              var endDate = new Date(periode.end);
+              endDate.setDate(endDate.getDate() + 1);
+              return {
+                  start: periode.start,
+                  end: endDate.getFullYear() + '-' +
+                   ('0' + (endDate.getMonth() + 1)).slice(-2) + '-' +
+                   ('0' + endDate.getDate()).slice(-2),
+                  color: '#a4fa82',
+                  display: 'background'
+              };
+          }),
+      });
+
+      calendar.render();
+  });
+</script>
+
 {% endblock %} {% endblock %}

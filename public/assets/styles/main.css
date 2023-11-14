@@ -292,3 +292,12 @@ i {
 .num__contribution {
   font-weight: 800;
 }
+.input-group {
+  display: flex;
+
+  align-items: center;
+}
+
+input {
+  margin-right: 5px;
+}

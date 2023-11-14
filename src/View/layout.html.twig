@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/assets/image/logo.svg" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link href="/assets/styles/main.css" rel="stylesheet" type="text/css" />
+    <!-- CSS -->
+    <title>{% block title %} Loufok {% endblock %}</title>
+  </head>
+  <body>
+    {% block content %}{% endblock %}
+    <script src="/assets/js/newscript.js"></script>
 
-	<head>
-		<meta charset="UTF-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link
-		rel="icon" href="/assets/image/logo.svg">
-		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-		<link href="/assets/styles/main.css" rel="stylesheet" type="text/css"/>
-		<!-- CSS -->
-		<title>
-			{% block title %} Loufok
-			{% endblock %}
-		</title>
-	</head>
-	<body>
-		{% block content %}{% endblock %}
-		<script src='/assets/js/script.js'></script>
-
-		<!-- JS -->
-		{% block js %}
-	{% endblock -%}
-</body></html>
+    <!-- JS -->
+    {% block js %} {% endblock -%}
+  </body>
+</html>
