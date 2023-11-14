@@ -60,9 +60,9 @@ class CadavreModel extends Model
 
     public function getCurrentCadavreId()
     {
-        $sql = 'SELECT c.id_cadavre
-        FROM cadavre c
-        WHERE CURDATE() BETWEEN c.date_debut_cadavre AND c.date_fin_cadavre  AND c.nb_contributions > (SELECT COUNT(co.ordre_soumission) FROM contribution co WHERE co.id_cadavre = c.id_cadavre)';
+        $sql = "SELECT c.id_cadavre
+        FROM {$this->cadavretableName} c
+        WHERE CURDATE() BETWEEN c.date_debut_cadavre AND c.date_fin_cadavre  AND c.nb_contributions > (SELECT COUNT(co.ordre_soumission) FROM {$this->contributiontableName} co WHERE co.id_cadavre = c.id_cadavre)";
         $sth = self::$dbh->prepare($sql);
         $sth->execute();
         $result = $sth->fetch();
@@ -78,9 +78,9 @@ class CadavreModel extends Model
             return 0; // Le cadavre actuel n'existe pas
         }
 
-        $sql = 'SELECT COUNT(ordre_soumission)
-        FROM ' . $this->contributiontableName . '
-        WHERE id_cadavre = :id_cadavre';
+        $sql = "SELECT COUNT(ordre_soumission)
+        FROM {$this->contributiontableName}
+        WHERE id_cadavre = :id_cadavre";
         $sth = self::$dbh->prepare($sql);
         $sth->bindParam(':id_cadavre', $currentCadavreId['id_cadavre']);
         $sth->execute();
@@ -235,8 +235,8 @@ class CadavreModel extends Model
 
     public function getAllTitles()
     {
-        $sql = 'SELECT titre_cadavre
-        FROM cadavre';
+        $sql = "SELECT titre_cadavre
+        FROM {$this->cadavretableName}";
 
         $sth = self::$dbh->prepare($sql);
         $sth->execute();
@@ -247,7 +247,7 @@ class CadavreModel extends Model
     public function getAllPeriods()
     {
         $sql = "SELECT id_cadavre, CONCAT(date_debut_cadavre, ' | ', date_fin_cadavre) AS periode
-                FROM cadavre";
+                FROM {$this->cadavretableName}";
 
         $sth = self::$dbh->prepare($sql);
         $sth->execute();
