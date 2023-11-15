@@ -12,37 +12,50 @@ use App\Model\JoueurAdministrateurModel;
 
 class JoueurController extends Controller
 {
+    /**
+     * Affiche la page principale du joueur.
+     *
+     * @param int $id Identifiant de l'utilisateur
+     */
     public function index($id)
     {
+        // Récupère la variable de session 'neverplayed' s'il existe
         $neverplayed = isset($_SESSION['neverplayed']) ? $_SESSION['neverplayed'] : null;
 
-        // Supprimez les messages de confirmation de la session pour qu'ils ne soient pas affichés à nouveau
+        // Supprime les messages de confirmation de la session pour éviter qu'ils ne soient affichés à nouveau
         unset($_SESSION['neverplayed']);
+
+        // Vérifie si le rôle est défini dans la session
         if (isset($_SESSION['role'])) {
             $role = $_SESSION['role'];
 
+            // Redirige les administrateurs vers leur page spécifique
             if ($role === 'administrateur') {
                 HTTP::redirect("/administrateur/{$id}");
             } else {
+                // Récupère l'ID de l'utilisateur depuis la session
                 $id = $_SESSION['user_id'];
 
+                // Crée une instance de CadavreModel
                 $cadavreModel = new CadavreModel();
-                $randomContribution = $cadavreModel::getInstance()->getRandomContribution();
 
+                // Récupère une contribution aléatoire existante ou attribue une nouvelle contribution
+                $randomContribution = $cadavreModel::getInstance()->getRandomContribution();
                 $maxOrdre = $cadavreModel::getInstance()->getCurrentSubmissionOrder();
 
+                // Récupère les contributions actuelles du cadavre exquis
                 $currentCadavreContributions = $cadavreModel->getCurrentCadavre($role, $id);
 
+                // Récupère l'ID du cadavre exquis actuel
                 $getIdCadavre = $cadavreModel->getCurrentCadavreId();
 
-                if ($getIdCadavre != false) {
-                    $idcadavre = $getIdCadavre;
-                } else {
-                    $idcadavre = 0;
-                }
+                // Initialise l'ID du cadavre exquis à 0 s'il n'existe pas
+                $idcadavre = $getIdCadavre != false ? $getIdCadavre : 0;
+
+                // Récupère la date actuelle
                 $dateActuelle = date('Y-m-d');
 
-
+                // Affiche la page des listes du joueur avec les données pertinentes
                 $this->display(
                     'joueur/listes.html.twig',
                     [
@@ -55,66 +68,41 @@ class JoueurController extends Controller
                 );
             }
         } else {
+            // Redirige vers la page d'accueil si le rôle n'est pas défini
             HTTP::redirect('/');
         }
     }
 
-    // public function insertAleatoire($id)
-    // {
-    //     if (isset($_SESSION['role'])) {
-    //         $role = $_SESSION['role'];
-    //         $cadavre = Cadavre::getInstance()->getCurrentCadavreId();
-
-    //         if ($role === 'administrateur') {
-    //             HTTP::redirect("/administrateur/{$id}");
-    //         } else {
-    //             $existingContributionAleatoire = ContributionAleatoire::getInstance()->findby([
-    //                 'id_joueur' => $_SESSION['user_id'],
-    //                 'id_cadavre' => $cadavre,
-    //             ]);
-
-    //             if (empty($existingContributionAleatoire)) {
-    //                 $maxOrdre = Contribution::getInstance()->getMaxOrdreContributionForCadavre($cadavre);
-
-    //                 if ($maxOrdre >= 1) {
-    //                     $numContributionAleatoire = mt_rand(1, $maxOrdre);
-
-    //                     ContributionAleatoire::getInstance()->create([
-    //                         'id_joueur' => $_SESSION['user_id'],
-    //                         'id_cadavre' => $cadavre,
-    //                         'num_contribution' => $numContributionAleatoire,
-    //                     ]);
-    //                 } else {
-    //                     $errors = 'Le nombre maximum de contributions pour ce cadavre est invalide.';
-    //                 }
-    //             }
-    //             HTTP::redirect("/joueur/cadavre/{$id}/{$cadavre}");
-    //         }
-    //     } else {
-    //         HTTP::redirect('/');
-    //     }
-    // }
-
+    /**
+     * Ajoute une contribution au cadavre exquis.
+     *
+     * @param int $id        Identifiant de l'utilisateur
+     * @param int $idcadavre Identifiant du cadavre exquis
+     */
     public function insertcontribution($id, $idcadavre)
     {
+        // Vérifie si le rôle est défini dans la session
         if (isset($_SESSION['role'])) {
             $role = $_SESSION['role'];
 
+            // Redirige les administrateurs vers leur page spécifique
             if ($role === 'administrateur') {
                 HTTP::redirect("/administrateur/{$id}");
             } else {
+                // Récupère le texte de la contribution depuis le formulaire
                 $text = $_POST['texteContribution'];
                 $joueurId = $_SESSION['user_id'];
                 $cadavreId = $_POST['cadavreId'];
 
+                // Crée une instance de CadavreModel
                 $cadavreModel = new CadavreModel();
 
-                // Appel à la méthode qui peut retourner des erreurs
+                // Appelle la méthode qui peut retourner des erreurs
                 $errorMessages = $cadavreModel->addJoueurContribution($cadavreId, $joueurId, $text);
                 $id = $_SESSION['user_id'];
 
+                // Affiche la page d'erreur en cas d'erreurs, sinon redirige vers la page du joueur
                 if (!empty($errorMessages)) {
-
                     $this->display(
                         'joueur/error.html.twig',
                         [
@@ -127,22 +115,33 @@ class JoueurController extends Controller
                 }
             }
         } else {
+            // Redirige vers la page d'accueil si le rôle n'est pas défini
             HTTP::redirect('/');
         }
     }
 
-
+    /**
+     * Affiche la page du dernier cadavre exquis auquel le joueur a participé.
+     *
+     * @param int $id Identifiant de l'utilisateur
+     */
     public function lastcadavre($id)
     {
+        // Vérifie si le rôle est défini dans la session
         if (isset($_SESSION['role'])) {
             $role = $_SESSION['role'];
 
+            // Redirige les administrateurs vers leur page spécifique
             if ($role === 'administrateur') {
                 HTTP::redirect("/administrateur/{$id}");
             } else {
+                // Récupère l'ID de l'utilisateur depuis la session
                 $id = $_SESSION['user_id'];
 
+                // Récupère les informations complètes du dernier cadavre exquis auquel le joueur a participé
                 $lastCadavre = JoueurAdministrateurModel::getInstance()->getCompleteCadavreInfo($id);
+
+                // Affiche la page du dernier cadavre exquis avec les données pertinentes
                 if ($lastCadavre) {
                     $this->display(
                         'joueur/lastcadavre.html.twig',
@@ -152,11 +151,13 @@ class JoueurController extends Controller
                         ]
                     );
                 } else {
+                    // Redirige vers la page du joueur avec un message si le joueur n'a pas encore participé à un cadavre
                     HTTP::redirect("/joueur/{$id}");
                     $_SESSION['neverplayed'] = "Vous n'avez pas encore participé à un cadavre exquis qui est maintenant clos.";
                 }
             }
         } else {
+            // Redirige vers la page d'accueil si le rôle n'est pas défini
             HTTP::redirect('/');
         }
     }
