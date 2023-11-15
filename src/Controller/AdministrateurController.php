@@ -13,6 +13,11 @@ class AdministrateurController extends Controller
 {
     public function index($id)
     {
+        $confirmMessages = isset($_SESSION['confirmMessages']) ? $_SESSION['confirmMessages'] : null;
+
+        // Supprimez les messages de confirmation de la session pour qu'ils ne soient pas affichés à nouveau
+        unset($_SESSION['confirmMessages']);
+
         if (isset($_SESSION['role'])) {
             $role = $_SESSION['role'];
 
@@ -45,6 +50,7 @@ class AdministrateurController extends Controller
                         'dateActuelle' => $dateActuelle,
                         'popup' => isset($_SESSION['popup']) ? $_SESSION['popup'] : null,
                         'id' => $id,
+                        'confirmMessages' => $confirmMessages,
                     ]
                 );
             }
@@ -93,15 +99,24 @@ class AdministrateurController extends Controller
             ];
 
             $cadavreModel = new CadavreModel();
+            $returnMessages = $cadavreModel->insertCadavreContribution($datas);
 
-            $cadavreAdd = $cadavreModel->insertCadavreContribution($datas);
-            if ($cadavreAdd) {
-                $_SESSION['popup'] = "L'enregistrement de votre Cadavre a échoué.";
+            $errorMessages = $returnMessages['errors'];
+            $confirmMessages = $returnMessages['success'];
+
+            if (!empty($errorMessages)) {
+
+                $this->display(
+                    'administrateur/error.html.twig',
+                    [
+                        'errorMessages' => $errorMessages,
+                    ]
+                );
             } else {
-                $_SESSION['popup'] = 'Votre cadavre a bien été enregistré.';
-            }
+                $_SESSION['confirmMessages'] = $confirmMessages;
 
-            HTTP::redirect("/administrateur/{$id}");
+                HTTP::redirect("/administrateur/{$id}");
+            }
         } else {
             var_dump('ERROR');
         }

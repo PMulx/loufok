@@ -66,14 +66,17 @@
   <h3 class="contribution__title">Cadavres exquis en cours</h3>
 
   <div class="contribution__all">
-    {% for contribution in currentCadavreContributions.data %} {% if
-    contribution.texte_contribution is null %}
-    <div class="contribution__all--div">
-      <h4>Contribution masquée</h4>
-      <span class="contribution__all-div__firstspan"> </span>
-      <span class="contribution__all-div__secondspan"> </span>
-      <span class="contribution__all-div__lastspan"> </span>
-    </div>
+  {% if currentCadavreContributions.data is empty %}
+    <p> Aucune fabrication de cadavre en cours </p>
+  {% else %}
+  {% for contribution in currentCadavreContributions.data %}
+    {% if contribution.texte_contribution is null %}
+      <div class="contribution__all--div">
+      <h4> Contribution masquée </h4>
+        <span class="contribution__all-div__firstspan"> </span>
+        <span class="contribution__all-div__secondspan"> </span>
+        <span class="contribution__all-div__lastspan"> </span>
+      </div>
     {% else %}
     <div class="contribution__all--div">
       <h4>Contribution n°{{ contribution.ordre_soumission }}</h4>
@@ -84,34 +87,33 @@
 
   {% if not currentCadavreContributions.played %}
   <form
-    class="section__form"
-    action="{{ url('/joueur/contribution/' ~ id ~ '/' ~ idcadavre) }}"
-    method="post"
-  >
-    <input
-      type="hidden"
-      name="ordreSoumission"
-      value="{{ nextOrdreSoumission }}"
-    />
-    <label for="texteContribution"> Contribution </label>
-    <textarea
-      id="texteContribution"
-      placeholder="Vous avez entre 50 et 280 caractères d'autorisées"
-      name="texteContribution"
-      minlength="50"
-      maxlength="280"
-      required
-    ></textarea>
-    <span id="compteur">0/280</span>
-    <button class="button button__disabled" type="submit" disabled>
-      Valider
-    </button>
-  </form>
-  {% else %}
-  <p class="contribution__msg">Merci d'avoir participé à ce Cadavre Exquis !</p>
-  {% endif %}
-</section>
-{% block scripts %}
+      class="section__form"
+      action="{{ url('/joueur/contribution/' ~ id ~ '/' ~ idcadavre) }}"
+      method="post"
+    >
+      <input
+        type="hidden"
+        name="cadavreId"
+        value="{{ idcadavre }}"
+      />
+      <label for="texteContribution"> Contribution </label>
+      <textarea
+        id="texteContribution"
+        placeholder="Vous avez entre 50 et 280 caractères d'autorisées"
+        name="texteContribution"
+        minlength="50"
+        maxlength="280"
+        required
+      ></textarea>
+      <span id="compteur">0/280</span>
+      <button class="button button__disabled" type="submit" disabled>
+        Valider
+      </button>
+    </form>
+    {% else %}
+      <p class="contribution__msg"> Merci d'avoir participé à ce cadavre exquis ! </p>
+    {% endif %}
+    {% endif %}
 
 <script src="/assets/js/compteur.js"></script>
 <script src="/assets/js/joueur.js"></script>

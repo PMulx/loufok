@@ -69,6 +69,8 @@
     {% for lastcadavreinfo in lastcadavre %}
         {% if lastTitle != lastcadavreinfo.titre_cadavre %}
             {% if lastTitle is not null %}
+                {# Tri des écrivains par ordre alphabétique #}
+                {% set writers = writers|sort %}
                 <p class="lastcadavre__writers"> Ecrivains : {{ writers|join(', ') }} </p>
             {% endif %}
             <h2 class="lastcadavre__title">{{ lastcadavreinfo.titre_cadavre }}</h2>
@@ -86,9 +88,12 @@
     {% endfor %}
 
     {% if lastTitle is not null %}
+        {# Tri des écrivains par ordre alphabétique pour la dernière entrée #}
+        {% set writers = writers|sort %}
         <p class="lastcadavre__writers"> Ecrivains : {{ writers|join(', ') }} </p>
     {% endif %}
 </section>
+
 
 
 

@@ -29,6 +29,13 @@ class JoueurController extends Controller
 
                 $currentCadavreContributions = $cadavreModel->getCurrentCadavre($role, $id);
 
+                $getIdCadavre = $cadavreModel->getCurrentCadavreId();
+
+                if ($getIdCadavre != false) {
+                    $idcadavre = $getIdCadavre["id_cadavre"];
+                } else {
+                    $idcadavre = 0;
+                }
                 $dateActuelle = date('Y-m-d');
 
                 $this->display(
@@ -36,6 +43,7 @@ class JoueurController extends Controller
                     [
                         'dateActuelle' => $dateActuelle,
                         'id' => $id,
+                        'idcadavre' => $idcadavre,
                         'currentCadavreContributions' => $currentCadavreContributions,
                     ]
                 );
@@ -81,26 +89,6 @@ class JoueurController extends Controller
     //     }
     // }
 
-    public function cadavre($id, $idcadavre)
-    {
-        if (isset($_SESSION['role'])) {
-            $role = $_SESSION['role'];
-
-            if ($role === 'administrateur') {
-                HTTP::redirect("/administrateur/{$id}");
-            } else {
-                $id = $_SESSION['user_id'];
-
-                $this->display(
-                    'joueur/cadavre.html.twig',
-                    []
-                );
-            }
-        } else {
-            HTTP::redirect('/');
-        }
-    }
-
     public function insertcontribution($id, $idcadavre)
     {
         if (isset($_SESSION['role'])) {
@@ -109,16 +97,32 @@ class JoueurController extends Controller
             if ($role === 'administrateur') {
                 HTTP::redirect("/administrateur/{$id}");
             } else {
-                $texteContribution = $_POST['texteContribution'];
-                $ordreSoumission = $_POST['ordreSoumission'];
-                $dateSoumission = date('Y-m-d');
+                $text = $_POST['texteContribution'];
+                $joueurId = $_SESSION['user_id'];
+                $cadavreId = $_POST['cadavreId'];
 
-                HTTP::redirect("/joueur/{$id}");
+                $cadavreModel = new CadavreModel();
+
+                // Appel à la méthode qui peut retourner des erreurs
+                $errorMessages = $cadavreModel->addJoueurContribution($cadavreId, $joueurId, $text);
+
+                if (!empty($errorMessages)) {
+
+                    $this->display(
+                        'joueur/error.html.twig',
+                        [
+                            'errorMessages' => $errorMessages,
+                        ]
+                    );
+                } else {
+                    HTTP::redirect("/joueur/{$id}");
+                }
             }
         } else {
             HTTP::redirect('/');
         }
     }
+
 
     public function lastcadavre($id)
     {
