@@ -154,8 +154,8 @@
   var periodes = {{ periodes|json_encode|raw }};
 </script>
 <script>
-   // Attendez que le DOM soit entièrement chargé avant d'exécuter le code
-  document.addEventListener('DOMContentLoaded', function() {
+     // Attendez que le DOM soit entièrement chargé avant d'exécuter le code
+   document.addEventListener('DOMContentLoaded', function() {
       // Récupérez les données de périodes depuis le backend, encodées en JSON
       var periodes = {{ periodes|json_encode|raw }};
 

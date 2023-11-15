@@ -181,14 +181,16 @@
     const nbContributions = App.DOM.nbContributions.value;
     const ContributionsError = document.getElementById("ContributionsErreur");
 
-    if (!nbContributions || nbContributions <= 1) {
-      ContributionsError.textContent =
-        "Le nombre de contributions doit être supérieur à 1";
-      return "error"; // Nombre de contributions insuffisant, renvoyer une erreur
-    }
-    if (!nbContributions || nbContributions > 1) {
-      ContributionsError.textContent = "";
-      return "ok"; // Nombre de contributions valide, pas d'erreur
+    if (nbContributions) {
+      if (nbContributions <= 1) {
+        ContributionsError.textContent =
+          "Le nombre de contributions doit être supérieur à 1";
+        return "error"; // Nombre de contributions insuffisant, renvoyer une erreur}
+      }
+      if (!nbContributions || nbContributions > 1) {
+        ContributionsError.textContent = "";
+        return "ok"; // Nombre de contributions valide, pas d'erreur
+      }
     }
 
     return "erreur";
