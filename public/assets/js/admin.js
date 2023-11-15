@@ -156,7 +156,6 @@
   }
   function compteur_contribution() {
     App.longueur = App.DOM.textarea.value.length;
-    App.DOM.compteur.textContent = App.longueur + " / 280 caractères";
 
     if (App.longueur < App.minCaracteres) {
       return "error";

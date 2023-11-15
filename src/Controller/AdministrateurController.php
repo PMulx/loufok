@@ -43,6 +43,7 @@ class AdministrateurController extends Controller
                         'titles' => json_encode($titles),
                         'periodes' => $periodes,
                         'dateActuelle' => $dateActuelle,
+                        'popup' => isset($_SESSION['popup']) ? $_SESSION['popup'] : null,
                         'id' => $id,
                     ]
                 );
@@ -92,7 +93,13 @@ class AdministrateurController extends Controller
             ];
 
             $cadavreModel = new CadavreModel();
-            $cadavreModel->insertCadavreContribution($datas);
+
+            $cadavreAdd = $cadavreModel->insertCadavreContribution($datas);
+            if ($cadavreAdd) {
+                $_SESSION['popup'] = "L'enregistrement de votre Cadavre a échoué.";
+            } else {
+                $_SESSION['popup'] = 'Votre cadavre a bien été enregistré.';
+            }
 
             HTTP::redirect("/administrateur/{$id}");
         } else {

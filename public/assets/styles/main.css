@@ -216,6 +216,7 @@ i {
   color: var(--dark);
 }
 .creaCadavre {
+  position: relative;
   width: 100vw;
   padding: 1rem;
 }
@@ -334,4 +335,36 @@ i {
 
 input {
   margin-right: 5px;
+}
+.popupValidate {
+  text-align: center;
+  height: fit-content;
+  background-color: rgba(166, 173, 190, 1);
+  position: absolute;
+  z-index: 999;
+  border-radius: 25px;
+  left: 10%;
+  top: 100px;
+  padding: 25px;
+  width: 80%;
+
+  /* Propriétés de la transition */
+  opacity: 0; /* La popup commence transparente */
+  transition: opacity 0.5s ease-in-out; /* Propriétés de la transition */
+}
+.popupValidate p {
+  color: var(--green);
+  font-size: 1.2rem;
+  text-align: center;
+}
+.popupValidate svg {
+  height: 80px;
+  width: auto;
+  color: var(--green);
+}
+.popupValidate.show {
+  opacity: 1; /* L'opacité devient 1 pour montrer la popup */
+}
+.d-none {
+  display: none;
 }
