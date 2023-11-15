@@ -58,8 +58,6 @@
 
 <hr />
 
-<p> {{ confirmMessages }} </p> 
-
 <section class="creaCadavre">
   <h3 class="creaCadavre__h3">Création d'un nouveau cadavre Exquis</h3>
 
@@ -116,6 +114,8 @@
       placeholder="Vous avez entre 50 et 280 caractères d’autorisées"
       required
       spellcheck="true"
+      minlength="50"
+      maxlength="280"
     ></textarea>
     <div id="compteur">0/280</div>
 
@@ -129,7 +129,7 @@
     </button>
   </form>
   <div class="popupValidate">
-    <p class="popup_texte"></p>
+    <p class="popup_texte"> {{ confirmMessages }} </p>
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="16"
@@ -185,10 +185,6 @@
 
       calendar.render();
   });
-</script>
-<script>
-  var popupMessage = {{ popup|json_encode|raw }};
-  console.log(popupMessage);
 </script>
 <script src="/assets/js/popup.js"></script>
 <script>

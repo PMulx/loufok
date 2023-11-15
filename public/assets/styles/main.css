@@ -10,6 +10,7 @@
   --unactive: #eeeff2;
   --grey: #a6adbe;
   --white: #fefffe;
+  --error: #fa8282;
 }
 
 body {
@@ -368,4 +369,26 @@ input {
 }
 .d-none {
   display: none;
+}
+.popupError {
+  text-align: center;
+  height: fit-content;
+  background-color: var(--unactive);
+  z-index: 999;
+  border-radius: 25px;
+  margin: auto;
+  left: 10%;
+  top: 100px;
+  padding: 25px;
+  width: 80%;
+}
+.popupError p {
+  color: var(--error);
+  font-size: 1.2rem;
+  text-align: center;
+}
+.popupError svg {
+  height: 80px;
+  width: auto;
+  color: var(--error);
 }

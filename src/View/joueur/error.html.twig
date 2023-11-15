@@ -1,1 +1,67 @@
-<p> {{ errorMessages[0] }} </p>
+{% extends 'layout.html.twig' %} {% block title %} Joueur
+{{ parent() }}
+{% endblock %} {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+<header class="admin">
+  <div class="header">
+    <div class="header__logo">
+      <?xml version="1.0" encoding="UTF-8"?>
+      <svg
+        id="Calque_1"
+        data-name="Calque 1"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 248 248"
+      >
+        <defs>
+          <style>
+            svg {
+              width: 20%;
+            }
+            .cls-1 {
+              fill: #fefffe;
+            }
+
+            .cls-1,
+            .cls-2 {
+              stroke-width: 0px;
+            }
+
+            .cls-2 {
+              fill: #101a31;
+            }
+          </style>
+        </defs>
+        <circle class="cls-2" cx="124" cy="124" r="124" />
+        <path
+          class="cls-1"
+          d="m96,46h21.68l-10.84,58.78s-5.84,22.22,14.16,23.22c0,0,19,3,26-15l10-46h-24s6.37-21,22.18-21h27.64l-11.83,62s-4,22-34,47l-46-10s-7-17-7-23c0,0-3-20,12-76Z"
+        />
+        <polygon class="cls-1" points="93 156 104 187 128 164 93 156" />
+        <path
+          class="cls-1"
+          d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"
+        />
+      </svg>
+      <h1>Loufok</h1>
+      <a class="disconnect" href="/disconnect">
+        <span class="material-icons">logout</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<section class="section__link">
+  <a class="section__link--a" href="/joueur/{{ id }}">
+    Retour
+  </a>
+</section>
+
+<hr />
+  <div class="popupError">
+    <p class="popup_texte"> {{ errorMessages[0] }} </p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+    </svg>
+  </div>
+ {% endblock %}

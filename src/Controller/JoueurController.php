@@ -32,7 +32,7 @@ class JoueurController extends Controller
                 $getIdCadavre = $cadavreModel->getCurrentCadavreId();
 
                 if ($getIdCadavre != false) {
-                    $idcadavre = $getIdCadavre["id_cadavre"];
+                    $idcadavre = $getIdCadavre;
                 } else {
                     $idcadavre = 0;
                 }
@@ -105,6 +105,7 @@ class JoueurController extends Controller
 
                 // Appel à la méthode qui peut retourner des erreurs
                 $errorMessages = $cadavreModel->addJoueurContribution($cadavreId, $joueurId, $text);
+                $id = $_SESSION['user_id'];
 
                 if (!empty($errorMessages)) {
 
@@ -112,6 +113,7 @@ class JoueurController extends Controller
                         'joueur/error.html.twig',
                         [
                             'errorMessages' => $errorMessages,
+                            'id' => $id,
                         ]
                     );
                 } else {

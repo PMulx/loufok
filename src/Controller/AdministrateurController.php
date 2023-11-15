@@ -98,6 +98,8 @@ class AdministrateurController extends Controller
                 'nbMaxContributions' => $_POST['nbContributions'],
             ];
 
+            $id = $_SESSION['user_id'];
+
             $cadavreModel = new CadavreModel();
             $returnMessages = $cadavreModel->insertCadavreContribution($datas);
 
@@ -105,11 +107,11 @@ class AdministrateurController extends Controller
             $confirmMessages = $returnMessages['success'];
 
             if (!empty($errorMessages)) {
-
                 $this->display(
                     'administrateur/error.html.twig',
                     [
                         'errorMessages' => $errorMessages,
+                        'id' => $id,
                     ]
                 );
             } else {

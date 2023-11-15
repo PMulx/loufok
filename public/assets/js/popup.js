@@ -2,10 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const popup = document.querySelector(".popupValidate");
   const popup_texte = document.querySelector(".popup_texte");
 
-  if (popupMessage) {
-    // Affichez la popup ici en utilisant une bibliothèque de votre choix ou créez votre propre logique de popup
-    popup_texte.textContent = popupMessage;
-
+  if (popup_texte && popup_texte.textContent.trim() !== "") {
     // Ajoutez la classe "show" pour activer la transition
     popup.classList.add("show");
 
