@@ -267,6 +267,7 @@ i {
   margin-top: 3rem;
   font-size: 0.9rem;
   font-style: italic;
+  text-align: start;
 }
 .contribution {
   position: relative;

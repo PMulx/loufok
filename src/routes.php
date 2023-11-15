@@ -16,7 +16,6 @@ return [
 
   ['GET', '/joueur/{id}', 'joueur@index'],
   ['POST', '/joueur/insert/{id}', 'joueur@insertaleatoire'],
-  ['GET', '/joueur/cadavre/{id}/{idcadavre}', 'joueur@cadavre'],
   ['GET', '/joueur/lastcadavre/{id}', 'joueur@lastcadavre'],
   ['POST', '/joueur/contribution/{id}/{idcadavre}', 'joueur@insertcontribution'],
 

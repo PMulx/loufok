@@ -67,6 +67,9 @@
   <h3 class="contribution__title">Cadavres exquis en cours</h3>
 
   <div class="contribution__all">
+  {% if currentCadavreContributions.data is empty %}
+    <p> Aucune fabrication de cadavre en cours </p>
+  {% else %}
   {% for contribution in currentCadavreContributions.data %}
     {% if contribution.texte_contribution is null %}
       <div class="contribution__all--div">
@@ -92,8 +95,8 @@
     >
       <input
         type="hidden"
-        name="ordreSoumission"
-        value="{{ nextOrdreSoumission }}"
+        name="cadavreId"
+        value="{{ idcadavre }}"
       />
       <label for="texteContribution"> Contribution </label>
       <textarea
@@ -110,7 +113,8 @@
       </button>
     </form>
     {% else %}
-      <p class="contribution__msg"> Merci d'avoir participé à ce Cadavre Exquis ! </p>
+      <p class="contribution__msg"> Merci d'avoir participé à ce cadavre exquis ! </p>
+    {% endif %}
     {% endif %}
 
   </section>

@@ -91,27 +91,41 @@ class CadavreModel extends Model
 
     public function addJoueurContribution($cadavreId, $joueurId, $text)
     {
+        // Vérifiez la taille du texte avant d'effectuer l'opération SQL
         if (!$this->checkTextSize($text)) {
-            return "La longueur du texte n'est pas bonne.";
+            $errorMessages[] = "La longueur du texte n'est pas bonne.";
+            return $errorMessages;
         }
 
-        $currentCadavreId = $this->getCurrentCadavreId();
-        $currentSubmissionOrder = $this->getCurrentSubmissionOrder();
-        $nextSubmissionOrder = $currentSubmissionOrder + 1;
+        try {
+            $currentSubmissionOrder = $this->getCurrentSubmissionOrder();
+            $nextSubmissionOrder = $currentSubmissionOrder + 1;
 
-        if ($currentCadavreId !== $cadavreId) {
-            return "Le cadavre sélectionné n'est pas valide pour cette contribution.";
+            $sql = "INSERT INTO {$this->contributiontableName} (texte_contribution, ordre_soumission, date_soumission, id_joueur, id_cadavre)
+            VALUES (:text, :nextSubmission, NOW(), :joueurId, :cadavreId)";
+            $sth = self::$dbh->prepare($sql);
+            $sth->bindParam(':text', $text);
+            $sth->bindParam(':nextSubmission', $nextSubmissionOrder);
+            $sth->bindParam(':joueurId', $joueurId);
+            $sth->bindParam(':cadavreId', $cadavreId);
+            $sth->execute();
+        } catch (\PDOException $e) {
+            // Récupérez le message d'erreur SQL ici
+            $errorMessage = $e->getMessage();
+
+            // Vérifiez si le message d'erreur contient la chaîne spécifique
+            if (strpos($errorMessage, "'uc_contributions'") !== false) {
+                $errorMessages[] = "Il y a une erreur dans l'ajout de la contribution. Il semblerait que vous avez déjà joué sur ce Cadavre Exquis ou que le cadavre est terminé.";
+            } else {
+                // Traitez les autres erreurs SQL comme nécessaire
+                $errorMessages[] = $errorMessage;
+            }
+
+            return $errorMessages;
         }
-
-        $sql = "INSERT INTO {$this->contributiontableName} (texte_contribution, ordre_soumission, date_soumission, id_joueur, id_cadavre)
-    VALUES (:text, 1, NOW(), :joueurId, :cadavreId)";
-        $sth = self::$dbh->prepare($sql);
-        $sth->bindParam(':text', $text);
-
-        $sth->bindParam(':joueurId', $joueurId);
-        $sth->bindParam(':cadavreId', $cadavreId);
-        $sth->execute();
     }
+
+
 
     public function getCurrentCadavre($role, $id)
     {
@@ -144,6 +158,7 @@ class CadavreModel extends Model
         LEFT JOIN {$this->contributiontableName} cont ON cad.id_cadavre = cont.id_cadavre
         WHERE 
             CURDATE() BETWEEN cad.date_debut_cadavre AND cad.date_fin_cadavre
+            AND cad.nb_contributions > (SELECT COUNT(cont.ordre_soumission) FROM {$this->contributiontableName} cont WHERE cont.id_cadavre = cad.id_cadavre)
         ORDER BY cad.id_cadavre, cont.ordre_soumission";
         }
 
@@ -179,16 +194,22 @@ class CadavreModel extends Model
 
     public function createCadavre($title, $dateStart, $dateEnd, $adminId, $nbMaxContributions)
     {
+        $errorMessages = [];
+
         if ($this->isTitleUnique($title)) {
-            return "Le titre n'est pas unique.";
+            $errorMessages[] = "Le titre a déjà été utilisé.";
         }
 
         if ($this->isPeriodValid($dateStart, $dateEnd)) {
-            return 'La période se chevauche avec un autre cadavre.';
+            $errorMessages[] = 'La période se chevauche avec un autre cadavre.';
         }
 
         if (!$this->isNbMaxContributionsValid($nbMaxContributions)) {
-            return 'Le nombre maximum de contributions doit être supérieur à 1.';
+            $errorMessages[] = 'Le nombre maximum de contributions doit être supérieur à 1.';
+        }
+
+        if (!empty($errorMessages)) {
+            return $errorMessages;
         }
 
         $sql = "INSERT INTO {$this->cadavretableName} (titre_cadavre, date_debut_cadavre, date_fin_cadavre, nb_contributions, nb_jaime, id_administrateur)
@@ -207,7 +228,7 @@ class CadavreModel extends Model
     public function addFirstContribution($cadavreId, $adminId, $text)
     {
         if (!$this->checkTextSize($text)) {
-            return "La longueur du texte n'est pas bonne.";
+            throw new \Exception("La longueur du texte n'est pas bonne.");
         }
 
         $sql = "INSERT INTO {$this->contributiontableName} (texte_contribution, ordre_soumission, date_soumission, id_administrateur, id_cadavre)
@@ -217,21 +238,47 @@ class CadavreModel extends Model
         $sth->bindParam(':adminId', $adminId);
         $sth->bindParam(':cadavreId', $cadavreId);
         $sth->execute();
+        return self::$dbh->lastInsertId();
+    }
+
+    public function deleteCadavreOnError($cadavreId)
+    {
+        $sql = "DELETE FROM {$this->cadavretableName} WHERE id_cadavre = :cadavreId";
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':cadavreId', $cadavreId);
+        $sth->execute();
     }
 
     public function insertCadavreContribution($datas)
     {
-        $title = $datas['title'];
-        $dateStart = $datas['dateStart'];
-        $dateEnd = $datas['dateEnd'];
-        $text = $datas['text'];
-        $adminId = $datas['adminId'];
-        $nbMaxContributions = $datas['nbMaxContributions'];
+        $messages = [
+            'errors' => [],     // Pour stocker les messages d'erreur
+            'success' => null,  // Pour stocker le message de confirmation
+        ];
 
-        $cadavreId = $this->createCadavre($title, $dateStart, $dateEnd, $adminId, $nbMaxContributions);
+        // Créer le cadavre
+        $cadavreIdOrError = $this->createCadavre($datas['title'], $datas['dateStart'], $datas['dateEnd'], $datas['adminId'], $datas['nbMaxContributions']);
 
-        $this->addFirstContribution($cadavreId, $adminId, $text);
+        if (is_array($cadavreIdOrError)) {
+            // S'il y a des erreurs avec createCadavre, ajoutez-les au tableau d'erreurs
+            $messages['errors'] = array_merge($messages['errors'], $cadavreIdOrError);
+        } else {
+            // Si createCadavre réussit, essayez d'ajouter la contribution
+            try {
+                $this->addFirstContribution($cadavreIdOrError, $datas['adminId'], $datas['text']);
+                $messages['success'] = "Le cadavre et la contribution ont été ajoutés avec succès.";
+            } catch (\Exception $e) {
+                // Attrapez l'exception de addFirstContribution et ajoutez le message d'erreur au tableau d'erreurs
+                $messages['errors'][] = $e->getMessage();
+                $this->deleteCadavreOnError($cadavreIdOrError);
+            }
+        }
+
+        return $messages;
     }
+
+
+
 
     public function getAllTitles()
     {
