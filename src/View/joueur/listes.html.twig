@@ -50,6 +50,7 @@
   </div>
 </header>
 
+{% if neverplayed is empty %}
 <section class="section__link">
   <a
     class="section__link--a"
@@ -59,6 +60,11 @@
     Dernier cadavre exquis réalisé
   </a>
 </section>
+{% else %}
+<section class="section__link">
+  <p class="section__link--p"> {{ neverplayed}} </p>
+</section>
+{% endif %}
 
 <hr />
 

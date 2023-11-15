@@ -167,6 +167,11 @@ i {
 .currentCadavre__div {
   padding: 0.5rem;
 }
+.section__link--p {
+  text-align: center;
+  color: var(--error);
+  padding: 2rem;
+}
 .section__link--a {
   width: 80%;
   margin: 3rem auto;

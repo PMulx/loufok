@@ -37,7 +37,7 @@ class ConnexionController extends Controller
 
                     if ($randomContribution === false) {
                         if ($maxOrdre >= 1) {
-                            $numContributionAleatoire = mt_rand(1, $maxOrdre);
+                            $numContributionAleatoire = mt_rand(1, (int) $maxOrdre);
 
                             // Appeler une méthode pour attribuer aléatoirement une contribution
                             $cadavreModel->assignRandomContribution($cadavre, $_SESSION['user_id'], $numContributionAleatoire);

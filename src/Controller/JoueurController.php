@@ -14,6 +14,10 @@ class JoueurController extends Controller
 {
     public function index($id)
     {
+        $neverplayed = isset($_SESSION['neverplayed']) ? $_SESSION['neverplayed'] : null;
+
+        // Supprimez les messages de confirmation de la session pour qu'ils ne soient pas affichés à nouveau
+        unset($_SESSION['neverplayed']);
         if (isset($_SESSION['role'])) {
             $role = $_SESSION['role'];
 
@@ -38,6 +42,7 @@ class JoueurController extends Controller
                 }
                 $dateActuelle = date('Y-m-d');
 
+
                 $this->display(
                     'joueur/listes.html.twig',
                     [
@@ -45,6 +50,7 @@ class JoueurController extends Controller
                         'id' => $id,
                         'idcadavre' => $idcadavre,
                         'currentCadavreContributions' => $currentCadavreContributions,
+                        'neverplayed' => $neverplayed,
                     ]
                 );
             }
@@ -147,6 +153,7 @@ class JoueurController extends Controller
                     );
                 } else {
                     HTTP::redirect("/joueur/{$id}");
+                    $_SESSION['neverplayed'] = "Vous n'avez pas encore participé à un cadavre exquis qui est maintenant clos.";
                 }
             }
         } else {
