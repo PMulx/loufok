@@ -72,25 +72,31 @@
   <h3 class="contribution__title">Cadavres exquis en cours</h3>
 
   <div class="contribution__all">
-  {% if currentCadavreContributions.data is empty %}
+    {% if currentCadavreContributions.data is empty %}
+    <!-- Si aucune fabrication de cadavre n'est en cours -->
     <p> Aucune fabrication de cadavre en cours </p>
   {% else %}
-  {% for contribution in currentCadavreContributions.data %}
-    {% if contribution.texte_contribution is null %}
-      <div class="contribution__all--div">
-      <h4> Contribution masquée </h4>
-        <span class="contribution__all-div__firstspan"> </span>
-        <span class="contribution__all-div__secondspan"> </span>
-        <span class="contribution__all-div__lastspan"> </span>
-      </div>
-    {% else %}
-    <div class="contribution__all--div">
-      <h4>Contribution n°{{ contribution.ordre_soumission }}</h4>
-      <p>{{ contribution.texte_contribution }}</p>
+    <!-- Si des contributions existent pour le cadavre actuel -->
+    <div class="contribution__all">
+        {% for contribution in currentCadavreContributions.data %}
+            {% if contribution.texte_contribution is null %}
+                <!-- Si la contribution est masquée -->
+                <div class="contribution__all--div">
+                    <h4> Contribution masquée </h4>
+                    <span class="contribution__all-div__firstspan"> </span>
+                    <span class="contribution__all-div__secondspan"> </span>
+                    <span class="contribution__all-div__lastspan"> </span>
+                </div>
+            {% else %}
+                <!-- Si la contribution est visible -->
+                <div class="contribution__all--div">
+                    <h4>Contribution n°{{ contribution.ordre_soumission }}</h4>
+                    <p>{{ contribution.texte_contribution }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
     </div>
-    {% endif %} {% endfor %}
-  </div>
-
+{% endif %} 
   {% if not currentCadavreContributions.played %}
   <form
       class="section__form"
