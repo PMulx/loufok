@@ -1,22 +1,27 @@
+/* Importation de la police de caractères depuis Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Arvo&family=Proza+Libre:wght@700&display=swap");
 
+/* Réinitialisation de la boîte du modèle pour inclure les bordures */
 * {
   box-sizing: border-box;
 }
 
+/* Définition des variables de couleur */
 :root {
-  --dark: #101a31;
-  --green: #a4fa82;
-  --unactive: #eeeff2;
-  --grey: #a6adbe;
-  --white: #fefffe;
-  --error: #fa8282;
+  --dark: #101a31; /* Couleur principale, foncée */
+  --green: #a4fa82; /* Couleur verte pour les éléments positifs */
+  --unactive: #eeeff2; /* Couleur pour les éléments inactifs */
+  --grey: #a6adbe; /* Couleur grise pour les éléments textuels */
+  --white: #fefffe; /* Couleur de fond principale, claire */
+  --error: #fa8282; /* Couleur pour les messages d'erreur */
 }
 
+/* Configuration de base du corps de la page */
 body {
   margin: 0;
 }
 
+/* Styles de police pour les titres */
 h1,
 h2,
 h3,
@@ -25,10 +30,12 @@ h4 {
   color: var(--dark);
 }
 
+/* Justification du texte dans les paragraphes */
 p {
   text-align: justify;
 }
 
+/* Styles de police pour les paragraphes, les étiquettes et les liens */
 p,
 label,
 a {
@@ -36,29 +43,35 @@ a {
   color: var(--dark);
 }
 
+/* Styles pour le texte de substitution dans les champs de saisie */
 ::placeholder {
   font-family: "Arvo", serif;
   color: var(--grey);
 }
 
+/* Ligne horizontale qui s'étend sur toute la largeur de la vue */
 hr {
   width: 100vw;
 }
 
+/* Suppression du soulignement par défaut des liens */
 a {
   text-decoration: none;
 }
 
+/* Couleur de fond principale pour le corps de la page */
 body {
   background-color: var(--white);
 }
 
+/* Styles pour les icônes génériques */
 i {
   display: block;
   width: 20px;
   height: 20px;
 }
 
+/* Styles pour les boutons désactivés */
 .button__disabled {
   display: flex;
   align-items: center;
@@ -69,6 +82,8 @@ i {
   background-color: var(--unactive);
   color: var(--grey);
 }
+
+/* Styles pour les boutons de validation */
 .button__validate {
   display: flex;
   align-items: center;
@@ -79,20 +94,28 @@ i {
   background-color: var(--green);
   color: var(--dark);
 }
+
+/* Styles pour les éléments de déconnexion */
 .disconnect {
   display: flex;
   align-items: center;
 }
+
+/* Styles pour les éléments cachés */
 .hidden {
   display: none;
 }
+
+/* Styles pour les éléments affichés */
 .show {
   display: block;
 }
+
 /* ========================= DEBUT DU CSS PAR PAGE ========================= */
 
 /* =========== SECTION 1 : LOGIN + INSCRIPTION =========== */
 
+/* Style de l'en-tête */
 .header {
   margin-top: 5rem;
   width: 100vw;
@@ -100,36 +123,50 @@ i {
   flex-direction: column;
   align-items: center;
 }
+
+/* Style du logo dans l'en-tête */
 .header__logo {
   display: flex;
   justify-content: space-evenly;
   margin: 0rem 4rem;
 }
 
+/* Style des sections de la page */
 .section {
   margin: 2rem;
 }
+
+/* Style des titres de section */
 .section__h2 {
   text-align: center;
   font-weight: 700;
 }
+
+/* Style du formulaire dans une section */
 .section__form {
   display: flex;
   flex-direction: column;
 }
 
+/* Style des champs de saisie dans le formulaire */
 .section__form input {
   margin: 1rem 0rem 2rem 0rem;
   padding: 1rem;
   border-radius: 2rem;
   border: 1px var(--grey) solid;
 }
+
+/* Style du texte de substitution dans les champs de saisie */
 .section__form input::placeholder {
   color: var(--grey) !important;
 }
+
+/* Style des champs de saisie lorsqu'ils sont en focus */
 .section__form input:focus {
   border-color: var(--green);
 }
+
+/* Style des liens dans une section */
 .section__a {
   text-align: center;
   padding: 1rem;
@@ -140,38 +177,66 @@ i {
 }
 
 /* =========== SECTION 2 : PAGE ADMIN =========== */
+/* Style de l'en-tête dans la page d'administration */
+.creaCadavre {
+  position: relative;
+  width: 100vw;
+  padding: 1rem;
+}
+.creaCadavre__h3 {
+  margin: 0px;
+  text-align: center;
+}
 .admin > .header {
   margin-top: 1rem;
 }
+
+/* Style du logo dans l'en-tête de la page d'administration */
 .admin .header__logo {
   margin: 0;
   justify-content: space-around;
 }
+
+/* Style du logo SVG dans l'en-tête de la page d'administration */
 .admin .header__logo > svg {
   width: 15%;
 }
+
+/* Style de la taille du texte du logo dans l'en-tête de la page d'administration */
 .admin .header__logo span {
   font-size: 2rem;
 }
+
+/* Style du titre du cadavre actuel */
 .currentCadavre__title {
   text-align: center;
 }
+
+/* Style du conteneur du titre du cadavre actuel */
 .currentCadavre__div--title {
   margin: 0px;
   text-align: end;
 }
+
+/* Style du paragraphe du cadavre actuel */
 .currentCadavre__div--p {
   margin: 0px;
   text-align: justify;
 }
+
+/* Style du conteneur du cadavre actuel */
 .currentCadavre__div {
   padding: 0.5rem;
 }
+
+/* Style du paragraphe du lien dans une section */
 .section__link--p {
   text-align: center;
   color: var(--error);
   padding: 2rem;
 }
+
+/* Style du lien dans une section */
 .section__link--a {
   width: 80%;
   margin: 3rem auto;
@@ -185,111 +250,121 @@ i {
   display: block;
   font-size: 0.9rem;
 }
-.cadavres {
-  margin: 0rem 2rem;
-}
-.cadavres__pres {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.cadavres__pres--a {
-  text-align: center;
-  padding: 0.5rem 1.5rem;
-  border-radius: 2rem;
-  border: none;
-  background-color: var(--green);
-  font-weight: 600;
-  display: block;
-}
-/* CALENDRIER */
+
+/* Style du calendrier */
 #calendar {
   margin: 1rem 0rem;
 }
+
+/* Style de la barre d'outils du calendrier */
 .fc .fc-toolbar {
   align-items: end;
 }
+
+/* Style du titre de la barre d'outils du calendrier */
 .fc-toolbar-title {
   text-transform: capitalize;
   font-size: 1.5rem !important;
 }
+
+/* Style des bordures du calendrier */
 .fc-theme-standard .fc-scrollgrid,
 .fc-theme-standard td,
 .fc-theme-standard th {
   border-color: var(--dark);
 }
+
+/* Style du numéro du jour dans le calendrier */
 .fc .fc-daygrid-day-number {
   color: var(--dark);
 }
-.creaCadavre {
-  position: relative;
-  width: 100vw;
-  padding: 1rem;
-}
-.creaCadavre__h3 {
-  margin: 0px;
-  text-align: center;
-}
+
+/* Style du formulaire de sélection de dates */
 .form__date {
   display: flex;
   justify-content: space-around;
 }
+
+/* Style du formulaire pour la date de début et de fin */
 .form__date--debut,
 .form__date--fin {
   margin-top: 1rem;
   display: flex;
   flex-direction: column;
 }
+
+/* Style du label du formulaire pour la date de début et de fin */
 .form__date--debut label,
 .form__date--fin label {
   color: var(--grey);
   text-align: center;
 }
+
+/* Style de l'entrée du formulaire pour la date de début et de fin */
 .form__date--debut input,
 .form__date--fin input {
   margin: 0.2rem 0 2rem;
 }
+
+/* Style de la zone de texte dans le formulaire */
 .section__form textarea {
   margin: 1rem 0 0;
   padding: 1rem;
   border-radius: 2rem 2rem 0rem 2rem;
   height: 10rem;
 }
+
+/* Style du compteur de caractères dans la zone de texte */
 #compteur {
   text-align: end;
 }
 
 /* =========== SECTION 2 : PAGE JOUEUR =========== */
+/* Style de la section "lastcadavre" */
 .lastcadavre {
   margin: 1rem;
 }
+
+/* Style du titre dans la section "lastcadavre" */
 .lastcadavre__title {
   text-align: center;
   margin-bottom: 3rem;
 }
+
+/* Style du paragraphe dans la section "lastcadavre" */
 .lastcadavre__p {
   text-align: justify;
 }
+
+/* Style des informations sur les auteurs dans la section "lastcadavre" */
 .lastcadavre__writers {
   margin-top: 3rem;
   font-size: 0.9rem;
   font-style: italic;
   text-align: start;
 }
+
+/* Style des contributions individuelles */
 .contribution {
   position: relative;
   margin: 2rem 2rem;
 }
+
+/* Style du message d'erreur pour une contribution invalide */
 .contribution__msg {
   position: absolute;
   top: -2.5rem;
   color: rgb(249, 85, 85);
   font-weight: 700;
 }
+
+/* Style du titre d'une contribution */
 .contribution__title {
   text-align: center;
   font-weight: 700;
 }
+
+/* Style des séparateurs entre les contributions */
 .contribution__all-div__firstspan,
 .contribution__all-div__secondspan {
   height: 0.05rem;
@@ -297,12 +372,16 @@ i {
   background-color: var(--dark);
   margin: 0.5rem 0rem;
 }
+
+/* Style du dernier séparateur entre les contributions */
 .contribution__all-div__lastspan {
   height: 0.05rem;
   width: 40%;
   background-color: var(--dark);
   margin: 0.5rem 0rem;
 }
+
+/* Style du conteneur pour toutes les contributions */
 .contribution__all--div {
   display: flex;
   flex-wrap: wrap;
@@ -312,37 +391,47 @@ i {
   border: 1px var(--grey) solid;
   margin: 1rem 0rem;
 }
+
+/* Style des titres et paragraphes dans le conteneur des contributions */
 .contribution__all--div h4,
 .contribution__all--div p {
   margin: 0.5rem 0rem;
 }
+
+/* Style des icônes matériel dans les contributions */
 .material-icons {
   text-align: end;
 }
+
+/* Style du titre dans le conteneur d'une contribution */
 .contribution__div--title {
   margin: 0;
 }
+
+/* Style du texte dans le conteneur d'une contribution */
 .contribution__div--txt {
   margin-bottom: 0;
   border-top: 1px solid var(--grey);
   padding-top: 1rem;
   width: 100%;
 }
+
+/* Style de la zone de texte dans le formulaire de contribution */
 .contribution .section__form textarea {
   margin-bottom: 2rem;
 }
+
+/* Style du numéro de la contribution */
 .num__contribution {
   font-weight: 800;
 }
-.input-group {
-  display: flex;
 
-  align-items: center;
-}
-
+/* Style de l'espacement des boutons radio et des étiquettes dans les formulaires */
 input {
   margin-right: 5px;
 }
+
+/* Style de la popup de validation */
 .popupValidate {
   text-align: center;
   height: fit-content;
@@ -354,27 +443,35 @@ input {
   top: 100px;
   padding: 25px;
   width: 80%;
-
-  /* Propriétés de la transition */
-  opacity: 0; /* La popup commence transparente */
-  transition: opacity 0.5s ease-in-out; /* Propriétés de la transition */
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
 }
+
+/* Style du texte dans la popup de validation */
 .popupValidate p {
   color: var(--green);
   font-size: 1.2rem;
   text-align: center;
 }
+
+/* Style de l'icône dans la popup de validation */
 .popupValidate svg {
   height: 80px;
   width: auto;
   color: var(--green);
 }
+
+/* Style de la popup de validation visible */
 .popupValidate.show {
-  opacity: 1; /* L'opacité devient 1 pour montrer la popup */
+  opacity: 1;
 }
+
+/* Style de la classe d'affichage 'none' */
 .d-none {
   display: none;
 }
+
+/* Style de la popup d'erreur */
 .popupError {
   text-align: center;
   height: fit-content;
@@ -387,11 +484,15 @@ input {
   padding: 25px;
   width: 80%;
 }
+
+/* Style du texte dans la popup d'erreur */
 .popupError p {
   color: var(--error);
   font-size: 1.2rem;
   text-align: center;
 }
+
+/* Style de l'icône dans la popup d'erreur */
 .popupError svg {
   height: 80px;
   width: auto;
