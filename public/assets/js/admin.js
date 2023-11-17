@@ -217,7 +217,7 @@
       moisDuJour === moisDebut &&
       jourDuJour === jourDebut
     ) {
-      return "error"; // Date de début égale à la date du jour, renvoyer une erreur
+      return "ok"; // Date de début égale à la date du jour, renvoyer une erreur
     } else if (App.dateDebutValue < App.dateDuJour) {
       App.DOM.messageErreur.textContent =
         "La date de début ne peut pas être antérieure à la date du jour.";

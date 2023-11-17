@@ -156,6 +156,7 @@ class AdministrateurController extends Controller
                 );
             } else {
                 $_SESSION['confirmMessages'] = $confirmMessages;
+                $_SESSION['notifications'] = "Un nouveau cadavre exquis vient d'être crée.";
 
                 HTTP::redirect("/administrateur/{$id}");
             }

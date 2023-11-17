@@ -1,6 +1,6 @@
 # Projet "loufok" - Jeu du Cadavre Exquis
 
-Par Murail Anthonin.
+Par Murail Anthonin et Cantet Alexis.
 
 ## Description
 

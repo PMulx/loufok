@@ -20,6 +20,13 @@ class ConnexionController extends Controller
         // Crée une instance de CadavreModel
         $cadavreModel = new CadavreModel();
 
+        $notifications = isset($_SESSION['notifications']) ? $_SESSION['notifications'] : null;
+
+        // Supprime les messages de confirmation de la session pour éviter qu'ils ne soient affichés à nouveau
+        unset($_SESSION['notifications']);
+
+        $notifications = "Un cadavre exquis vient de se créer ! ";
+
         // Initialise le message d'erreur à null
         $errorMessage = null;
 
@@ -80,11 +87,13 @@ class ConnexionController extends Controller
                 $errorMessage = 'Adresse e-mail ou mot de passe incorrect.';
             }
         }
-
         // Affiche la page de connexion avec le message d'erreur éventuel
         $this->display(
             'connexion/index.html.twig',
-            ['errorMessage' => $errorMessage ?? null]
+            [
+                'errorMessage' => $errorMessage ?? null,
+                'notifications' => $notifications
+            ]
         );
     }
 

@@ -103,7 +103,7 @@ i {
 
 /* Styles pour les éléments cachés */
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* Styles pour les éléments affichés */

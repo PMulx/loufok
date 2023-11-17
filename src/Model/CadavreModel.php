@@ -4,10 +4,10 @@ namespace App\Model;
 
 class CadavreModel extends Model
 {
-    protected $cadavretableName = APP_TABLE_PREFIX.'cadavre';
-    protected $contributiontableName = APP_TABLE_PREFIX.'contribution';
-    protected $randomcontributiontableName = APP_TABLE_PREFIX.'contribution_aléatoire';
-    protected $joueurtableName = APP_TABLE_PREFIX.'joueur';
+    protected $cadavretableName = APP_TABLE_PREFIX . 'cadavre';
+    protected $contributiontableName = APP_TABLE_PREFIX . 'contribution';
+    protected $randomcontributiontableName = APP_TABLE_PREFIX . 'contribution_aléatoire';
+    protected $joueurtableName = APP_TABLE_PREFIX . 'joueur';
 
     protected static $instance;
 
