@@ -136,109 +136,37 @@ class JoueurAdministrateurModel extends Model
         }
     }
 
+    /**
+     * Récupère les informations complètes d'un cadavre spécifique, y compris ses contributions et les noms d'auteurs.
+     *
+     * @param int $id L'identifiant du joueur pour lequel obtenir les informations du cadavre
+     *
+     * @return array|null un tableau contenant les informations complètes du cadavre ou null si l'id_cadavre est invalide ou inexistant
+     */
     public function getCompleteCadavreInfo($id)
     {
-        // Utilisez la méthode getLastFinishedCadavre pour obtenir l'id_cadavre
+        // Étape 1: Utiliser la méthode getLastFinishedCadavre pour obtenir l'id_cadavre
         $id_cadavre = $this->getLastFinishedCadavre($id);
 
-        // Si vous obtenez un id_cadavre valide, vous pouvez récupérer les informations souhaitées
+        // Étape 2: Si vous obtenez un id_cadavre valide, récupérez les informations souhaitées
         if ($id_cadavre) {
+            // Requête SQL pour récupérer les informations complètes du cadavre et de ses contributions
             $sql = "SELECT c.*, co.*, IFNULL(j.nom_plume, 'Administrateur') AS nom_plume
                 FROM {$this->tableCadavre} c
                 JOIN {$this->tableContribution} co ON c.id_cadavre = co.id_cadavre
                 LEFT JOIN {$this->tableJoueur} j ON co.id_joueur = j.id_joueur
                 WHERE c.id_cadavre = :id_cadavre";
 
+            // Préparer et exécuter la requête SQL
             $sth = self::$dbh->prepare($sql);
             $sth->bindParam(':id_cadavre', $id_cadavre);
             $sth->execute();
 
-            // Vous obtiendrez un ensemble de résultats avec toutes les informations souhaitées
+            // Étape 3: Vous obtiendrez un ensemble de résultats avec toutes les informations souhaitées
             return $sth->fetchAll();
         } else {
-            // Traitez le cas où l'id_cadavre est nul ou inexistant
+            // Étape 4: Traitez le cas où l'id_cadavre est nul ou inexistant
             return null;
         }
-    }
-
-    /**
-     * Insère un nouveau cadavre dans la base de données.
-     *
-     * Cette méthode prend en paramètre les informations nécessaires pour créer un nouveau cadavre dans la base de données,
-     * y compris le titre, la date de début, la date de fin, le nombre prévu de contributions, le nombre initial de "J'aime"
-     * et l'ID de l'administrateur associé. Elle utilise une requête SQL d'insertion pour ajouter ces informations à la table
-     * des cadavres. Après l'insertion, elle récupère l'ID du cadavre nouvellement inséré à l'aide de la méthode
-     * lastInsertId() et le retourne.
-     *
-     * @param string $titre           le titre du cadavre
-     * @param string $dateDebut       la date de début du cadavre
-     * @param string $dateFin         la date de fin du cadavre
-     * @param int    $nbContributions le nombre de contributions prévu
-     * @param int    $nbJaime         le nombre initial de "J'aime"
-     * @param int    $id              L'ID de l'administrateur associé
-     *
-     * @return int L'ID du cadavre inséré
-     */
-    public function insertCadavre($titre, $dateDebut, $dateFin, $nbContributions, $nbJaime, $id)
-    {
-        // Définit la requête SQL pour insérer un nouveau cadavre dans la base de données.
-        $sql = 'INSERT INTO cadavre (titre_cadavre, date_debut_cadavre, date_fin_cadavre, nb_contributions, nb_jaime, id_administrateur)
-                    VALUES (:titre, :dateDebut, :dateFin, :nbContributions, :nbJaime, :id)';
-
-        // Prépare la requête SQL avec la connexion à la base de données.
-        $sth = self::$dbh->prepare($sql);
-
-        // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
-        $sth->bindParam(':titre', $titre);
-        $sth->bindParam(':dateDebut', $dateDebut);
-        $sth->bindParam(':dateFin', $dateFin);
-        $sth->bindParam(':nbContributions', $nbContributions);
-        $sth->bindParam(':nbJaime', $nbJaime);
-        $sth->bindParam(':id', $id);
-
-        // Exécute la requête SQL.
-        $sth->execute();
-
-        // Récupère l'ID du cadavre nouvellement inséré.
-        $idCadavre = self::$dbh->lastInsertId();
-
-        // Retourne l'ID du cadavre nouvellement inséré.
-        return $idCadavre;
-    }
-
-    /**
-     * Ajoute une nouvelle contribution à un cadavre.
-     *
-     * Cette méthode prend en paramètre le texte de la contribution, l'ID de l'administrateur contributeur et l'ID du cadavre
-     * auquel la contribution sera ajoutée. Elle utilise une requête SQL d'insertion pour ajouter ces informations à la table
-     * des contributions. Les paramètres tels que l'ordre de soumission et la date de soumission sont définis à l'intérieur
-     * de la méthode. Cette méthode est utilisée pour enrichir un cadavre avec de nouvelles contributions.
-     *
-     * @param string $texteContribution le texte de la contribution
-     * @param int    $idAdmin           L'ID de l'administrateur contributeur
-     * @param int    $idCadavre         L'ID du cadavre auquel contribuer
-     */
-    public function addContribution($texteContribution, $idAdmin, $idCadavre)
-    {
-        // Définit l'ordre de soumission à 1 et la date de soumission à la date actuelle.
-        $ordreSoumission = 1;
-        $dateSoumission = date('Y-m-d');
-
-        // Définit la requête SQL pour ajouter une nouvelle contribution à un cadavre dans la base de données.
-        $sqlContribution = 'INSERT INTO contribution (texte_contribution, ordre_soumission, date_soumission, id_administrateur, id_cadavre)
-                VALUES (:texteContribution, :ordreSoumission, :dateSoumission, :idAdmin, :idCadavre)';
-
-        // Prépare la requête SQL avec la connexion à la base de données.
-        $sthContribution = self::$dbh->prepare($sqlContribution);
-
-        // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
-        $sthContribution->bindParam(':texteContribution', $texteContribution);
-        $sthContribution->bindParam(':ordreSoumission', $ordreSoumission);
-        $sthContribution->bindParam(':dateSoumission', $dateSoumission);
-        $sthContribution->bindParam(':idAdmin', $idAdmin);
-        $sthContribution->bindParam(':idCadavre', $idCadavre);
-
-        // Exécute la requête SQL.
-        $sthContribution->execute();
     }
 }

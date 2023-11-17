@@ -12,23 +12,109 @@ class CadavreModel extends Model
     protected static $instance;
 
     /**
-     * Vérifie si la taille du texte est conforme aux limites définies.
+     * Méthode statique pour obtenir une instance unique de la classe.
      *
-     * Cette méthode prend en paramètre un texte et vérifie sa longueur.
-     * Le texte doit avoir une longueur d'au moins 50 caractères et ne pas dépasser 280 caractères,
-     * conformément aux limites généralement associées à des champs de texte, tels que les messages.
+     * Cette méthode implémente le modèle de conception Singleton, assurant qu'il n'y a qu'une seule instance
+     * de la classe actuelle. Si aucune instance n'existe, elle en crée une et la retourne.
      *
-     * @param string $text le texte à vérifier
-     *
-     * @return bool true si la taille du texte est valide, sinon false
+     * @return joueurAdministrateurModel L'instance unique de la classe actuelle
      */
-    protected function checkTextSize($text)
+    public static function getInstance()
     {
-        // Obtient la longueur du texte.
-        $textLength = strlen($text);
+        // Vérifie si une instance de la classe existe déjà.
+        if (!isset(self::$instance)) {
+            // Si aucune instance n'existe, crée une nouvelle instance de la classe.
+            self::$instance = new self();
+        }
 
-        // Vérifie si la longueur du texte est comprise entre 50 et 280 caractères inclus.
-        return $textLength >= 50 && $textLength <= 280;
+        // Retourne l'instance existante ou nouvellement créée de la classe actuelle.
+        return self::$instance;
+    }
+
+    /**
+     * Obtient les informations du cadavre en cours pour un utilisateur donné.
+     *
+     * Cette méthode prend en paramètre le rôle de l'utilisateur ('administrateur' ou 'joueur') ainsi que son ID.
+     * En fonction du rôle, elle exécute une requête SQL pour récupérer les contributions actuelles pour un administrateur
+     * ou les contributions disponibles pour un joueur. Elle retourne un tableau contenant les données récupérées
+     * ainsi qu'un indicateur indiquant si le joueur a déjà participé.
+     *
+     * @param string $role le rôle de l'utilisateur ('administrateur' ou 'joueur')
+     * @param int    $id   L'ID de l'utilisateur
+     *
+     * @return array tableau contenant les données du cadavre et un indicateur si le joueur a déjà participé
+     */
+    public function getCurrentCadavre($role, $id)
+    {
+        // Initialise les variables.
+        $id_joueur = $id;
+        $alreadyPlayed = false;
+
+        // Définit les requêtes SQL en fonction du rôle de l'utilisateur.
+        if ($role === 'administrateur') {
+            $sql = "SELECT
+                    CASE
+                        WHEN c.id_joueur IS NOT NULL THEN j.nom_plume
+                        ELSE 'Administrateur'
+                    END AS nom_plume,
+                    c.texte_contribution,
+                    c.ordre_soumission,
+                    ca.titre_cadavre
+                FROM {$this->contributiontableName} c
+                LEFT JOIN {$this->cadavretableName} ca ON c.id_cadavre = ca.id_cadavre
+                LEFT JOIN {$this->joueurtableName} j ON c.id_joueur = j.id_joueur
+                WHERE ca.date_debut_cadavre <= CURDATE() AND ca.date_fin_cadavre >= CURDATE()
+                AND :role = 'administrateur'";
+        } elseif ($role === 'joueur') {
+            $sql = "SELECT 
+            CASE 
+                WHEN cont.id_joueur = :id_joueur THEN cont.texte_contribution
+                WHEN cr.num_contribution = cont.ordre_soumission THEN cont.texte_contribution
+                ELSE NULL
+            END AS texte_contribution,
+            cont.ordre_soumission
+        FROM {$this->cadavretableName} cad
+        LEFT JOIN {$this->randomcontributiontableName} cr ON cad.id_cadavre = cr.id_cadavre AND cr.id_joueur = :id_joueur
+        LEFT JOIN {$this->contributiontableName} cont ON cad.id_cadavre = cont.id_cadavre
+        WHERE 
+            CURDATE() BETWEEN cad.date_debut_cadavre AND cad.date_fin_cadavre
+            AND cad.nb_contributions > (SELECT COUNT(cont.ordre_soumission) FROM {$this->contributiontableName} cont WHERE cont.id_cadavre = cad.id_cadavre)
+        ORDER BY cad.id_cadavre, cont.ordre_soumission";
+        }
+
+        // Prépare la requête SQL avec la connexion à la base de données.
+        $sth = self::$dbh->prepare($sql);
+
+        // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
+        $sth->bindParam(':role', $role);
+
+        if ($role === 'joueur') {
+            $sth->bindParam(':id_joueur', $id_joueur);
+            $playedContributions = 0;
+
+            // Exécute la requête SQL et compte les contributions déjà jouées par le joueur.
+            $sth->execute();
+
+            while ($row = $sth->fetch()) {
+                if ($row['texte_contribution'] !== null) {
+                    ++$playedContributions;
+                }
+            }
+
+            // Met à jour l'indicateur si le joueur a déjà joué deux contributions.
+            if ($playedContributions === 2) {
+                $alreadyPlayed = true;
+            }
+        }
+
+        // Exécute la requête SQL.
+        $sth->execute();
+
+        // Retourne un tableau avec les données du cadavre et l'indicateur de participation.
+        return [
+            'data' => $sth->fetchAll(),
+            'played' => $alreadyPlayed,
+        ];
     }
 
     /**
@@ -120,23 +206,47 @@ class CadavreModel extends Model
     }
 
     /**
-     * Méthode statique pour obtenir une instance unique de la classe.
+     * Vérifie si la taille du texte est conforme aux limites définies.
      *
-     * Cette méthode implémente le modèle de conception Singleton, assurant qu'il n'y a qu'une seule instance
-     * de la classe actuelle. Si aucune instance n'existe, elle en crée une et la retourne.
+     * Cette méthode prend en paramètre un texte et vérifie sa longueur.
+     * Le texte doit avoir une longueur d'au moins 50 caractères et ne pas dépasser 280 caractères,
+     * conformément aux limites fixés préalablement.
      *
-     * @return joueurAdministrateurModel L'instance unique de la classe actuelle
+     * @param string $text le texte à vérifier
+     *
+     * @return bool true si la taille du texte est valide, sinon false
      */
-    public static function getInstance()
+    protected function checkTextSize($text)
     {
-        // Vérifie si une instance de la classe existe déjà.
-        if (!isset(self::$instance)) {
-            // Si aucune instance n'existe, crée une nouvelle instance de la classe.
-            self::$instance = new self();
+        // Obtient la longueur du texte.
+        $textLength = strlen($text);
+
+        // Vérifie si la longueur du texte est comprise entre 50 et 280 caractères inclus.
+        return $textLength >= 50 && $textLength <= 280;
+    }
+
+    /**
+     * Méthode pour obtenir l'ID du cadavre en cours à la date actuelle.
+     *
+     * @return string|null - Retourne l'ID du cadavre actuel en tant que chaîne, ou null s'il n'y a pas de cadavre en cours
+     */
+    public function getCurrentCadavreId()
+    {
+        $sql = "SELECT c.id_cadavre
+            FROM {$this->cadavretableName} c
+            WHERE CURDATE() BETWEEN c.date_debut_cadavre AND c.date_fin_cadavre  AND c.nb_contributions > (SELECT COUNT(co.ordre_soumission) FROM {$this->contributiontableName} co WHERE co.id_cadavre = c.id_cadavre)";
+        $sth = self::$dbh->prepare($sql);
+        $sth->execute();
+        $result = $sth->fetch();
+
+        // Vérifiez si le résultat est un tableau non vide et que 'id_cadavre' est numérique
+        if ($result && is_array($result) && is_numeric($result['id_cadavre'])) {
+            // Retournez l'ID de cadavre en tant que chaîne
+            return (string) $result['id_cadavre'];
         }
 
-        // Retourne l'instance existante ou nouvellement créée de la classe actuelle.
-        return self::$instance;
+        // Si le résultat n'est pas conforme aux attentes, vous pouvez renvoyer null ou effectuer d'autres actions appropriées
+        return null;
     }
 
     /**
@@ -169,8 +279,8 @@ class CadavreModel extends Model
             $sth = self::$dbh->prepare($sql);
 
             // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
-            $sth->bindParam(':id_cadavre', $id_cadavre, \PDO::PARAM_INT);
-            $sth->bindParam(':id_joueur', $id_joueur, \PDO::PARAM_INT);
+            $sth->bindParam(':id_cadavre', $id_cadavre);
+            $sth->bindParam(':id_joueur', $id_joueur);
 
             // Exécute la requête SQL.
             $sth->execute();
@@ -186,6 +296,13 @@ class CadavreModel extends Model
         return null;
     }
 
+    /**
+     * Méthode pour attribuer une contribution aléatoire à un joueur pour un cadavre donné.
+     *
+     * @param int $id_cadavre               - L'ID du cadavre auquel la contribution est attribuée
+     * @param int $id_joueur                - L'ID du joueur à qui la contribution est attribuée
+     * @param int $numContributionAleatoire - Le numéro de la contribution attribuée de manière aléatoire
+     */
     public function assignRandomContribution($id_cadavre, $id_joueur, $numContributionAleatoire)
     {
         // Insérer la contribution aléatoire dans la base de données
@@ -195,25 +312,6 @@ class CadavreModel extends Model
         $sth->bindParam(':id_cadavre', $id_cadavre);
         $sth->bindParam(':num_contribution', $numContributionAleatoire);
         $sth->execute();
-    }
-
-    public function getCurrentCadavreId()
-    {
-        $sql = "SELECT c.id_cadavre
-            FROM {$this->cadavretableName} c
-            WHERE CURDATE() BETWEEN c.date_debut_cadavre AND c.date_fin_cadavre  AND c.nb_contributions > (SELECT COUNT(co.ordre_soumission) FROM {$this->contributiontableName} co WHERE co.id_cadavre = c.id_cadavre)";
-        $sth = self::$dbh->prepare($sql);
-        $sth->execute();
-        $result = $sth->fetch();
-
-        // Vérifiez si le résultat est un tableau non vide et que 'id_cadavre' est numérique
-        if ($result && is_array($result) && is_numeric($result['id_cadavre'])) {
-            // Retournez l'ID de cadavre en tant que chaîne
-            return (string) $result['id_cadavre'];
-        }
-
-        // Si le résultat n'est pas conforme aux attentes, vous pouvez renvoyer null ou effectuer d'autres actions appropriées
-        return null;
     }
 
     /**
@@ -325,92 +423,6 @@ class CadavreModel extends Model
 
         // Retourne null si l'opération a réussi sans erreurs.
         return null;
-    }
-
-    /**
-     * Obtient les informations du cadavre en cours pour un utilisateur donné.
-     *
-     * Cette méthode prend en paramètre le rôle de l'utilisateur ('administrateur' ou 'joueur') ainsi que son ID.
-     * En fonction du rôle, elle exécute une requête SQL pour récupérer les contributions actuelles pour un administrateur
-     * ou les contributions disponibles pour un joueur. Elle retourne un tableau contenant les données récupérées
-     * ainsi qu'un indicateur indiquant si le joueur a déjà participé.
-     *
-     * @param string $role le rôle de l'utilisateur ('administrateur' ou 'joueur')
-     * @param int    $id   L'ID de l'utilisateur
-     *
-     * @return array tableau contenant les données du cadavre et un indicateur si le joueur a déjà participé
-     */
-    public function getCurrentCadavre($role, $id)
-    {
-        // Initialise les variables.
-        $id_joueur = $id;
-        $alreadyPlayed = false;
-
-        // Définit les requêtes SQL en fonction du rôle de l'utilisateur.
-        if ($role === 'administrateur') {
-            $sql = "SELECT
-                    CASE
-                        WHEN c.id_joueur IS NOT NULL THEN j.nom_plume
-                        ELSE 'Administrateur'
-                    END AS nom_plume,
-                    c.texte_contribution,
-                    c.ordre_soumission,
-                    ca.titre_cadavre
-                FROM {$this->contributiontableName} c
-                LEFT JOIN {$this->cadavretableName} ca ON c.id_cadavre = ca.id_cadavre
-                LEFT JOIN {$this->joueurtableName} j ON c.id_joueur = j.id_joueur
-                WHERE ca.date_debut_cadavre <= CURDATE() AND ca.date_fin_cadavre >= CURDATE()
-                AND :role = 'administrateur'";
-        } elseif ($role === 'joueur') {
-            $sql = "SELECT 
-            CASE 
-                WHEN cont.id_joueur = :id_joueur THEN cont.texte_contribution
-                WHEN cr.num_contribution = cont.ordre_soumission THEN cont.texte_contribution
-                ELSE NULL
-            END AS texte_contribution,
-            cont.ordre_soumission
-        FROM {$this->cadavretableName} cad
-        LEFT JOIN {$this->randomcontributiontableName} cr ON cad.id_cadavre = cr.id_cadavre AND cr.id_joueur = :id_joueur
-        LEFT JOIN {$this->contributiontableName} cont ON cad.id_cadavre = cont.id_cadavre
-        WHERE 
-            CURDATE() BETWEEN cad.date_debut_cadavre AND cad.date_fin_cadavre
-            AND cad.nb_contributions > (SELECT COUNT(cont.ordre_soumission) FROM {$this->contributiontableName} cont WHERE cont.id_cadavre = cad.id_cadavre)
-        ORDER BY cad.id_cadavre, cont.ordre_soumission";
-        }
-
-        // Prépare la requête SQL avec la connexion à la base de données.
-        $sth = self::$dbh->prepare($sql);
-
-        // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
-        $sth->bindParam(':role', $role);
-
-        if ($role === 'joueur') {
-            $sth->bindParam(':id_joueur', $id_joueur);
-            $playedContributions = 0;
-
-            // Exécute la requête SQL et compte les contributions déjà jouées par le joueur.
-            $sth->execute();
-
-            while ($row = $sth->fetch()) {
-                if ($row['texte_contribution'] !== null) {
-                    ++$playedContributions;
-                }
-            }
-
-            // Met à jour l'indicateur si le joueur a déjà joué deux contributions.
-            if ($playedContributions === 2) {
-                $alreadyPlayed = true;
-            }
-        }
-
-        // Exécute la requête SQL.
-        $sth->execute();
-
-        // Retourne un tableau avec les données du cadavre et l'indicateur de participation.
-        return [
-            'data' => $sth->fetchAll(),
-            'played' => $alreadyPlayed,
-        ];
     }
 
     /**
@@ -538,31 +550,51 @@ class CadavreModel extends Model
         $sth->execute();
     }
 
+    /**
+     * Insère un nouveau cadavre et sa première contribution dans la base de données.
+     *
+     * @param array $datas les données nécessaires pour créer le cadavre et la contribution
+     *
+     * @return array Tableau contenant des messages de succès et d'erreur.
+     *               - 'errors': Tableau des messages d'erreur.
+     *               - 'success': Message de confirmation en cas de succès, sinon null.
+     */
     public function insertCadavreContribution($datas)
     {
+        // Tableau pour stocker les messages de succès et d'erreur
         $messages = [
             'errors' => [],     // Pour stocker les messages d'erreur
             'success' => null,  // Pour stocker le message de confirmation
         ];
 
-        // Créer le cadavre
-        $cadavreIdOrError = $this->createCadavre($datas['title'], $datas['dateStart'], $datas['dateEnd'], $datas['adminId'], $datas['nbMaxContributions']);
+        // Étape 1: Créer le cadavre
+        $cadavreIdOrError = $this->createCadavre(
+            $datas['title'],
+            $datas['dateStart'],
+            $datas['dateEnd'],
+            $datas['adminId'],
+            $datas['nbMaxContributions']
+        );
 
+        // Vérifier si createCadavre a renvoyé des erreurs
         if (is_array($cadavreIdOrError)) {
             // S'il y a des erreurs avec createCadavre, ajoutez-les au tableau d'erreurs
             $messages['errors'] = array_merge($messages['errors'], $cadavreIdOrError);
         } else {
-            // Si createCadavre réussit, essayez d'ajouter la contribution
+            // Étape 2: Ajouter la première contribution au cadavre
             try {
                 $this->addFirstContribution($cadavreIdOrError, $datas['adminId'], $datas['text']);
+                // Si l'ajout réussit, enregistrez un message de succès
                 $messages['success'] = 'Le cadavre et la contribution ont été ajoutés avec succès.';
             } catch (\Exception $e) {
                 // Attrapez l'exception de addFirstContribution et ajoutez le message d'erreur au tableau d'erreurs
                 $messages['errors'][] = $e->getMessage();
+                // En cas d'erreur, supprimez le cadavre ajouté
                 $this->deleteCadavreOnError($cadavreIdOrError);
             }
         }
 
+        // Renvoyer le tableau de messages
         return $messages;
     }
 
