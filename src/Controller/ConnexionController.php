@@ -25,8 +25,6 @@ class ConnexionController extends Controller
         // Supprime les messages de confirmation de la session pour éviter qu'ils ne soient affichés à nouveau
         unset($_SESSION['notifications']);
 
-        $notifications = "Un cadavre exquis vient de se créer ! ";
-
         // Initialise le message d'erreur à null
         $errorMessage = null;
 
