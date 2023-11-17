@@ -4,10 +4,10 @@ namespace App\Model;
 
 class JoueurAdministrateurModel extends Model
 {
-    protected $tableAdminstrateur = APP_TABLE_PREFIX.'administrateur';
-    protected $tableJoueur = APP_TABLE_PREFIX.'joueur';
-    protected $tableContribution = APP_TABLE_PREFIX.'contribution';
-    protected $tableCadavre = APP_TABLE_PREFIX.'cadavre';
+    protected $tableAdminstrateur = APP_TABLE_PREFIX . 'administrateur';
+    protected $tableJoueur = APP_TABLE_PREFIX . 'joueur';
+    protected $tableContribution = APP_TABLE_PREFIX . 'contribution';
+    protected $tableCadavre = APP_TABLE_PREFIX . 'cadavre';
     protected static $instance;
 
     /**
@@ -159,51 +159,6 @@ class JoueurAdministrateurModel extends Model
             // Traitez le cas où l'id_cadavre est nul ou inexistant
             return null;
         }
-    }
-
-    /**
-     * Insère un nouveau cadavre dans la base de données.
-     *
-     * Cette méthode prend en paramètre les informations nécessaires pour créer un nouveau cadavre dans la base de données,
-     * y compris le titre, la date de début, la date de fin, le nombre prévu de contributions, le nombre initial de "J'aime"
-     * et l'ID de l'administrateur associé. Elle utilise une requête SQL d'insertion pour ajouter ces informations à la table
-     * des cadavres. Après l'insertion, elle récupère l'ID du cadavre nouvellement inséré à l'aide de la méthode
-     * lastInsertId() et le retourne.
-     *
-     * @param string $titre           le titre du cadavre
-     * @param string $dateDebut       la date de début du cadavre
-     * @param string $dateFin         la date de fin du cadavre
-     * @param int    $nbContributions le nombre de contributions prévu
-     * @param int    $nbJaime         le nombre initial de "J'aime"
-     * @param int    $id              L'ID de l'administrateur associé
-     *
-     * @return int L'ID du cadavre inséré
-     */
-    public function insertCadavre($titre, $dateDebut, $dateFin, $nbContributions, $nbJaime, $id)
-    {
-        // Définit la requête SQL pour insérer un nouveau cadavre dans la base de données.
-        $sql = 'INSERT INTO cadavre (titre_cadavre, date_debut_cadavre, date_fin_cadavre, nb_contributions, nb_jaime, id_administrateur)
-                    VALUES (:titre, :dateDebut, :dateFin, :nbContributions, :nbJaime, :id)';
-
-        // Prépare la requête SQL avec la connexion à la base de données.
-        $sth = self::$dbh->prepare($sql);
-
-        // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
-        $sth->bindParam(':titre', $titre);
-        $sth->bindParam(':dateDebut', $dateDebut);
-        $sth->bindParam(':dateFin', $dateFin);
-        $sth->bindParam(':nbContributions', $nbContributions);
-        $sth->bindParam(':nbJaime', $nbJaime);
-        $sth->bindParam(':id', $id);
-
-        // Exécute la requête SQL.
-        $sth->execute();
-
-        // Récupère l'ID du cadavre nouvellement inséré.
-        $idCadavre = self::$dbh->lastInsertId();
-
-        // Retourne l'ID du cadavre nouvellement inséré.
-        return $idCadavre;
     }
 
     /**
