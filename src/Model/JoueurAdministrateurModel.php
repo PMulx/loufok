@@ -160,40 +160,4 @@ class JoueurAdministrateurModel extends Model
             return null;
         }
     }
-
-    /**
-     * Ajoute une nouvelle contribution à un cadavre.
-     *
-     * Cette méthode prend en paramètre le texte de la contribution, l'ID de l'administrateur contributeur et l'ID du cadavre
-     * auquel la contribution sera ajoutée. Elle utilise une requête SQL d'insertion pour ajouter ces informations à la table
-     * des contributions. Les paramètres tels que l'ordre de soumission et la date de soumission sont définis à l'intérieur
-     * de la méthode. Cette méthode est utilisée pour enrichir un cadavre avec de nouvelles contributions.
-     *
-     * @param string $texteContribution le texte de la contribution
-     * @param int    $idAdmin           L'ID de l'administrateur contributeur
-     * @param int    $idCadavre         L'ID du cadavre auquel contribuer
-     */
-    public function addContribution($texteContribution, $idAdmin, $idCadavre)
-    {
-        // Définit l'ordre de soumission à 1 et la date de soumission à la date actuelle.
-        $ordreSoumission = 1;
-        $dateSoumission = date('Y-m-d');
-
-        // Définit la requête SQL pour ajouter une nouvelle contribution à un cadavre dans la base de données.
-        $sqlContribution = 'INSERT INTO contribution (texte_contribution, ordre_soumission, date_soumission, id_administrateur, id_cadavre)
-                VALUES (:texteContribution, :ordreSoumission, :dateSoumission, :idAdmin, :idCadavre)';
-
-        // Prépare la requête SQL avec la connexion à la base de données.
-        $sthContribution = self::$dbh->prepare($sqlContribution);
-
-        // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
-        $sthContribution->bindParam(':texteContribution', $texteContribution);
-        $sthContribution->bindParam(':ordreSoumission', $ordreSoumission);
-        $sthContribution->bindParam(':dateSoumission', $dateSoumission);
-        $sthContribution->bindParam(':idAdmin', $idAdmin);
-        $sthContribution->bindParam(':idCadavre', $idCadavre);
-
-        // Exécute la requête SQL.
-        $sthContribution->execute();
-    }
 }
