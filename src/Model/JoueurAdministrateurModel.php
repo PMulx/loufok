@@ -136,27 +136,36 @@ class JoueurAdministrateurModel extends Model
         }
     }
 
+    /**
+     * Récupère les informations complètes d'un cadavre spécifique, y compris ses contributions et les noms d'auteurs.
+     *
+     * @param int $id L'identifiant du joueur pour lequel obtenir les informations du cadavre
+     *
+     * @return array|null un tableau contenant les informations complètes du cadavre ou null si l'id_cadavre est invalide ou inexistant
+     */
     public function getCompleteCadavreInfo($id)
     {
-        // Utilisez la méthode getLastFinishedCadavre pour obtenir l'id_cadavre
+        // Étape 1: Utiliser la méthode getLastFinishedCadavre pour obtenir l'id_cadavre
         $id_cadavre = $this->getLastFinishedCadavre($id);
 
-        // Si vous obtenez un id_cadavre valide, vous pouvez récupérer les informations souhaitées
+        // Étape 2: Si vous obtenez un id_cadavre valide, récupérez les informations souhaitées
         if ($id_cadavre) {
+            // Requête SQL pour récupérer les informations complètes du cadavre et de ses contributions
             $sql = "SELECT c.*, co.*, IFNULL(j.nom_plume, 'Administrateur') AS nom_plume
                 FROM {$this->tableCadavre} c
                 JOIN {$this->tableContribution} co ON c.id_cadavre = co.id_cadavre
                 LEFT JOIN {$this->tableJoueur} j ON co.id_joueur = j.id_joueur
                 WHERE c.id_cadavre = :id_cadavre";
 
+            // Préparer et exécuter la requête SQL
             $sth = self::$dbh->prepare($sql);
             $sth->bindParam(':id_cadavre', $id_cadavre);
             $sth->execute();
 
-            // Vous obtiendrez un ensemble de résultats avec toutes les informations souhaitées
+            // Étape 3: Vous obtiendrez un ensemble de résultats avec toutes les informations souhaitées
             return $sth->fetchAll();
         } else {
-            // Traitez le cas où l'id_cadavre est nul ou inexistant
+            // Étape 4: Traitez le cas où l'id_cadavre est nul ou inexistant
             return null;
         }
     }
