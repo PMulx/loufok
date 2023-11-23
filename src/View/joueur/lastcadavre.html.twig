@@ -42,7 +42,7 @@
           d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"
         />
       </svg>
-      <a href="/joueur/{{ id }}"><h1>Loufok</h1></a>
+      <a href="/joueur/{{ id }}"><h1 class="access">Loufok</h1></a>
       <a class="disconnect" href="/disconnect">
         <span class="material-icons">logout</span>
       </a>
@@ -51,7 +51,7 @@
 </header>
 
 <section class="section__link">
-  <a class="section__link--a" href="/joueur/{{ id }}" id="lienVersLast">
+  <a class="section__link--a access" href="/joueur/{{ id }}" id="lienVersLast">
     Retour
   </a>
 </section>
@@ -63,26 +63,34 @@
   lastcadavre %} {% if lastTitle != lastcadavreinfo.titre_cadavre %} {% if
   lastTitle is not null %} {# Tri des écrivains par ordre alphabétique avant
   d'afficher le titre du nouveau cadavre #} {% set writers = writers|sort %}
-  <p class="lastcadavre__writers">Ecrivains : {{ writers|join(', ') }}</p>
+  <p class="lastcadavre__writers access">
+    Ecrivains : {{ writers|join(', ') }}
+  </p>
   {% endif %}
   <!-- Titre du cadavre -->
-  <h2 class="lastcadavre__title">{{ lastcadavreinfo.titre_cadavre }}</h2>
+  <h2 class="lastcadavre__title access">{{ lastcadavreinfo.titre_cadavre }}</h2>
   <!-- Div pour le texte de la contribution -->
   <div>
-    <p class="lastcadavre__p">{{ lastcadavreinfo.texte_contribution }}</p>
+    <p class="lastcadavre__p access">
+      {{ lastcadavreinfo.texte_contribution }}
+    </p>
   </div>
   <!-- Réinitialisation de la liste des écrivains avec le premier écrivain du nouveau cadavre -->
   {% set writers = [lastcadavreinfo.nom_plume] %} {% else %}
   <!-- Si le titre du cadavre est le même, ajoutez simplement la contribution à la div existante -->
   <div>
-    <p class="lastcadavre__p">{{ lastcadavreinfo.texte_contribution }}</p>
+    <p class="lastcadavre__p access">
+      {{ lastcadavreinfo.texte_contribution }}
+    </p>
   </div>
   <!-- Ajoutez l'écrivain actuel à la liste des écrivains -->
   {% set writers = writers|merge([lastcadavreinfo.nom_plume]) %} {% endif %} {%
   set lastTitle = lastcadavreinfo.titre_cadavre %} {% endfor %} {% if lastTitle
   is not null %} {# Tri des écrivains par ordre alphabétique pour la dernière
   entrée #} {% set writers = writers|sort %}
-  <p class="lastcadavre__writers">Ecrivains : {{ writers|join(', ') }}</p>
+  <p class="lastcadavre__writers access">
+    Ecrivains : {{ writers|join(', ') }}
+  </p>
   {% endif %}
 </section>
 

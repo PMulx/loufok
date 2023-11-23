@@ -42,33 +42,42 @@
             d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"
           />
         </svg>
-        <h1>Loufok</h1>
+        <h1 class="access">Loufok</h1>
       </div>
-      <h3>Créez, inspirez, délirez</h3>
+      <h3 class="access">Créez, inspirez, délirez</h3>
     </div>
   </header>
   <section class="section">
     <form class="section__form" action="/connexion" method="POST">
-      <label for="email"> Votre adresse mail </label>
+      <label for="email" class="access"> Votre adresse mail </label>
       <input
         placeholder="exemple@gmail.com"
         type="email"
+        class="access"
         id="email"
         name="email"
         required
       />
-      <label for="mdp"> Votre mot de passe </label>
+      <label for="mdp" class="access"> Votre mot de passe </label>
       <input type="password" id="mdp" name="mdp" required />
-      <button type="submit" class="button__disabled" id="btnValider" disabled>
+      <button
+        type="submit"
+        class="button__disabled access"
+        id="btnValider"
+        disabled
+      >
         Connexion <span class="material-icons">arrow_right</span>
       </button>
     </form>
     <div class="section__link">
-      <button id="pwaInstall" class="hidden section__link--a">
+      <button id="pwaInstall" class="hidden section__link--a access">
         Télécharger l'application
       </button>
     </div>
   </section>
+  <div class="hidden">
+    <p id="notif" class="access">{{ notifications }}</p>
+  </div>
 </body>
 {% block scripts %}
 <script src="/assets/js/connexion.js"></script>

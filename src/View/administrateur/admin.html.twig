@@ -42,7 +42,7 @@
           d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"
         />
       </svg>
-      <h1>Loufok</h1>
+      <h1 class="access">Loufok</h1>
       <a class="disconnect" href="/disconnect">
         <span class="material-icons">logout</span>
       </a>
@@ -51,7 +51,10 @@
 </header>
 
 <section class="section__link">
-  <a class="section__link--a" href="/administrateur/{{ id }}/currentCadavre">
+  <a
+    class="section__link--a access"
+    href="/administrateur/{{ id }}/currentCadavre"
+  >
     Cadavre Exquis en cours
   </a>
 </section>
@@ -59,7 +62,7 @@
 <hr />
 
 <section class="creaCadavre">
-  <h3 class="creaCadavre__h3">Création d'un nouveau cadavre Exquis</h3>
+  <h3 class="creaCadavre__h3 access">Création d'un nouveau cadavre Exquis</h3>
 
   <div id="calendar"></div>
 
@@ -70,58 +73,73 @@
   >
     <input type="hidden" name="id" value="{{ id }}" />
 
-    <label for="titre">Titre du Cadavre Exquis</label>
+    <label for="titre" class="access">Titre du Cadavre Exquis</label>
     <input
+      class="access"
       type="text"
       placeholder="Le titre du Cadavre Exquis doit être unique"
       name="titre"
       id="titre"
       required
-    /><span id="titreError" style="color: red"></span>
+    /><span id="titreError" class="access" style="color: red"></span>
 
-    <label for="nbContributions">Nombre de contributions</label>
+    <label for="nbContributions" class="access">Nombre de contributions</label>
 
     <input
       type="number"
+      class="access"
       placeholder="12"
       name="nbContributions"
       id="nbContributions"
       required
     />
 
-    <span id="ContributionsErreur" style="color: red"></span>
+    <span id="ContributionsErreur" class="access" style="color: red"></span>
 
     <input type="hidden" name="nbJaime" value="0" />
 
-    <label>Période de jeu</label>
+    <label class="access">Période de jeu</label>
     <div class="form__date">
       <div class="form__date--debut">
-        <label for="dateDebut">Début</label>
-        <input type="date" name="dateDebut" id="dateDebut" required />
+        <label for="dateDebut" class="access">Début</label>
+        <input
+          type="date"
+          name="dateDebut"
+          id="dateDebut"
+          class="access"
+          required
+        />
       </div>
 
       <div class="form__date--fin">
-        <label for="dateFin">Fin</label>
-        <input type="date" name="dateFin" id="dateFin" required />
+        <label for="dateFin" class="access">Fin</label>
+        <input
+          type="date"
+          name="dateFin"
+          id="dateFin"
+          class="access"
+          required
+        />
       </div>
     </div>
-    <span id="messageErreur" style="color: red"></span>
+    <span id="messageErreur" class="access" style="color: red"></span>
 
-    <label for="texteContribution">Contribution</label>
+    <label for="texteContribution" class="access">Contribution</label>
     <textarea
       name="texteContribution"
       id="texteContribution"
       placeholder="Vous avez entre 50 et 280 caractères d’autorisées"
       required
+      class="access"
       spellcheck="true"
       minlength="50"
       maxlength="280"
     ></textarea>
-    <div id="compteur">0/280</div>
+    <div id="compteur" class="access">0/280</div>
 
     <button
       type="submit"
-      class="button__disabled button"
+      class="button__disabled button access"
       id="btnValider"
       disabled
     >
@@ -129,7 +147,7 @@
     </button>
   </form>
   <div class="popupValidate">
-    <p class="popup_texte">{{ confirmMessages }}</p>
+    <p class="popup_texte access">{{ confirmMessages }}</p>
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="16"

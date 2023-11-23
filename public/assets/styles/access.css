@@ -1,0 +1,272 @@
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url(./../fonts/OpenDyslexicAlta-Regular.otf);
+}
+.dyslexic-font {
+  font-family: "OpenDyslexic";
+}
+.dyslexic-font::placeholder {
+  font-family: "OpenDyslexic";
+}
+.senior-mode {
+  font-family: "arial";
+  /* font-size: calc(100% + 0.5rem) !important; */
+}
+
+#title-access {
+  font-size: 1.7rem;
+}
+
+h1 {
+  font-size: 3.6em;
+}
+
+p {
+  font-size: 1.6em;
+}
+
+li {
+  list-style: none;
+}
+.menu {
+  background-color: #6cd4f0;
+  color: white;
+  border-radius: 15px;
+  border: 1px solid black;
+  padding: 5px;
+  width: 40%;
+}
+.acces-div {
+  position: fixed;
+  z-index: 99998;
+  right: auto;
+  left: 0px;
+  margin-left: 20px;
+  bottom: 50px;
+}
+.acces-button {
+  background-color: #a4fa82;
+  border-radius: 50px;
+  cursor: pointer;
+  padding: 15px;
+  fill: #101a31;
+  border: 1px solid #101a31;
+}
+.acces-button:hover {
+  background-color: #101a31;
+  border-radius: 50px;
+  cursor: pointer;
+  padding: 15px;
+  fill: white;
+  border: 1px solid #101a31;
+}
+.acces-button svg {
+  fill: inherit;
+  height: 25px;
+  width: 25px;
+}
+.div-popup-access {
+  top: 46px;
+  left: 5vw;
+  transition: none 0s ease 0s;
+  position: fixed;
+  box-shadow: 0 2px 2.2px rgba(0, 0, 0, 0.034), 0 2px 5.3px rgba(0, 0, 0, 0.048),
+    0 2px 10px rgba(0, 0, 0, 0.06), 0 2px 17.9px rgba(0, 0, 0, 0.072),
+    0 41.8px 33.4px rgba(0, 0, 0, 0.086);
+  background-color: white;
+  color: #101a31;
+  z-index: 99999;
+  display: block;
+  width: 90vw;
+  max-height: 95vh;
+
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 20px;
+  animation-duration: 600ms;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: both;
+}
+.popup-header {
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding-top: 16px;
+}
+.popup-header button {
+  background: 0 0;
+  border: 0;
+  padding: 10px;
+  margin-right: 32px;
+}
+.popup-header button:before {
+  content: "✕";
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.popup-main {
+  max-height: 60vh;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+.popup-main-header {
+  border-top: 2px solid #a4fa82;
+  padding: 4px 0 0 0;
+  margin: 32px 24px 0 32px;
+}
+.popup-main-header h4 {
+  font-size: 1.5rem;
+  margin: 16px 0 0;
+  padding: 0;
+}
+.popup-main-body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+.popup-main-div {
+  margin-top: 16px;
+  cursor: pointer;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+.popup-main-unique {
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+}
+.popop-div-btn {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+.popup-label {
+  position: relative;
+  display: inline-block;
+  border-radius: 17px;
+  width: 60px;
+  height: 34px;
+  font-size: 0;
+  transition: 0.25s ease-out all;
+}
+.popup-span {
+  background-color: #101a31;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 34px;
+  transition: 0.4s;
+}
+.popup-span:before {
+  background-color: #a4fa82;
+  position: absolute;
+  content: "";
+  border-radius: 50%;
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  transition: 0.4s;
+}
+.popup-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0 0;
+  box-sizing: border-box;
+  border: none;
+  padding: 0;
+}
+input[type="checbox" i] {
+  background-color: initial;
+  cursor: default;
+  appearance: auto;
+  box-sizing: border-box;
+  margin: 3px 3px 3px 4px;
+  padding: initial;
+  border: initial;
+}
+.popup-text {
+  margin-left: 35px;
+  padding: 0;
+  border: 0;
+
+  font: inherit;
+  vertical-align: baseline;
+}
+.popup-text h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 5px;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+}
+.popup-text p {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+input:checked + .popup-span {
+  background-color: #a4fa82;
+}
+
+input:checked + .popup-span:before {
+  transform: translateX(26px);
+  background-color: #101a31;
+}
+.popup-footer {
+  display: flex;
+  gap: 17px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 32px;
+  box-sizing: border-box;
+}
+.popup-button-footer {
+  font-size: 1rem;
+  border-radius: 16px;
+  min-height: 34px;
+  margin: 0;
+  padding: 17px;
+  flex-grow: 1;
+  transition: 0.2s;
+  font-weight: 700;
+  background-color: #101a31;
+  text-transform: none;
+  letter-spacing: normal;
+  background: var(white);
+  color: #a4fa82;
+  border: 2px solid #a4fa82;
+}
+.popup-button-footer:hover {
+  background-color: #a4fa82;
+  color: #101a31;
+  border: 2px solid #101a31;
+}
+.d-none {
+  display: none;
+}
