@@ -11,14 +11,94 @@
     />
     <link href="/assets/styles/main.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/web-push"></script>
-    <link rel="manifest" href="/loufok.webmanifest">
+    <link rel="manifest" href="/loufok.webmanifest" />
+    <link href="/assets/styles/access.css" rel="stylesheet" type="text/css" />
     <!-- CSS -->
     <title>{% block title %} Loufok {% endblock %}</title>
   </head>
   <body>
-    {% block content %}{% endblock %}
+    {% block content %} {% endblock %}
+    <div id="accessButton" class="acces-div">
+      <button class="acces-button">
+        <span class="acces-span">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            class="bi bi-universal-access-circle"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M8 4.143A1.071 1.071 0 1 0 8 2a1.071 1.071 0 0 0 0 2.143m-4.668 1.47 3.24.316v2.5l-.323 4.585A.383.383 0 0 0 7 13.14l.826-4.017c.045-.18.301-.18.346 0L9 13.139a.383.383 0 0 0 .752-.125L9.43 8.43v-2.5l3.239-.316a.38.38 0 0 0-.047-.756H3.379a.38.38 0 0 0-.047.756Z"
+            />
+            <path
+              d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0M1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8"
+            />
+          </svg>
+        </span>
+      </button>
+    </div>
+    <div id="menu-access" class="div-popup-access d-none">
+      <section class="popup-header">
+        <h3 style="padding: 0; margin: 0 32px" id="title-access" class="access">
+          Accessibilité
+        </h3>
+        <button id="croix"></button>
+      </section>
+      <section class="popup-main">
+        <div class="popup-main-header">
+          <h4 class="access">Modes d'accessibilité</h4>
+        </div>
+        <div class="popup-main-body">
+          <div class="popup-main-div">
+            <div class="popup-main-unique">
+              <div class="popop-div-btn">
+                <label class="popup-label">
+                  <input
+                    id="dyslexicCheck"
+                    type="checkbox"
+                    class="popup-input"
+                    tabindex="-1"
+                    value="on"
+                  />
+                  <span class="popup-span"></span>
+                </label>
+              </div>
+              <div class="popup-text">
+                <h4 class="access">Mode dyslexie</h4>
+                <p class="access">Modifie la police d'écriture.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="popup-main-div">
+          <div class="popup-main-unique">
+            <div class="popop-div-btn">
+              <label class="popup-label">
+                <input
+                  id="seniorCheck"
+                  type="checkbox"
+                  class="popup-input"
+                  value="on"
+                  tabindex="-1"
+                />
+                <span class="popup-span"></span>
+              </label>
+            </div>
+            <div class="popup-text">
+              <h4 class="access">Mode senior</h4>
+              <p class="access">
+                Modifie et agrandit la taille de la police d'écriture.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <!-- JS -->
-    {% block js %} {% endblock -%}
+    {% block js %}
+    <script src="/assets/js/access.js"></script>
+    {% endblock -%}
   </body>
 </html>
