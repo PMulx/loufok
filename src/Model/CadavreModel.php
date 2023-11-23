@@ -448,12 +448,12 @@ class CadavreModel extends Model
         $errorMessages = [];
 
         // Vérifie l'unicité du titre.
-        if (!$this->isTitleUnique($title)) {
+        if ($this->isTitleUnique($title)) {
             $errorMessages[] = 'Le titre a déjà été utilisé.';
         }
 
         // Vérifie la validité de la période.
-        if (!$this->isPeriodValid($dateStart, $dateEnd)) {
+        if ($this->isPeriodValid($dateStart, $dateEnd)) {
             $errorMessages[] = 'La période se chevauche avec un autre cadavre.';
         }
 
