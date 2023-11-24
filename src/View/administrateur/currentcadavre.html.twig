@@ -45,14 +45,20 @@ Actuel
       </svg>
       <h1 class="access">Loufok</h1>
       <a class="disconnect" href="/disconnect">
-        <span class="material-icons">logout</span>
+        <span class="material-icons" aria-label="Boutton déconnexion"
+          >logout</span
+        >
       </a>
     </div>
   </div>
 </header>
 
 <section class="section__link">
-  <a href="/administrateur/{{ id }}" class="section__link--a access">
+  <a
+    href="/administrateur/{{ id }}"
+    class="section__link--a access"
+    aria-label="Boutton retour vers création d'un cadavre"
+  >
     Retour
   </a>
 </section>
@@ -65,18 +71,24 @@ Actuel
   {% set titreCadavre = currentCadavres.data[0].titre_cadavre %}
 
   <!-- Titre du cadavre actuel -->
-  <h2 class="currentCadavre__title access">{{ titreCadavre }}</h2>
+  <h2
+    class="currentCadavre__title access"
+    tabindex="0"
+    aria-details="Titre du cadavre"
+  >
+    {{ titreCadavre }}
+  </h2>
 
   <!-- Boucle sur les contributions du cadavre actuel -->
   {% for currentCadavre in currentCadavres.data %}
   <div class="currentCadavre__div">
     <!-- Titre du contributeur -->
-    <h3 class="currentCadavre__div--title access">
+    <h3 class="currentCadavre__div--title access" tabindex="0">
       {{ currentCadavre.nom_plume }}
     </h3>
 
     <!-- Texte de la contribution -->
-    <p class="currentCadavre__div--p access">
+    <p class="currentCadavre__div--p access" tabindex="0">
       {{ currentCadavre.texte_contribution }}
     </p>
   </div>

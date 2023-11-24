@@ -11,6 +11,7 @@
           data-name="Calque 1"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 248 248"
+          aria-label="Logo Loufok"
         >
           <defs>
             <style>
@@ -44,12 +45,16 @@
         </svg>
         <h1 class="access">Loufok</h1>
       </div>
-      <h3 class="access">Créez, inspirez, délirez</h3>
+      <h3 class="access" aria-label="Slogan loufok - Créez, inspirez, délirez">
+        Créez, inspirez, délirez
+      </h3>
     </div>
   </header>
   <section class="section">
     <form class="section__form" action="/connexion" method="POST">
-      <label for="email" class="access"> Votre adresse mail </label>
+      <label for="email" class="access" aria-label="Votre adresse mail">
+        Votre adresse mail
+      </label>
       <input
         placeholder="exemple@gmail.com"
         type="email"
@@ -58,19 +63,26 @@
         name="email"
         required
       />
-      <label for="mdp" class="access"> Votre mot de passe </label>
+      <label for="mdp" class="access" aria-label="Votre mot de passe">
+        Votre mot de passe
+      </label>
       <input type="password" id="mdp" name="mdp" required />
       <button
         type="submit"
         class="button__disabled access"
         id="btnValider"
+        aria-label="Connexion"
         disabled
       >
         Connexion <span class="material-icons">arrow_right</span>
       </button>
     </form>
     <div class="section__link">
-      <button id="pwaInstall" class="hidden section__link--a access">
+      <button
+        id="pwaInstall"
+        class="hidden section__link--a access"
+        aria-label="Télécharger l'application"
+      >
         Télécharger l'application
       </button>
     </div>

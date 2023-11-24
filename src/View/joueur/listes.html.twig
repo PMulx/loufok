@@ -11,6 +11,8 @@
         data-name="Calque 1"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 248 248"
+        tabindex="-1"
+        aria-label="Logo loufok"
       >
         <defs>
           <style>
@@ -44,7 +46,7 @@
       </svg>
       <h1 class="access">Loufok</h1>
       <a class="disconnect" href="/disconnect">
-        <span class="material-icons ">logout</span>
+        <span class="material-icons" aria-label="Boutton déconnexion">logout</span>
       </a>
     </div>
   </div>
@@ -56,25 +58,27 @@
     class="section__link--a access"
     href="/joueur/lastcadavre/{{ id }}"
     id="lienVersLast"
+    
+    aria-label="Boutton voir votre dernière participation"
   >
     Dernier cadavre exquis réalisé
   </a>
 </section>
 {% else %}
 <section class="section__link">
-  <p class="section__link--p"> {{ neverplayed}} </p>
+  <p class="section__link--p" tabindex="0"> {{ neverplayed}} </p>
 </section>
 {% endif %}
 
 <hr />
 
 <section class="contribution">
-  <h3 class="contribution__title access">Cadavres exquis en cours</h3>
+  <h3 class="contribution__title access" aria-label="Cadavre exquis en cours" tabindex="0">Cadavres exquis en cours</h3>
 
   <div class="contribution__all">
   {% if currentCadavreContributions.data is empty %}
     <!-- Si aucune fabrication de cadavre n'est en cours -->
-    <p class="access"> Aucune fabrication de cadavre en cours </p>
+    <p class="access" tabindex="0" aria-label="Aucune fabrication de cadavre en cours"> Aucune fabrication de cadavre en cours </p>
   {% else %}
     <!-- Si des contributions existent pour le cadavre actuel -->
     <div class="contribution__all">
@@ -82,7 +86,7 @@
             {% if contribution.texte_contribution is null %}
                 <!-- Si la contribution est masquée -->
                 <div class="contribution__all--div">
-                    <h4 class="access"> Contribution masquée </h4>
+                    <h4 class="access" tabindex="0" aria-label="Contribution masquée"> Contribution masquée </h4>
                     <span class="contribution__all-div__firstspan"> </span>
                     <span class="contribution__all-div__secondspan"> </span>
                     <span class="contribution__all-div__lastspan"> </span>
@@ -90,8 +94,8 @@
             {% else %}
                 <!-- Si la contribution est visible -->
                 <div class="contribution__all--div">
-                    <h4 class="access">Contribution n°{{ contribution.ordre_soumission }}</h4>
-                    <p class="access">{{ contribution.texte_contribution }}</p>
+                    <h4 class="access" tabindex="0">Contribution n°{{ contribution.ordre_soumission }}</h4>
+                    <p class="access" tabindex="0">{{ contribution.texte_contribution }}</p>
                 </div>
             {% endif %}
         {% endfor %}
@@ -111,6 +115,7 @@
       <textarea
         id="texteContribution"
         class="access"
+        aria-label="Votre contribution"
         placeholder="Vous avez entre 50 et 280 caractères d'autorisées"
         name="texteContribution"
         minlength="50"
@@ -124,7 +129,7 @@
     </form>
     {% else %}
         <div class="popupValidate">
-          <p class="popup_texte access"> Merci d'avoir participé à ce cadavre exquis ! </p>
+          <p class="popup_texte access" tabindex="0"> Merci d'avoir participé à ce cadavre exquis ! </p>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"

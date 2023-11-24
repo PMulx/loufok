@@ -11,6 +11,7 @@
         data-name="Calque 1"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 248 248"
+        aria-label="Logo Loufok"
       >
         <defs>
           <style>
@@ -44,7 +45,9 @@
       </svg>
       <h1 class="access">Loufok</h1>
       <a class="disconnect" href="/disconnect">
-        <span class="material-icons">logout</span>
+        <span class="material-icons" aria-label="Boutton déconnexion"
+          >logout</span
+        >
       </a>
     </div>
   </div>
@@ -54,6 +57,7 @@
   <a
     class="section__link--a access"
     href="/administrateur/{{ id }}/currentCadavre"
+    aria-label="Boutton consultation du cadavre exquis en cours"
   >
     Cadavre Exquis en cours
   </a>
@@ -62,7 +66,9 @@
 <hr />
 
 <section class="creaCadavre">
-  <h3 class="creaCadavre__h3 access">Création d'un nouveau cadavre Exquis</h3>
+  <h3 class="creaCadavre__h3 access" tabindex="0">
+    Création d'un nouveau cadavre Exquis
+  </h3>
 
   <div id="calendar"></div>
 
@@ -70,6 +76,8 @@
     class="section__form"
     action="/administrateur/{{ id }}/add"
     method="post"
+    aria-label="formulaire de création d'un cadavre exquis"
+    tabindex="0"
   >
     <input type="hidden" name="id" value="{{ id }}" />
 
@@ -80,8 +88,14 @@
       placeholder="Le titre du Cadavre Exquis doit être unique"
       name="titre"
       id="titre"
+      aria-label="Choisir Titre du cadavre exquis (il doit être unique)"
       required
-    /><span id="titreError" class="access" style="color: red"></span>
+    /><span
+      id="titreError"
+      class="access"
+      style="color: red"
+      tabindex="0"
+    ></span>
 
     <label for="nbContributions" class="access">Nombre de contributions</label>
 
@@ -91,10 +105,16 @@
       placeholder="12"
       name="nbContributions"
       id="nbContributions"
+      aria-label="Choisir nombre de contribution max pour le cadavre"
       required
     />
 
-    <span id="ContributionsErreur" class="access" style="color: red"></span>
+    <span
+      id="ContributionsErreur"
+      class="access"
+      style="color: red"
+      tabindex="0"
+    ></span>
 
     <input type="hidden" name="nbJaime" value="0" />
 
@@ -107,6 +127,7 @@
           name="dateDebut"
           id="dateDebut"
           class="access"
+          aria-label="Chosir date de début du cadavre"
           required
         />
       </div>
@@ -118,11 +139,17 @@
           name="dateFin"
           id="dateFin"
           class="access"
+          aria-label="Choisir date de fin du cadavre"
           required
         />
       </div>
     </div>
-    <span id="messageErreur" class="access" style="color: red"></span>
+    <span
+      id="messageErreur"
+      class="access"
+      style="color: red"
+      tabindex="0"
+    ></span>
 
     <label for="texteContribution" class="access">Contribution</label>
     <textarea
@@ -134,6 +161,7 @@
       spellcheck="true"
       minlength="50"
       maxlength="280"
+      aria-label="Écrire première contribution du cadavre"
     ></textarea>
     <div id="compteur" class="access">0/280</div>
 
@@ -141,13 +169,14 @@
       type="submit"
       class="button__disabled button access"
       id="btnValider"
+      aria-label="Bouton valider la création du cadavre"
       disabled
     >
       Valider
     </button>
   </form>
   <div class="popupValidate">
-    <p class="popup_texte access">{{ confirmMessages }}</p>
+    <p class="popup_texte access" tabindex="0">{{ confirmMessages }}</p>
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="16"

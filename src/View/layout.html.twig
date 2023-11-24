@@ -20,7 +20,7 @@
   <body>
     {% block content %} {% endblock %}
     <div id="accessButton" class="acces-div">
-      <button class="acces-button">
+      <button class="acces-button" aria-label="Ouvrir le menu d'accessibilité">
         <span class="acces-span">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -40,17 +40,24 @@
     </div>
     <div id="menu-access" class="div-popup-access d-none">
       <section class="popup-header">
-        <h3 style="padding: 0; margin: 0 32px" id="title-access" class="access">
+        <h3
+          style="padding: 0; margin: 0 32px"
+          id="title-access"
+          class="access"
+          aria-label="Section sur l'accessibilité"
+        >
           Accessibilité
         </h3>
-        <button id="croix"></button>
+        <button id="croix" aria-label="Fermer le menu d'accessibilité"></button>
       </section>
       <section class="popup-main">
         <div class="popup-main-header">
-          <h4 class="access">Modes d'accessibilité</h4>
+          <h4 class="access" aria-label="Modes d'accessibilité">
+            Modes d'accessibilité
+          </h4>
         </div>
         <div class="popup-main-body">
-          <div class="popup-main-div">
+          <div class="popup-main-div" tabindex="0">
             <div class="popup-main-unique">
               <div class="popop-div-btn">
                 <label class="popup-label">
@@ -58,8 +65,8 @@
                     id="dyslexicCheck"
                     type="checkbox"
                     class="popup-input"
-                    tabindex="-1"
                     value="on"
+                    tabindex="-1"
                   />
                   <span class="popup-span"></span>
                 </label>
@@ -72,12 +79,13 @@
           </div>
         </div>
 
-        <div class="popup-main-div">
+        <div class="popup-main-div" tabindex="0">
           <div class="popup-main-unique">
             <div class="popop-div-btn">
               <label class="popup-label">
                 <input
                   id="seniorCheck"
+                  aria-label="Activer le mode senior"
                   type="checkbox"
                   class="popup-input"
                   value="on"
