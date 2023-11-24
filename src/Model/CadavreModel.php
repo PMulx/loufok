@@ -412,6 +412,8 @@ class CadavreModel extends Model
             // Vérifie si le message d'erreur contient la chaîne spécifique liée à l'unicité de la contribution.
             if (strpos($errorMessage, "'uc_contributions'") !== false) {
                 $errorMessages[] = "Il y a une erreur dans l'ajout de la contribution. Il semblerait que vous avez déjà joué sur ce Cadavre Exquis ou que le cadavre est terminé.";
+            } else if ($errorMessage === "SQLSTATE[45000]: <<Unknown error>>: 1644 Le nombre maximum de contributions pour ce cadavre a été atteint") {
+                $errorMessages[] = "Le nombre maximum de contributions pour ce cadavre a été atteint";
             } else {
                 // Traite les autres erreurs SQL comme nécessaire.
                 $errorMessages[] = $errorMessage;
@@ -448,12 +450,12 @@ class CadavreModel extends Model
         $errorMessages = [];
 
         // Vérifie l'unicité du titre.
-        if ($this->isTitleUnique($title)) {
+        if (!$this->isTitleUnique($title)) {
             $errorMessages[] = 'Le titre a déjà été utilisé.';
         }
 
         // Vérifie la validité de la période.
-        if ($this->isPeriodValid($dateStart, $dateEnd)) {
+        if (!$this->isPeriodValid($dateStart, $dateEnd)) {
             $errorMessages[] = 'La période se chevauche avec un autre cadavre.';
         }
 
