@@ -11,6 +11,8 @@
         data-name="Calque 1"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 248 248"
+        aria-label="Logo loufok"
+        aria-label="Boutton déconnexion"
       >
         <defs>
           <style>
@@ -51,7 +53,12 @@
 </header>
 
 <section class="section__link">
-  <a class="section__link--a access" href="/joueur/{{ id }}" id="lienVersLast">
+  <a
+    class="section__link--a access"
+    href="/joueur/{{ id }}"
+    id="lienVersLast"
+    aria-label="Boutton retour vers liste des contributions"
+  >
     Retour
   </a>
 </section>
@@ -63,15 +70,17 @@
   lastcadavre %} {% if lastTitle != lastcadavreinfo.titre_cadavre %} {% if
   lastTitle is not null %} {# Tri des écrivains par ordre alphabétique avant
   d'afficher le titre du nouveau cadavre #} {% set writers = writers|sort %}
-  <p class="lastcadavre__writers access">
+  <p class="lastcadavre__writers access" tabindex="0">
     Ecrivains : {{ writers|join(', ') }}
   </p>
   {% endif %}
   <!-- Titre du cadavre -->
-  <h2 class="lastcadavre__title access">{{ lastcadavreinfo.titre_cadavre }}</h2>
+  <h2 class="lastcadavre__title access" tabindex="0">
+    {{ lastcadavreinfo.titre_cadavre }}
+  </h2>
   <!-- Div pour le texte de la contribution -->
   <div>
-    <p class="lastcadavre__p access">
+    <p class="lastcadavre__p access" tabindex="0">
       {{ lastcadavreinfo.texte_contribution }}
     </p>
   </div>
@@ -79,7 +88,7 @@
   {% set writers = [lastcadavreinfo.nom_plume] %} {% else %}
   <!-- Si le titre du cadavre est le même, ajoutez simplement la contribution à la div existante -->
   <div>
-    <p class="lastcadavre__p access">
+    <p class="lastcadavre__p access" tabindex="0">
       {{ lastcadavreinfo.texte_contribution }}
     </p>
   </div>
@@ -88,7 +97,7 @@
   set lastTitle = lastcadavreinfo.titre_cadavre %} {% endfor %} {% if lastTitle
   is not null %} {# Tri des écrivains par ordre alphabétique pour la dernière
   entrée #} {% set writers = writers|sort %}
-  <p class="lastcadavre__writers access">
+  <p class="lastcadavre__writers access" tabindex="0">
     Ecrivains : {{ writers|join(', ') }}
   </p>
   {% endif %}
