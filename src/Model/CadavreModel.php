@@ -259,7 +259,7 @@ class CadavreModel extends Model
      *
      * @return array|null le tableau associatif de la contribution aléatoire ou null en cas d'échec
      */
-    public function getRandomContribution()
+    public function getRandomContribution($id_joueur)
     {
         // Obtient le résultat de getCurrentCadavreId.
         $cadavreResult = $this->getCurrentCadavreId();
@@ -268,7 +268,6 @@ class CadavreModel extends Model
         if ($cadavreResult) {
             // Obtient l'ID du cadavre et l'ID de l'utilisateur en session.
             $id_cadavre = $cadavreResult;
-            $id_joueur = $_SESSION['user_id'];
 
             // Définit la requête SQL pour récupérer une contribution aléatoire pour le cadavre et l'utilisateur spécifiés.
             $sql = "SELECT rc.id_cadavre, rc.id_joueur
@@ -305,14 +304,20 @@ class CadavreModel extends Model
      */
     public function assignRandomContribution($id_cadavre, $id_joueur, $numContributionAleatoire)
     {
-        // Insérer la contribution aléatoire dans la base de données
-        $sql = "INSERT INTO {$this->randomcontributiontableName} (id_joueur, id_cadavre, num_contribution) VALUES (:id_joueur, :id_cadavre, :num_contribution)";
-        $sth = self::$dbh->prepare($sql);
-        $sth->bindParam(':id_joueur', $id_joueur);
-        $sth->bindParam(':id_cadavre', $id_cadavre);
-        $sth->bindParam(':num_contribution', $numContributionAleatoire);
-        $sth->execute();
+        try {
+            // Insérer la contribution aléatoire dans la base de données
+            $sql = "INSERT INTO {$this->randomcontributiontableName} (id_joueur, id_cadavre, num_contribution) VALUES (:id_joueur, :id_cadavre, :num_contribution)";
+            $sth = self::$dbh->prepare($sql);
+            $sth->bindParam(':id_joueur', $id_joueur);
+            $sth->bindParam(':id_cadavre', $id_cadavre);
+            $sth->bindParam(':num_contribution', $numContributionAleatoire);
+            $sth->execute();
+        } catch (\PDOException $e) {
+            // Gérer l'erreur ici, par exemple, afficher un message d'erreur ou enregistrer dans un fichier de journal
+            echo "Erreur d'insertion dans la base de données : " . $e->getMessage();
+        }
     }
+
 
     /**
      * Obtient l'ordre de soumission actuel pour le cadavre en cours.
@@ -469,24 +474,32 @@ class CadavreModel extends Model
             return $errorMessages;
         }
 
-        // Prépare la requête SQL d'insertion avec la connexion à la base de données.
-        $sql = "INSERT INTO {$this->cadavretableName} (titre_cadavre, date_debut_cadavre, date_fin_cadavre, nb_contributions, nb_jaime, id_administrateur)
-        VALUES (:title, :dateStart, :dateEnd, :nbMaxContributions, 0, :adminId)";
-        $sth = self::$dbh->prepare($sql);
+        try {
+            // Prépare la requête SQL d'insertion avec la connexion à la base de données.
+            $sql = "INSERT INTO {$this->cadavretableName} (titre_cadavre, date_debut_cadavre, date_fin_cadavre, nb_contributions, nb_jaime, id_administrateur)
+            VALUES (:title, :dateStart, :dateEnd, :nbMaxContributions, 0, :adminId)";
+            $sth = self::$dbh->prepare($sql);
 
-        // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
-        $sth->bindParam(':title', $title);
-        $sth->bindParam(':dateStart', $dateStart);
-        $sth->bindParam(':dateEnd', $dateEnd);
-        $sth->bindParam(':nbMaxContributions', $nbMaxContributions);
-        $sth->bindParam(':adminId', $adminId);
+            // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
+            $sth->bindParam(':title', $title);
+            $sth->bindParam(':dateStart', $dateStart);
+            $sth->bindParam(':dateEnd', $dateEnd);
+            $sth->bindParam(':nbMaxContributions', $nbMaxContributions);
+            $sth->bindParam(':adminId', $adminId);
 
-        // Exécute la requête SQL d'insertion.
-        $sth->execute();
+            // Exécute la requête SQL d'insertion.
+            $sth->execute();
 
-        // Retourne l'ID du cadavre créé.
-        return self::$dbh->lastInsertId();
+            // Retourne l'ID du cadavre créé.
+            return self::$dbh->lastInsertId();
+        } catch (\PDOException $e) {
+            // Gérer l'erreur ici, par exemple, afficher un message d'erreur ou enregistrer dans un fichier de journal
+            echo "Erreur d'insertion dans la base de données : " . $e->getMessage();
+            // Vous pouvez également lever à nouveau l'exception si vous voulez que l'erreur se propage.
+            // throw $e;
+        }
     }
+
 
     /**
      * Ajoute la première contribution à un cadavre.

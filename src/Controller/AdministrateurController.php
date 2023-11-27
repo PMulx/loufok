@@ -37,9 +37,10 @@ class AdministrateurController extends Controller
 
                 // Récupère l'ID de l'utilisateur depuis la session
                 $id = $_SESSION['user_id'];
+                $nom = $_SESSION['user_name'];
 
                 // Crée une instance de CadavreModel
-                $cadavreModel = new CadavreModel();
+                $cadavreModel = CadavreModel::getInstance();
 
                 // Récupère toutes les périodes et titres pour l'affichage
                 $periodesModel = $cadavreModel->getAllPeriods();
@@ -59,6 +60,7 @@ class AdministrateurController extends Controller
                 $this->display(
                     'administrateur/admin.html.twig',
                     [
+                        'nom' => $nom,
                         'titles' => json_encode($titles),
                         'periodes' => $periodes,
                         'dateActuelle' => $dateActuelle,
@@ -91,9 +93,10 @@ class AdministrateurController extends Controller
             } else {
                 // Récupère l'ID de l'utilisateur depuis la session
                 $id = $_SESSION['user_id'];
+                $nom = $_SESSION['user_name'];
 
                 // Crée une instance de CadavreModel
-                $cadavreModel = new CadavreModel();
+                $cadavreModel = CadavreModel::getInstance();
 
                 // Récupère les cadavres exquis actuels en fonction du rôle et de l'ID de l'utilisateur
                 $currentCadavres = $cadavreModel->getCurrentCadavre($role, $id);
@@ -136,7 +139,7 @@ class AdministrateurController extends Controller
             $id = $_SESSION['user_id'];
 
             // Crée une instance de CadavreModel
-            $cadavreModel = new CadavreModel();
+            $cadavreModel = CadavreModel::getInstance();
 
             // Insère la contribution du cadavre exquis dans la base de données
             $returnMessages = $cadavreModel->insertCadavreContribution($datas);

@@ -46,11 +46,11 @@ class JoueurAdministrateurModel extends Model
     public function checkLogin($email, $password)
     {
         // Définit la requête SQL pour récupérer les informations de connexion de l'utilisateur.
-        $sql = "SELECT id_joueur AS id, ad_mail_joueur AS email, mot_de_passe_joueur AS mot_de_passe, 'joueur' AS type
+        $sql = "SELECT id_joueur AS id, nom_plume as nom, ad_mail_joueur AS email, mot_de_passe_joueur AS mot_de_passe, 'joueur' AS type
                 FROM {$this->tableJoueur}
                 WHERE ad_mail_joueur = :email AND mot_de_passe_joueur = :password
                 UNION
-                SELECT id_administrateur AS id, ad_mail_administrateur AS email, mot_de_passe_administrateur AS mot_de_passe, 'administrateur' AS type
+                SELECT id_administrateur AS id, 'Admin' as nom, ad_mail_administrateur AS email, mot_de_passe_administrateur AS mot_de_passe, 'administrateur' AS type
                 FROM {$this->tableAdminstrateur}
                 WHERE ad_mail_administrateur = :email AND mot_de_passe_administrateur = :password";
 

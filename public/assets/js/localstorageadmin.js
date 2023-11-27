@@ -1,4 +1,3 @@
-// Récupérer le contenu actuel du textarea
 var contributionTextarea = document.getElementById("texteContribution");
 var titre = document.getElementById("titre");
 var nbContributions = document.getElementById("nbContributions");
@@ -7,6 +6,8 @@ var dateFin = document.getElementById("dateFin");
 var currentUrl = window.location.href;
 var adminId = extractAdminIdFromUrl(currentUrl);
 var roleUser = "admin";
+var btnBrouillon = document.getElementById("btnBrouillon");
+
 window.onload = function () {
   // Extraire l'ID de l'administrateur de l'URL
   var popup = document.querySelector(".popupValidate");
@@ -25,17 +26,18 @@ window.onload = function () {
   // Vérifier si les conditions sont remplies pour restaurer les valeurs
   if (admin_id === adminId && role_user === roleUser) {
     contributionTextarea.value = savedContribution || "";
-    titre.value = savedTitle || ""; // Utilisez la valeur sauvegardée ou une chaîne vide si non définie
+    titre.value = savedTitle || "";
     nbContributions.value = savedNbContributions || "";
     dateDebut.value = savedDateDebut || "";
     dateFin.value = savedDateFin || "";
   }
 
-  titre.addEventListener("input", updateLocalStorage);
-  nbContributions.addEventListener("input", updateLocalStorage);
-  dateDebut.addEventListener("input", updateLocalStorage);
-  dateFin.addEventListener("input", updateLocalStorage);
-  contributionTextarea.addEventListener("input", updateLocalStorage);
+  btnBrouillon.addEventListener("click", saveToLocalStorage);
+  // Ajoutez un gestionnaire d'événements pour le bouton "btnBrouillon"
+  // qui appelle la fonction saveToLocalStorage lorsque le bouton est cliqué
+  document
+    .getElementById("formId")
+    .addEventListener("submit", resetLocalStorageValues);
 };
 
 function updateLocalStorage() {
@@ -54,7 +56,13 @@ function updateLocalStorage() {
   localStorage.setItem("role", roleUser);
 }
 
+function saveToLocalStorage() {
+  // Ajoutez cette fonction pour enregistrer les valeurs dans le stockage local
+  updateLocalStorage();
+}
+
 function resetLocalStorageValues() {
+  // Ajoutez cette fonction pour réinitialiser les valeurs du stockage local
   localStorage.setItem("contributions", "");
   localStorage.setItem("title", "");
   localStorage.setItem("nbContributions", "");
@@ -62,11 +70,8 @@ function resetLocalStorageValues() {
   localStorage.setItem("dateFin", "");
 }
 
-// Fonction pour extraire l'ID de l'administrateur de l'URL
 function extractAdminIdFromUrl(url) {
-  // Utilisez une expression régulière pour trouver un nombre à la fin de l'URL
   var match = url.match(/\/administrateur\/(\d+)$/);
-
   if (match && match[1]) {
     return match[1];
   } else {

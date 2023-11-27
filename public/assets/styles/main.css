@@ -8,6 +8,7 @@
 
 /* Définition des variables de couleur */
 :root {
+  --fc-bg-event-opacity: 0.8 !important;
   --dark: #101a31; /* Couleur principale, foncée */
   --green: #a4fa82; /* Couleur verte pour les éléments positifs */
   --unactive: #eeeff2; /* Couleur pour les éléments inactifs */
@@ -83,6 +84,12 @@ i {
   color: var(--grey);
 }
 
+.btnbrouillon {
+  background-color: var(--grey);
+  color: var(--green);
+  margin: 1rem 0rem 2rem;
+  font-size: 1.05rem;
+}
 /* Styles pour les boutons de validation */
 .button__validate {
   display: flex;
@@ -229,6 +236,10 @@ i {
   padding: 0.5rem;
 }
 
+.section__link {
+  margin: -1rem 1rem;
+}
+
 /* Style du paragraphe du lien dans une section */
 .section__link--p {
   text-align: center;
@@ -259,6 +270,17 @@ i {
 /* Style de la barre d'outils du calendrier */
 .fc .fc-toolbar {
   align-items: end;
+}
+
+.fc-event-title {
+  padding: 0.1rem 0.5rem;
+  border-radius: 1rem;
+  background-color: rgb(0 61 100) !important;
+  font-size: 1.2rem !important;
+  font-style: italic !important;
+  color: var(--white) !important;
+  margin-top: 2rem !important;
+  font-weight: 700 !important;
 }
 
 /* Style du titre de la barre d'outils du calendrier */

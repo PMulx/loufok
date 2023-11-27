@@ -35,13 +35,14 @@ class JoueurController extends Controller
             } else {
                 // Récupère l'ID de l'utilisateur depuis la session
                 $id = $_SESSION['user_id'];
+                $nom = $_SESSION['user_name'];
 
                 // Crée une instance de CadavreModel
-                $cadavreModel = new CadavreModel();
+                $cadavreModel = CadavreModel::getInstance();
 
                 // Récupère une contribution aléatoire existante ou attribue une nouvelle contribution
-                $randomContribution = $cadavreModel::getInstance()->getRandomContribution();
-                $maxOrdre = $cadavreModel::getInstance()->getCurrentSubmissionOrder();
+                $randomContribution = $cadavreModel->getRandomContribution($id);
+                $maxOrdre = $cadavreModel->getCurrentSubmissionOrder();
 
                 // Récupère les contributions actuelles du cadavre exquis
                 $currentCadavreContributions = $cadavreModel->getCurrentCadavre($role, $id);
@@ -59,6 +60,7 @@ class JoueurController extends Controller
                 $this->display(
                     'joueur/listes.html.twig',
                     [
+                        'nom' => $nom,
                         'dateActuelle' => $dateActuelle,
                         'id' => $id,
                         'idcadavre' => $idcadavre,
@@ -95,7 +97,7 @@ class JoueurController extends Controller
                 $cadavreId = $_POST['cadavreId'];
 
                 // Crée une instance de CadavreModel
-                $cadavreModel = new CadavreModel();
+                $cadavreModel = CadavreModel::getInstance();
 
                 // Appelle la méthode qui peut retourner des erreurs
                 $errorMessages = $cadavreModel->addJoueurContribution($cadavreId, $joueurId, $text);

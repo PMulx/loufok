@@ -18,7 +18,7 @@ class ConnexionController extends Controller
     public function index()
     {
         // Crée une instance de CadavreModel
-        $cadavreModel = new CadavreModel();
+        $cadavreModel = CadavreModel::getInstance();
 
         $notifications = isset($_SESSION['notifications']) ? $_SESSION['notifications'] : null;
 
@@ -38,24 +38,26 @@ class ConnexionController extends Controller
             $password = $_POST['mdp'];
 
             // Récupère l'ID du cadavre exquis actuel
-            $cadavre = $cadavreModel::getInstance()->getCurrentCadavreId();
+            $cadavre = $cadavreModel->getCurrentCadavreId();
 
             // Vérifie les informations de connexion dans la base de données
             $user = JoueurAdministrateurModel::getInstance()->checkLogin($email, $password);
 
             if ($user) {
                 $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_name'] = $user['nom'];
 
                 // Si l'utilisateur est un joueur
                 if ($user['type'] === 'joueur') {
                     $_SESSION['role'] = 'joueur';
+                    $id = $_SESSION['user_id'];
 
                     // Convertit l'ID de l'utilisateur en chaîne de caractères
                     $user_id_string = strval($_SESSION['user_id']);
 
                     // Récupère une contribution aléatoire existante ou attribue une nouvelle contribution
-                    $randomContribution = $cadavreModel::getInstance()->getRandomContribution();
-                    $maxOrdre = $cadavreModel::getInstance()->getCurrentSubmissionOrder();
+                    $randomContribution = $cadavreModel->getRandomContribution($id);
+                    $maxOrdre = $cadavreModel->getCurrentSubmissionOrder();
 
                     if ($randomContribution === false) {
                         if ($maxOrdre >= 1) {
