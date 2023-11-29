@@ -89,12 +89,15 @@ class APIController extends Controller
 
             // Récupère le nombre actuel de likes
             $currentLikes = $cadavreModel->getLikesCadavre($id);
+            if ($currentLikes === 0) {
+                $updatedLikes = "Erreur le cadavre n'a actuellement pas de j'aime";
+            } else {
+                // Incrémente le nombre de likes
+                $newLikes = $currentLikes - 1;
 
-            // Incrémente le nombre de likes
-            $newLikes = $currentLikes - 1;
-
-            // Appelle la méthode addLike pour mettre à jour le nombre de likes
-            $updatedLikes = $cadavreModel->removeLike($id, $newLikes);
+                // Appelle la méthode addLike pour mettre à jour le nombre de likes
+                $updatedLikes = $cadavreModel->removeLike($id, $newLikes);
+            }
 
             // Convertit le résultat en JSON sans échapper les caractères Unicode
             $jsonResponse = json_encode(['likes' => $updatedLikes], JSON_UNESCAPED_UNICODE);
