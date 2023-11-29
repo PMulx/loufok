@@ -104,7 +104,7 @@
   {% if randomcontribution == 1 %}
   {% if not currentCadavreContributions.played %}
   <form
-      class="section__form"
+      class="section__form section__form--joueur"
       action="{{ url('/joueur/contribution/' ~ id ~ '/' ~ idcadavre) }}"
       method="post"
     >

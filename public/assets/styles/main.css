@@ -473,7 +473,7 @@ i {
   width: 100%;
 }
 
-.section__form {
+.section__form--joueur {
   width: 100vw;
   border-top: 2px solid var(--grey);
   padding: 2rem;
