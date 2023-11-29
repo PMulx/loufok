@@ -4,10 +4,10 @@ namespace App\Model;
 
 class CadavreModel extends Model
 {
-    protected $cadavretableName = APP_TABLE_PREFIX . 'cadavre';
-    protected $contributiontableName = APP_TABLE_PREFIX . 'contribution';
-    protected $randomcontributiontableName = APP_TABLE_PREFIX . 'contribution_aléatoire';
-    protected $joueurtableName = APP_TABLE_PREFIX . 'joueur';
+    protected $cadavretableName = APP_TABLE_PREFIX.'cadavre';
+    protected $contributiontableName = APP_TABLE_PREFIX.'contribution';
+    protected $randomcontributiontableName = APP_TABLE_PREFIX.'contribution_aléatoire';
+    protected $joueurtableName = APP_TABLE_PREFIX.'joueur';
 
     protected static $instance;
 
@@ -314,10 +314,9 @@ class CadavreModel extends Model
             $sth->execute();
         } catch (\PDOException $e) {
             // Gérer l'erreur ici, par exemple, afficher un message d'erreur ou enregistrer dans un fichier de journal
-            echo "Erreur d'insertion dans la base de données : " . $e->getMessage();
+            echo "Erreur d'insertion dans la base de données : ".$e->getMessage();
         }
     }
-
 
     /**
      * Obtient l'ordre de soumission actuel pour le cadavre en cours.
@@ -417,8 +416,8 @@ class CadavreModel extends Model
             // Vérifie si le message d'erreur contient la chaîne spécifique liée à l'unicité de la contribution.
             if (strpos($errorMessage, "'uc_contributions'") !== false) {
                 $errorMessages[] = "Il y a une erreur dans l'ajout de la contribution. Il semblerait que vous avez déjà joué sur ce Cadavre Exquis ou que le cadavre est terminé.";
-            } else if ($errorMessage === "SQLSTATE[45000]: <<Unknown error>>: 1644 Le nombre maximum de contributions pour ce cadavre a été atteint") {
-                $errorMessages[] = "Le nombre maximum de contributions pour ce cadavre a été atteint";
+            } elseif ($errorMessage === 'SQLSTATE[45000]: <<Unknown error>>: 1644 Le nombre maximum de contributions pour ce cadavre a été atteint') {
+                $errorMessages[] = 'Le nombre maximum de contributions pour ce cadavre a été atteint';
             } else {
                 // Traite les autres erreurs SQL comme nécessaire.
                 $errorMessages[] = $errorMessage;
@@ -494,12 +493,11 @@ class CadavreModel extends Model
             return self::$dbh->lastInsertId();
         } catch (\PDOException $e) {
             // Gérer l'erreur ici, par exemple, afficher un message d'erreur ou enregistrer dans un fichier de journal
-            echo "Erreur d'insertion dans la base de données : " . $e->getMessage();
+            echo "Erreur d'insertion dans la base de données : ".$e->getMessage();
             // Vous pouvez également lever à nouveau l'exception si vous voulez que l'erreur se propage.
             // throw $e;
         }
     }
-
 
     /**
      * Ajoute la première contribution à un cadavre.
@@ -660,5 +658,127 @@ class CadavreModel extends Model
 
         // Retourne les identifiants et les périodes des cadavres sous forme de tableau.
         return $sth->fetchAll();
+    }
+
+    public function getAllFinishedCadavre()
+    {
+        // Requête SQL pour récupérer les identifiants et les périodes des cadavres.
+        $sql = "SELECT DISTINCT(c.id_cadavre), c.titre_cadavre, c.date_debut_cadavre, c.date_fin_cadavre, c.nb_jaime
+        FROM {$this->cadavretableName} c
+        LEFT OUTER JOIN {$this->contributiontableName} co ON c.id_cadavre = co.id_cadavre
+        LEFT OUTER JOIN {$this->joueurtableName} j ON co.id_joueur = j.id_joueur 
+        WHERE (c.date_fin_cadavre < CURDATE() OR c.nb_contributions <= (SELECT COUNT(ordre_soumission) FROM {$this->contributiontableName} WHERE id_cadavre = c.id_cadavre))";
+
+        // Prépare la requête SQL avec la connexion à la base de données.
+        $sth = self::$dbh->prepare($sql);
+
+        // Exécute la requête SQL.
+        $sth->execute();
+
+        return $sth->fetchAll();
+    }
+
+    public function getFinishedCadavre($id)
+    {
+        // Requête SQL pour récupérer les informations d'un cadavre spécifique.
+        $sql = "SELECT 
+        c.id_cadavre, 
+        c.titre_cadavre, 
+        c.date_debut_cadavre, 
+        c.date_fin_cadavre, 
+        c.nb_jaime, 
+        co.id_contribution, 
+        co.texte_contribution,  
+        CASE
+            WHEN co.id_joueur IS NOT NULL THEN j.nom_plume
+            ELSE 'Administrateur'
+        END AS nom_plume
+    FROM 
+        {$this->cadavretableName} c
+        LEFT OUTER JOIN {$this->contributiontableName} co ON c.id_cadavre = co.id_cadavre 
+        LEFT OUTER JOIN {$this->joueurtableName} j ON co.id_joueur = j.id_joueur 
+    WHERE 
+        c.id_cadavre = :id";
+        // Utilisation d'un paramètre nommé :id
+
+        // Prépare la requête SQL avec la connexion à la base de données.
+        $sth = self::$dbh->prepare($sql);
+
+        // Lie la valeur du paramètre $id à la requête SQL
+        $sth->bindParam(':id', $id);
+
+        // Exécute la requête SQL.
+        $sth->execute();
+
+        return $sth->fetchAll();  // Utilisation de FETCH_ASSOC pour obtenir un tableau associatif
+    }
+
+    public function getlikesCadavre($id): int
+    {
+        // Requête SQL pour récupérer les informations d'un cadavre spécifique.
+        $sql = "SELECT nb_jaime FROM {$this->cadavretableName} WHERE id_cadavre = :id";
+
+        // Prépare la requête SQL avec la connexion à la base de données.
+        $sth = self::$dbh->prepare($sql);
+
+        // Lie la valeur du paramètre $id à la requête SQL
+        $sth->bindParam(':id', $id);
+
+        // Exécute la requête SQL.
+        $sth->execute();
+
+        // Récupère le résultat sous forme d'entier
+        $result = $sth->fetchColumn();
+
+        // Retourne le résultat sous forme d'entier
+        return (int) $result;
+    }
+
+    public function addLike($id, $newLike)
+    {
+        try {
+            // Requête SQL pour mettre à jour le nombre de likes
+            $sql = "UPDATE {$this->cadavretableName} SET nb_jaime = :newLike WHERE id_cadavre = :id";
+            $sth = self::$dbh->prepare($sql);
+
+            // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
+            $sth->bindParam(':newLike', $newLike);
+            $sth->bindParam(':id', $id);
+
+            // Exécute la requête SQL de mise à jour.
+            $sth->execute();
+
+            // Retourne le nombre de likes mis à jour.
+            return $newLike;
+        } catch (PDOException $e) {
+            // Gère les erreurs
+            http_response_code(500);
+            echo 'Internal Server Error';
+            exit;
+        }
+    }
+
+    public function removeLike($id, $newLike)
+    {
+        try {
+            // Requête SQL pour mettre à jour le nombre de likes
+            $sql = "UPDATE {$this->cadavretableName} SET nb_jaime = :newLike WHERE id_cadavre = :id";
+            $sth = self::$dbh->prepare($sql);
+
+            // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
+            $sth->bindParam(':newLike', $newLike);
+            $sth->bindParam(':id', $id);
+
+            // Exécute la requête SQL de mise à jour.
+            $sth->execute();
+
+            // Retourne le nombre de likes mis à jour.
+            return $newLike;
+        } catch (PDOException $e) {
+            // Gère les erreurs
+            http_response_code(500);
+            echo 'Internal Server Error';
+            exit;
+        }
     }
 }
