@@ -8,7 +8,7 @@ use App\Model\CadavreModel;
 
 session_start();
 
-class APIController extends Controller
+class ApiController extends Controller
 {
     /**
      * Affiche la page principale du joueur.

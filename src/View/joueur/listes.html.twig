@@ -82,7 +82,7 @@
     <p class="access" tabindex="0" aria-label="Aucune fabrication de cadavre en cours"> Aucune fabrication de cadavre en cours </p>
   {% else %}
     <!-- Si des contributions existent pour le cadavre actuel -->
-    <div class="contribution__all">
+    <div class="contribution__all--other">
         {% for contribution in currentCadavreContributions.data %}
             {% if contribution.texte_contribution is null %}
                 <!-- Si la contribution est masquée -->

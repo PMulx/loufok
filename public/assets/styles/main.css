@@ -402,6 +402,11 @@ i {
   margin: 2rem 2rem;
 }
 
+.contribution__all--other {
+  max-height: 20rem;
+  overflow-y: scroll;
+}
+
 /* Style du message d'erreur pour une contribution invalide */
 .contribution__msg {
   position: absolute;
@@ -468,6 +473,13 @@ i {
   width: 100%;
 }
 
+.section__form {
+  width: 100vw;
+  border-top: 2px solid var(--grey);
+  padding: 2rem;
+  padding-top: 1rem;
+  margin-left: -9.2%;
+}
 /* Style de la zone de texte dans le formulaire de contribution */
 .contribution .section__form textarea {
   margin-bottom: 2rem;
