@@ -21,4 +21,11 @@ return [
   ['POST', '/administrateur/{id}/add', 'administrateur@add'],
   ['GET', '/administrateur/{id}', 'administrateur@index'],
   ['GET', '/administrateur/{id}/currentCadavre', 'administrateur@currentCadavre'],
+
+  ['GET', '/api/cadavre/{id}/add_like', 'api@addLike'],
+  ['POST', '/api/cadavre/{id}/remove_like', 'api@removeLike'],
+  ['GET', '/api/cadavre/{id}/remove_like', 'api@removeLike'],
+  ['POST', '/api/cadavre/{id}/add_like', 'api@addLike'],
+  ['GET', '/api/cadavres', 'api@getAllCadavres'],
+  ['GET', '/api/cadavre/{id}', 'api@getCadavre'],
 ];
