@@ -1,0 +1,144 @@
+{% extends 'layout.html.twig' %} {% block title %} Administrateur
+{{ parent() }}
+{% endblock %} {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+<header class="admin">
+  <div class="header">
+    <div class="header__logo">
+      <?xml version="1.0" encoding="UTF-8"?>
+      <svg
+        id="Calque_1"
+        data-name="Calque 1"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 248 248"
+        aria-label="Logo Loufok"
+      >
+        <defs>
+          <style>
+            svg {
+              width: 20%;
+            }
+            .cls-1 {
+              fill: #fefffe;
+            }
+
+            .cls-1,
+            .cls-2 {
+              stroke-width: 0px;
+            }
+
+            .cls-2 {
+              fill: #101a31;
+            }
+          </style>
+        </defs>
+        <circle class="cls-2" cx="124" cy="124" r="124" />
+        <path
+          class="cls-1"
+          d="m96,46h21.68l-10.84,58.78s-5.84,22.22,14.16,23.22c0,0,19,3,26-15l10-46h-24s6.37-21,22.18-21h27.64l-11.83,62s-4,22-34,47l-46-10s-7-17-7-23c0,0-3-20,12-76Z"
+        />
+        <polygon class="cls-1" points="93 156 104 187 128 164 93 156" />
+        <path
+          class="cls-1"
+          d="m111,202s6,31,30,10c0,0,42-45,59-50,0,0,22-8,39,12l-3,6s-21-23-44-6c0,0-25,21-31,29,0,0-25,32-46,23,0,0-13-4-12-23,0,0,3-7,8-1Z"
+        />
+      </svg>
+      <h1 class="access">Loufok</h1>
+      <a class="disconnect" href="/disconnect">
+        <span class="material-icons" aria-label="Boutton déconnexion"
+          >logout</span
+        >
+      </a>
+    </div>
+  </div>
+</header>
+
+<section class="section__link">
+  <a
+    class="section__link--a access"
+    href="/administrateur/{{ id }}"
+    aria-label="Boutton retour à la page accueil de l'administrateur "
+  >
+    Retour
+  </a>
+</section>
+
+<hr />
+
+<section class="listejoueurs">
+    <div class="listejoueurs__title">
+        <h4> Nom de l'étudiant </h4>
+        <h4> Peut-il jouer ? </h4>
+    </div>
+
+<hr / class="hr_joueur">
+{% for joueurinfo in joueurinfos %}
+<div class="listejoueurs__div">
+
+<h3> {{ joueurinfo.nom_plume }} </h3>
+<form id="toggleForm{{ loop.index }}" action="{{ url('/administrateur/joueur/' ~ id ~ '/played/' ~ joueurinfo.nom_plume) }}" method="post">
+{% if joueurinfo.play == 1 %}
+    <div class="toggle-container" data-index="{{ loop.index }}">
+        <input type="hidden" class="playerName" name="playerName" value="{{ joueurinfo.nom_plume }}">
+        <input type="checkbox" id="toggleChecked{{ loop.index }}" class="toggle-input" checked >
+        <label for="toggleChecked{{ loop.index }}" class="toggle-label">
+            <div class="toggle-handle"></div>
+        </label>
+        <input type="hidden" name="toggleValue" value="1">
+    </div>
+{% else %}
+    <div class="toggle-container" data-index="{{ loop.index }}">
+        <input type="hidden" class="playerName" name="playerName" value="{{ joueurinfo.nom_plume }}">
+        <input type="checkbox" id="toggle{{ loop.index }}" class="toggle-input">
+        <label for="toggle{{ loop.index }}" class="toggle-label">
+            <div class="toggle-handle"></div>
+        </label>
+        <input type="hidden" name="toggleValue" value="0">
+    </div>
+{% endif %}
+
+</form>
+</div>
+
+{% endfor %}
+</section>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (event) {
+        var target = event.target;
+        var toggleContainer = target.closest('.toggle-container');
+
+        if (toggleContainer && toggleContainer.classList.contains('toggle-container')) {
+            var checkbox = toggleContainer.querySelector('.toggle-input');
+            var playerNameInput = toggleContainer.querySelector('.playerName');
+
+            if (checkbox && playerNameInput) {
+                var playerName = playerNameInput.value;
+
+                if (checkbox.checked) {
+                    localStorage.setItem("checked", 1);
+                    localStorage.setItem("playerName", playerName);
+                } else {
+                    localStorage.setItem("checked", 0);
+                    localStorage.setItem("playerName", playerName);
+                }
+            }
+
+            var dataIndex = toggleContainer.dataset.index;
+            var toggleValueInput = toggleContainer.querySelector('[name="toggleValue"]');
+            
+            if (toggleValueInput) {
+                toggleValueInput.value = localStorage.getItem("checked");
+                var form = toggleContainer.closest('form');
+                form.submit();
+            } else {
+                console.error("toggleValueInput not found.");
+            }
+        }
+    });
+});
+
+</script>
+{% endblock %} {% endblock %}

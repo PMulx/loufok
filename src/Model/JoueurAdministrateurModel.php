@@ -46,11 +46,11 @@ class JoueurAdministrateurModel extends Model
     public function checkLogin($email, $password)
     {
         // Définit la requête SQL pour récupérer les informations de connexion de l'utilisateur.
-        $sql = "SELECT id_joueur AS id, nom_plume as nom, ad_mail_joueur AS email, mot_de_passe_joueur AS mot_de_passe, 'joueur' AS type
+        $sql = "SELECT id_joueur AS id, nom_plume as nom, play as canplay, ad_mail_joueur AS email, mot_de_passe_joueur AS mot_de_passe, 'joueur' AS type
                 FROM {$this->tableJoueur}
                 WHERE ad_mail_joueur = :email AND mot_de_passe_joueur = :password
                 UNION
-                SELECT id_administrateur AS id, 'Admin' as nom, ad_mail_administrateur AS email, mot_de_passe_administrateur AS mot_de_passe, 'administrateur' AS type
+                SELECT id_administrateur AS id, 'Admin' as nom, '' as canplay, ad_mail_administrateur AS email, mot_de_passe_administrateur AS mot_de_passe, 'administrateur' AS type
                 FROM {$this->tableAdminstrateur}
                 WHERE ad_mail_administrateur = :email AND mot_de_passe_administrateur = :password";
 
@@ -167,6 +167,32 @@ class JoueurAdministrateurModel extends Model
         } else {
             // Étape 4: Traitez le cas où l'id_cadavre est nul ou inexistant
             return null;
+        }
+    }
+
+    public function getJoueurInfo()
+    {
+        $sql = "SELECT nom_plume, play
+                FROM {$this->tableJoueur}";
+
+        $sth = self::$dbh->prepare($sql);
+        $sth->execute();
+
+        return $sth->fetchAll();
+    }
+
+    public function updateJoueurCanplay($nomjoueur, $canplay)
+    {
+        try {
+            // Mettre à jour la valeur de play dans la table joueur
+            $sql = "UPDATE {$this->tableJoueur} SET play = :canplay WHERE nom_plume = :nom_plume";
+            $sth = self::$dbh->prepare($sql);
+            $sth->bindParam(':canplay', $canplay);
+            $sth->bindParam(':nom_plume', $nomjoueur);
+            $sth->execute();
+        } catch (\PDOException $e) {
+            // Gérer l'erreur ici, par exemple, afficher un message d'erreur ou enregistrer dans un fichier de journal
+            echo "Erreur de mise à jour dans la base de données : " . $e->getMessage();
         }
     }
 }

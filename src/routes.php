@@ -20,5 +20,7 @@ return [
 
   ['POST', '/administrateur/{id}/add', 'administrateur@add'],
   ['GET', '/administrateur/{id}', 'administrateur@index'],
+  ['GET', '/administrateur/joueur/{id}', 'administrateur@joueur'],
+  ['POST', '/administrateur/joueur/{id}/played/{nomjoueur}', 'administrateur@insertPlay'],
   ['GET', '/administrateur/{id}/currentCadavre', 'administrateur@currentCadavre'],
 ];

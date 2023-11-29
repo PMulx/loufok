@@ -44,6 +44,12 @@ class JoueurController extends Controller
                 $randomContribution = $cadavreModel->getRandomContribution($id);
                 $maxOrdre = $cadavreModel->getCurrentSubmissionOrder();
 
+                if ($randomContribution === false) {
+                    $randomContribution = 0;
+                } else {
+                    $randomContribution = 1;
+                }
+
                 // Récupère les contributions actuelles du cadavre exquis
                 $currentCadavreContributions = $cadavreModel->getCurrentCadavre($role, $id);
 
@@ -60,6 +66,7 @@ class JoueurController extends Controller
                 $this->display(
                     'joueur/listes.html.twig',
                     [
+                        'randomcontribution' => $randomContribution,
                         'nom' => $nom,
                         'dateActuelle' => $dateActuelle,
                         'id' => $id,
@@ -101,19 +108,27 @@ class JoueurController extends Controller
 
                 // Appelle la méthode qui peut retourner des erreurs
                 $errorMessages = $cadavreModel->addJoueurContribution($cadavreId, $joueurId, $text);
+                $dernierecontribution = $cadavreModel->getCurrentCadavre($role, $id);
+
                 $id = $_SESSION['user_id'];
 
-                // Affiche la page d'erreur en cas d'erreurs, sinon redirige vers la page du joueur
-                if (!empty($errorMessages)) {
-                    $this->display(
-                        'joueur/error.html.twig',
-                        [
-                            'errorMessages' => $errorMessages,
-                            'id' => $id,
-                        ]
-                    );
+                if (empty($dernierecontribution['data'])) {
+                    // Redirection spécifique lorsque 'data' est vide
+                    HTTP::redirect("/joueur/lastcadavre/{$id}");
                 } else {
-                    HTTP::redirect("/joueur/{$id}");
+
+                    // Affiche la page d'erreur en cas d'erreurs, sinon redirige vers la page du joueur
+                    if (!empty($errorMessages)) {
+                        $this->display(
+                            'joueur/error.html.twig',
+                            [
+                                'errorMessages' => $errorMessages,
+                                'id' => $id,
+                            ]
+                        );
+                    } else {
+                        HTTP::redirect("/joueur/{$id}");
+                    }
                 }
             }
         } else {

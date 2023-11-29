@@ -1,38 +1,68 @@
-// Récupérer le contenu actuel du textarea
 var contributionTextarea = document.getElementById("texteContribution");
+var currentUrl = window.location.href;
+var joueurId = extractAdminIdFromUrl(currentUrl);
+var roleUser = "joueur";
+var btnBrouillon = document.getElementById("btnBrouillon");
+var checkmark = document.querySelector(".checkmark");
 
 window.onload = function () {
-  // Extraire l'ID du joueur de l'URL
-  var currentUrl = window.location.href;
-  var playerId = extractPlayerIdFromUrl(currentUrl);
-  var roleUser = "joueur";
-
-  var savedContribution = localStorage.getItem("contributions");
-  var player_id = localStorage.getItem("id_joueur");
-  var role_user = localStorage.getItem("role");
-  if (savedContribution && player_id === playerId && role_user === roleUser) {
-    contributionTextarea.value = savedContribution;
+  // Extraire l'ID de l'administrateur de l'URL
+  var popup = document.querySelector(".popupValidate");
+  if (popup && popup.classList.contains("show")) {
+    resetLocalStorageValues();
   }
 
-  // Écouter les événements de changement dans le textarea
-  contributionTextarea.addEventListener("input", function () {
-    // Mettre à jour le contenu de localStorage à chaque changement
-    var contributionText = contributionTextarea.value;
-    localStorage.setItem("contributions", contributionText);
-    localStorage.setItem("id_joueur", playerId);
-    localStorage.setItem("role", roleUser);
-  });
+  var savedContribution = localStorage.getItem("contributions");
+  var id_joueur = localStorage.getItem("id_joueur");
+  var role_user = localStorage.getItem("role");
+
+  // Vérifier si les conditions sont remplies pour restaurer les valeurs
+  if (id_joueur === joueurId && role_user === roleUser) {
+    contributionTextarea.value = savedContribution || "";
+  }
+
+  contributionTextarea.addEventListener("input", valueChanged);
+
+  btnBrouillon.addEventListener("click", saveToLocalStorage);
+  document
+    .getElementById("formId")
+    .addEventListener("submit", resetLocalStorageValues);
 };
 
-// Fonction pour extraire l'ID du joueur de l'URL
-function extractPlayerIdFromUrl(url) {
-  // Utilisez une expression régulière pour trouver un nombre à la fin de l'URL
-  var match = url.match(/\/joueur\/(\d+)$/);
+function valueChanged() {
+  btnBrouillon.classList.remove("clicked");
+  checkmark.style.display = "none";
+}
 
+function updateLocalStorage() {
+  var contributionText = contributionTextarea.value;
+
+  localStorage.setItem("contributions", contributionText);
+  localStorage.setItem("id_joueur", joueurId);
+  localStorage.setItem("role", roleUser);
+}
+
+function saveToLocalStorage() {
+  // Ajoutez cette fonction pour enregistrer les valeurs dans le stockage local
+
+  btnBrouillon.addEventListener("click", function () {
+    btnBrouillon.classList.add("clicked");
+    checkmark.style.display = "inline-block";
+  });
+  updateLocalStorage();
+}
+
+function resetLocalStorageValues() {
+  // Ajoutez cette fonction pour réinitialiser les valeurs du stockage local
+  localStorage.setItem("contributions", "");
+}
+
+function extractAdminIdFromUrl(url) {
+  var match = url.match(/\/joueur\/(\d+)$/);
   if (match && match[1]) {
     return match[1];
   } else {
-    console.error("Player ID not found in the URL");
+    console.error("Joueur ID not found in the URL");
     return null;
   }
 }

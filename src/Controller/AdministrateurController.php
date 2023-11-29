@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Helper\HTTP;
 use App\Model\CadavreModel;
+use App\Model\JoueurAdministrateurModel;
 
 session_start();
 
@@ -109,6 +110,71 @@ class AdministrateurController extends Controller
                         'id' => $id,
                     ]
                 );
+            }
+        } else {
+            // Redirige vers la page d'accueil si l'utilisateur n'a pas de rôle valide
+            HTTP::redirect('/');
+        }
+    }
+
+
+    public function joueur($id)
+    {
+        // Vérifie si l'utilisateur a un rôle valide dans la session
+        if (isset($_SESSION['role'])) {
+            $role = $_SESSION['role'];
+
+            // Redirige le rôle "joueur" vers sa page spécifique
+            if ($role === 'joueur') {
+                HTTP::redirect("/joueur/{$id}");
+            } else {
+                // Récupère l'ID de l'utilisateur depuis la session
+                $id = $_SESSION['user_id'];
+
+                // Crée une instance de CadavreModel
+                $cadavreModel = JoueurAdministrateurModel::getInstance();
+
+                // Récupère les cadavres exquis actuels en fonction du rôle et de l'ID de l'utilisateur
+                $getAlljoueurinfos = $cadavreModel->getJoueurInfo();
+
+                // Affiche la page du cadavre exquis actuel avec les données pertinentes
+                $this->display(
+                    'administrateur/joueurs.html.twig',
+                    [
+                        'joueurinfos' => $getAlljoueurinfos,
+                        'id' => $id,
+                    ]
+                );
+            }
+        } else {
+            // Redirige vers la page d'accueil si l'utilisateur n'a pas de rôle valide
+            HTTP::redirect('/');
+        }
+    }
+
+    public function insertPlay($id, $nomjoueur)
+    {
+        // Vérifie si l'utilisateur a un rôle valide dans la session
+        if (isset($_SESSION['role'])) {
+            $role = $_SESSION['role'];
+
+            // Redirige le rôle "joueur" vers sa page spécifique
+            if ($role === 'joueur') {
+                $id = $_SESSION['user_id'];
+                HTTP::redirect("/joueur/{$id}");
+            } else {
+                $id = $_SESSION['user_id'];
+
+                $nomjoueur = $_POST['playerName'];
+                $canplay = $_POST['toggleValue'];
+
+                $administrateurJoueurModel = JoueurAdministrateurModel::getInstance();
+
+                // Insère la contribution du cadavre exquis dans la base de données
+                $returnMessages = $administrateurJoueurModel->updateJoueurCanplay($nomjoueur, $canplay);
+
+                // Affiche la page du cadavre exquis actuel avec les données pertinentes
+                HTTP::redirect("/administrateur/joueur/{$id}");
             }
         } else {
             // Redirige vers la page d'accueil si l'utilisateur n'a pas de rôle valide

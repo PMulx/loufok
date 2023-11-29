@@ -85,11 +85,35 @@ i {
 }
 
 .btnbrouillon {
-  background-color: var(--grey);
+  width: 100%;
+  background: linear-gradient(90deg, var(--grey) 50%, var(--green) 50%);
+  background-size: 200% 100%;
   color: var(--green);
   margin: 1rem 0rem 2rem;
   font-size: 1.05rem;
+  transition: background 0.5s ease; /* Ajout de la transition pour le fond */
 }
+
+.btnbrouillon.clicked {
+  background-position: -100% 0; /* Déplacement du fond à 100% à gauche après le clic */
+}
+
+.checkmark {
+  display: none;
+  color: var(--dark);
+  margin-left: -10rem;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* Styles pour les boutons de validation */
 .button__validate {
   display: flex;
@@ -270,6 +294,12 @@ i {
 /* Style de la barre d'outils du calendrier */
 .fc .fc-toolbar {
   align-items: end;
+}
+
+#messageErreur__calendrier {
+  color: var(--error);
+  display: block;
+  margin-bottom: 1rem;
 }
 
 .fc-event-title {
@@ -519,4 +549,71 @@ input {
   height: 80px;
   width: auto;
   color: var(--error);
+}
+
+.listejoueurs {
+  margin: 2rem;
+  border-radius: 2rem;
+  background-color: var(--unactive);
+  padding: 2rem;
+}
+
+.listejoueurs__title {
+  display: flex;
+  justify-content: space-between;
+}
+.listejoueurs__title h4 {
+  margin-bottom: 0rem;
+}
+.listejoueurs__div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.hr_joueur {
+  width: 100%;
+  border: 1px solid var(--error);
+}
+
+.toggle-container {
+  display: inline-block;
+  position: relative;
+}
+
+.toggle-input {
+  display: none; /* Cacher la case à cocher par défaut */
+}
+
+.toggle-label {
+  display: block;
+  width: 60px;
+  height: 30px;
+  background-color: var(--green);
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+.toggle-handle {
+  width: 15px;
+  height: 15px;
+  background-color: var(--unactive);
+  border-radius: 50%;
+  position: absolute;
+  left: 10px;
+  top: 24%;
+  transition: transform 0.3s;
+}
+
+/* Styliser la case à cocher lorsque celle-ci est cochée */
+.toggle-input:checked + .toggle-label .toggle-handle {
+  transform: translateX(25px);
+}
+
+.toggle-input:not(:checked) + .toggle-label .toggle-handle {
+  background-color: var(--error);
+}
+
+.toggle-input:not(:checked) + .toggle-label {
+  background-color: var(--unactive);
+  border: 0.3rem solid var(--error);
 }

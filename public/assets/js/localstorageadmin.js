@@ -7,6 +7,7 @@ var currentUrl = window.location.href;
 var adminId = extractAdminIdFromUrl(currentUrl);
 var roleUser = "admin";
 var btnBrouillon = document.getElementById("btnBrouillon");
+var checkmark = document.querySelector(".checkmark");
 
 window.onload = function () {
   // Extraire l'ID de l'administrateur de l'URL
@@ -32,6 +33,12 @@ window.onload = function () {
     dateFin.value = savedDateFin || "";
   }
 
+  titre.addEventListener("input", valueChanged);
+  nbContributions.addEventListener("input", valueChanged);
+  dateDebut.addEventListener("input", valueChanged);
+  dateFin.addEventListener("input", valueChanged);
+  contributionTextarea.addEventListener("input", valueChanged);
+
   btnBrouillon.addEventListener("click", saveToLocalStorage);
   // Ajoutez un gestionnaire d'événements pour le bouton "btnBrouillon"
   // qui appelle la fonction saveToLocalStorage lorsque le bouton est cliqué
@@ -39,6 +46,11 @@ window.onload = function () {
     .getElementById("formId")
     .addEventListener("submit", resetLocalStorageValues);
 };
+
+function valueChanged() {
+  btnBrouillon.classList.remove("clicked");
+  checkmark.style.display = "none";
+}
 
 function updateLocalStorage() {
   var contributionText = contributionTextarea.value;
@@ -58,6 +70,11 @@ function updateLocalStorage() {
 
 function saveToLocalStorage() {
   // Ajoutez cette fonction pour enregistrer les valeurs dans le stockage local
+
+  btnBrouillon.addEventListener("click", function () {
+    btnBrouillon.classList.add("clicked");
+    checkmark.style.display = "inline-block";
+  });
   updateLocalStorage();
 }
 

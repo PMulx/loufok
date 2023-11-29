@@ -51,12 +51,19 @@ class ConnexionController extends Controller
                 if ($user['type'] === 'joueur') {
                     $_SESSION['role'] = 'joueur';
                     $id = $_SESSION['user_id'];
+                    $canplay = $user['canplay'];
 
                     // Convertit l'ID de l'utilisateur en chaîne de caractères
                     $user_id_string = strval($_SESSION['user_id']);
 
                     // Récupère une contribution aléatoire existante ou attribue une nouvelle contribution
-                    $randomContribution = $cadavreModel->getRandomContribution($id);
+                    if ($canplay == 0) {
+                        $randomContribution = true;
+                        $canheplayed = "Non";
+                    } else {
+                        $randomContribution = $cadavreModel->getRandomContribution($id);
+                        $canheplayed = "Oui";
+                    }
                     $maxOrdre = $cadavreModel->getCurrentSubmissionOrder();
 
                     if ($randomContribution === false) {
