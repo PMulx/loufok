@@ -219,7 +219,7 @@ class CadavreModel extends Model
     protected function checkTextSize($text)
     {
         // Obtient la longueur du texte.
-        $textLength = strlen($text);
+        $textLength = mb_strlen($text, 'UTF-8');
 
         // Vérifie si la longueur du texte est comprise entre 50 et 280 caractères inclus.
         return $textLength >= 50 && $textLength <= 280;
