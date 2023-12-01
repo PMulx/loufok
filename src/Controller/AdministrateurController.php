@@ -46,6 +46,7 @@ class AdministrateurController extends Controller
                 // Récupère toutes les périodes et titres pour l'affichage
                 $periodesModel = $cadavreModel->getAllPeriods();
                 $titles = $cadavreModel->getAllTitles();
+                $cadavres = $cadavreModel->getInfoCadavres();
 
                 // Transforme les périodes dans un format plus facile à gérer
                 $periodes = [];
@@ -61,6 +62,7 @@ class AdministrateurController extends Controller
                 $this->display(
                     'administrateur/admin.html.twig',
                     [
+                        'cadavres' => $cadavres,
                         'nom' => $nom,
                         'titles' => json_encode($titles),
                         'periodes' => $periodes,

@@ -241,8 +241,21 @@
      // Attendez que le DOM soit entièrement chargé avant d'exécuter le code
 document.addEventListener('DOMContentLoaded', function() {
     // Récupérez les données de périodes depuis le backend, encodées en JSON
-    var periodes = {{ periodes|json_encode|raw }};
-    var titles = {{ titles | raw }};
+    var cadavres = {{cadavres|json_encode|raw }}
+    var titles = [];
+    var periodes = [];
+
+    for (var i = 0; i < cadavres.length; i++) {
+      // Extraire les titres
+      titles.push(cadavres[i].titre_cadavre);
+
+      // Extraire les périodes
+      var periode = {
+        start: cadavres[i].date_debut_cadavre,
+        end: cadavres[i].date_fin_cadavre
+      };
+      periodes.push(periode);
+    }
 
     // Récupérez la date actuelle depuis le backend
     var dateActuelle = new Date("{{ dateActuelle }}");
@@ -275,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ('0' + endDate.getDate()).slice(-2),
                 color: '#a4fa82',
                 display: 'background',
-                title: titles[index].titre_cadavre, // Utilisez le titre correspondant à l'index actuel
+                title: titles[index], // Utilisez le titre correspondant à l'index actuel
             };
         }),
     });

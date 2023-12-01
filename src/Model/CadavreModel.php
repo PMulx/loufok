@@ -4,10 +4,10 @@ namespace App\Model;
 
 class CadavreModel extends Model
 {
-    protected $cadavretableName = APP_TABLE_PREFIX.'cadavre';
-    protected $contributiontableName = APP_TABLE_PREFIX.'contribution';
-    protected $randomcontributiontableName = APP_TABLE_PREFIX.'contribution_aléatoire';
-    protected $joueurtableName = APP_TABLE_PREFIX.'joueur';
+    protected $cadavretableName = APP_TABLE_PREFIX . 'cadavre';
+    protected $contributiontableName = APP_TABLE_PREFIX . 'contribution';
+    protected $randomcontributiontableName = APP_TABLE_PREFIX . 'contribution_aléatoire';
+    protected $joueurtableName = APP_TABLE_PREFIX . 'joueur';
 
     protected static $instance;
 
@@ -314,7 +314,7 @@ class CadavreModel extends Model
             $sth->execute();
         } catch (\PDOException $e) {
             // Gérer l'erreur ici, par exemple, afficher un message d'erreur ou enregistrer dans un fichier de journal
-            echo "Erreur d'insertion dans la base de données : ".$e->getMessage();
+            echo "Erreur d'insertion dans la base de données : " . $e->getMessage();
         }
     }
 
@@ -493,7 +493,7 @@ class CadavreModel extends Model
             return self::$dbh->lastInsertId();
         } catch (\PDOException $e) {
             // Gérer l'erreur ici, par exemple, afficher un message d'erreur ou enregistrer dans un fichier de journal
-            echo "Erreur d'insertion dans la base de données : ".$e->getMessage();
+            echo "Erreur d'insertion dans la base de données : " . $e->getMessage();
             // Vous pouvez également lever à nouveau l'exception si vous voulez que l'erreur se propage.
             // throw $e;
         }
@@ -623,6 +623,22 @@ class CadavreModel extends Model
     {
         // Requête SQL pour récupérer tous les titres des cadavres.
         $sql = "SELECT titre_cadavre
+        FROM {$this->cadavretableName}";
+
+        // Prépare la requête SQL avec la connexion à la base de données.
+        $sth = self::$dbh->prepare($sql);
+
+        // Exécute la requête SQL.
+        $sth->execute();
+
+        // Retourne tous les titres des cadavres sous forme de tableau.
+        return $sth->fetchAll();
+    }
+
+    public function getInfoCadavres()
+    {
+        // Requête SQL pour récupérer tous les titres des cadavres.
+        $sql = "SELECT titre_cadavre, date_debut_cadavre, date_fin_cadavre
         FROM {$this->cadavretableName}";
 
         // Prépare la requête SQL avec la connexion à la base de données.
