@@ -39,9 +39,11 @@ class JoueurController extends Controller
 
                 // Crée une instance de CadavreModel
                 $cadavreModel = CadavreModel::getInstance();
+                $JAModel = JoueurAdministrateurModel::getInstance();
 
                 // Récupère une contribution aléatoire existante ou attribue une nouvelle contribution
                 $randomContribution = $cadavreModel->getRandomContribution($id);
+                $canHeplay = $JAModel->getJoueurPlay($id);
                 $maxOrdre = $cadavreModel->getCurrentSubmissionOrder();
 
                 if ($randomContribution === false) {
@@ -66,6 +68,7 @@ class JoueurController extends Controller
                 $this->display(
                     'joueur/listes.html.twig',
                     [
+                        'canplay' => $canHeplay,
                         'randomcontribution' => $randomContribution,
                         'nom' => $nom,
                         'dateActuelle' => $dateActuelle,

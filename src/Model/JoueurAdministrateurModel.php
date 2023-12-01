@@ -181,6 +181,18 @@ class JoueurAdministrateurModel extends Model
         return $sth->fetchAll();
     }
 
+    public function getJoueurPlay($id_joueur)
+    {
+        $sql = "SELECT play
+                FROM {$this->tableJoueur} WHERE id_joueur = :id_joueur";
+
+        $sth = self::$dbh->prepare($sql);
+        $sth->bindParam(':id_joueur', $id_joueur);
+        $sth->execute();
+
+        return $sth->fetch();
+    }
+
     public function updateJoueurCanplay($nomjoueur, $canplay)
     {
         try {

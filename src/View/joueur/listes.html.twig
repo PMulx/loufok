@@ -101,7 +101,7 @@
             {% endif %}
         {% endfor %}
     </div>
-  {% if randomcontribution == 1 %}
+  {% if randomcontribution == 1 and canplay.play == 1 %}
   {% if not currentCadavreContributions.played %}
   <form
       class="section__form section__form--joueur"
@@ -172,8 +172,10 @@
           </svg>
         </div>
     {% endif %}
-    {% else %}
+    {% elseif randomcontribution == 0 %}
         <p> Vous n'avez pas encore le droit de participer à ce cadavre exquis. Revenez plus tard. </p>
+    {% else %}
+        <p> Vous n'avez plus le droit de participer à ce cadavre exquis. </p>
     {% endif %}
     {% endif %} 
 
