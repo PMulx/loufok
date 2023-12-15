@@ -679,11 +679,12 @@ class CadavreModel extends Model
     public function getAllFinishedCadavre()
     {
         // Requête SQL pour récupérer les identifiants et les périodes des cadavres.
-        $sql = "SELECT DISTINCT(c.id_cadavre), c.titre_cadavre, c.date_debut_cadavre, c.date_fin_cadavre, c.nb_jaime
-        FROM {$this->cadavretableName} c
-        LEFT OUTER JOIN {$this->contributiontableName} co ON c.id_cadavre = co.id_cadavre
-        LEFT OUTER JOIN {$this->joueurtableName} j ON co.id_joueur = j.id_joueur 
-        WHERE (c.date_fin_cadavre < CURDATE() OR c.nb_contributions <= (SELECT COUNT(ordre_soumission) FROM {$this->contributiontableName} WHERE id_cadavre = c.id_cadavre))";
+        $sql = "SELECT DISTINCT(c.id_cadavre), c.titre_cadavre, c.date_debut_cadavre, c.date_fin_cadavre, c.nb_contributions AS nb_contributions_max, c.nb_jaime, 
+                (SELECT COUNT(ordre_soumission) FROM {$this->contributiontableName} WHERE id_cadavre = c.id_cadavre) AS nb_contributions
+                FROM {$this->cadavretableName} c
+                LEFT OUTER JOIN {$this->contributiontableName} co ON c.id_cadavre = co.id_cadavre
+                LEFT OUTER JOIN {$this->joueurtableName} j ON co.id_joueur = j.id_joueur 
+                WHERE (c.date_fin_cadavre < CURDATE() OR c.nb_contributions <= (SELECT COUNT(ordre_soumission) FROM {$this->contributiontableName} WHERE id_cadavre = c.id_cadavre))";
 
         // Prépare la requête SQL avec la connexion à la base de données.
         $sth = self::$dbh->prepare($sql);
@@ -693,6 +694,7 @@ class CadavreModel extends Model
 
         return $sth->fetchAll();
     }
+
 
     public function getFinishedCadavre($id)
     {
