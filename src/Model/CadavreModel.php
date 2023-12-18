@@ -698,6 +698,7 @@ class CadavreModel extends Model
         return $cadavres;
     }
 
+
     public function getFinishedCadavre($id)
     {
         // Requête SQL pour récupérer les informations d'un cadavre spécifique.
