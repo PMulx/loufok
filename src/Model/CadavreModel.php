@@ -698,7 +698,6 @@ class CadavreModel extends Model
         return $cadavres;
     }
 
-
     public function getFinishedCadavre($id)
     {
         // Requête SQL pour récupérer les informations d'un cadavre spécifique.
@@ -757,34 +756,39 @@ class CadavreModel extends Model
 
     public function getSingleCadavre($id)
     {
-        // Utilisation de la méthode existante pour obtenir les données du cadavre
-        $cadavres = $this->getFinishedCadavre($id);
+        try {
+            // Utilisation de la méthode existante pour obtenir les données du cadavre
+            $cadavres = $this->getFinishedCadavre($id);
 
-        // Vérifie si le cadavre existe
-        if (empty($cadavres)) {
-            return null;
-        }
+            // Vérifie si le cadavre existe
+            if (empty($cadavres)) {
+                return null;
+            }
 
-        // Structure les données pour un seul cadavre
-        $formattedData = [
-            'id_cadavre' => $cadavres[0]['id_cadavre'],
-            'titre_cadavre' => $cadavres[0]['titre_cadavre'],
-            'date_debut_cadavre' => $cadavres[0]['date_debut_cadavre'],
-            'date_fin_cadavre' => $cadavres[0]['date_fin_cadavre'],
-            'nb_jaime' => $cadavres[0]['nb_jaime'],
-            'contributions' => [],
-        ];
-
-        foreach ($cadavres as $cadavre) {
-            $formattedData['contributions'][] = [
-                'id_contribution' => $cadavre['id_contribution'],
-                'texte_contribution' => $cadavre['texte_contribution'],
-                'nom_plume' => $cadavre['nom_plume'],
+            // Structure les données pour un seul cadavre
+            $formattedData = [
+                'id_cadavre' => $cadavres[0]['id_cadavre'],
+                'titre_cadavre' => $cadavres[0]['titre_cadavre'],
+                'date_debut_cadavre' => $cadavres[0]['date_debut_cadavre'],
+                'date_fin_cadavre' => $cadavres[0]['date_fin_cadavre'],
+                'nb_jaime' => $cadavres[0]['nb_jaime'],
+                'contributions' => [],
             ];
-        }
 
-        // Retourne l'objet Cadavre
-        return (object) $formattedData;
+            foreach ($cadavres as $cadavre) {
+                $formattedData['contributions'][] = [
+                    'id_contribution' => $cadavre['id_contribution'],
+                    'texte_contribution' => $cadavre['texte_contribution'],
+                    'nom_plume' => $cadavre['nom_plume'],
+                ];
+            }
+
+            // Retourne l'objet Cadavre
+            return (object) $formattedData;
+        } catch (PDOException $e) {
+            // Gère les erreurs de base de données
+            throw new Exception('Database Error: '.$e->getMessage());
+        }
     }
 
     public function addLike($id)
@@ -819,10 +823,8 @@ class CadavreModel extends Model
             // Retourne le nombre de likes mis à jour.
             return $newLikes;
         } catch (PDOException $e) {
-            // Gère les erreurs
-            http_response_code(500);
-            echo 'Internal Server Error';
-            exit;
+            // Gère les erreurs de base de données
+            throw new Exception('Database Error: '.$e->getMessage());
         }
     }
 

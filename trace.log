@@ -1,0 +1,39 @@
+== Info:   Trying [2a00:b6e0:1:20:15::1]:443...
+== Info: Connected to loufok.alwaysdata.net (2a00:b6e0:1:20:15::1) port 443
+== Info: schannel: disabled automatic use of client certificate
+== Info: ALPN: curl offers http/1.1
+== Info: ALPN: server accepted http/1.1
+== Info: using HTTP/1.1
+=> Send header, 157 bytes (0x9d)
+0000: POST /api/cadavre/add_like HTTP/1.1
+0025: Host: loufok.alwaysdata.net
+0042: User-Agent: curl/8.4.0
+005a: Accept: */*
+0067: Content-Type: application/json
+0087: Content-Length: 12
+009b: 
+=> Send data, 12 bytes (0xc)
+0000: {  "id": 34}
+== Info: schannel: remote party requests renegotiation
+== Info: schannel: renegotiating SSL/TLS connection
+== Info: schannel: SSL/TLS connection renegotiated
+== Info: schannel: remote party requests renegotiation
+== Info: schannel: renegotiating SSL/TLS connection
+== Info: schannel: SSL/TLS connection renegotiated
+<= Recv header, 36 bytes (0x24)
+0000: HTTP/1.1 500 Internal Server Error
+<= Recv header, 24 bytes (0x18)
+0000: Connection: keep-alive
+<= Recv header, 19 bytes (0x13)
+0000: Content-Length: 0
+<= Recv header, 37 bytes (0x25)
+0000: date: Mon, 18 Dec 2023 20:21:13 GMT
+<= Recv header, 16 bytes (0x10)
+0000: server: Apache
+<= Recv header, 40 bytes (0x28)
+0000: content-type: text/html; charset=UTF-8
+<= Recv header, 18 bytes (0x12)
+0000: via: 1.1 alproxy
+<= Recv header, 2 bytes (0x2)
+0000: 
+== Info: Connection #0 to host loufok.alwaysdata.net left intact
