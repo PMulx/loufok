@@ -629,3 +629,7 @@ input {
   background-color: var(--unactive);
   border: 0.3rem solid var(--error);
 }
+.currentCadavre {
+  margin-left: 20px;
+  margin-right: 20px;
+}

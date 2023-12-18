@@ -4,10 +4,10 @@ namespace App\Model;
 
 class CadavreModel extends Model
 {
-    protected $cadavretableName = APP_TABLE_PREFIX . 'cadavre';
-    protected $contributiontableName = APP_TABLE_PREFIX . 'contribution';
-    protected $randomcontributiontableName = APP_TABLE_PREFIX . 'contribution_aléatoire';
-    protected $joueurtableName = APP_TABLE_PREFIX . 'joueur';
+    protected $cadavretableName = APP_TABLE_PREFIX.'cadavre';
+    protected $contributiontableName = APP_TABLE_PREFIX.'contribution';
+    protected $randomcontributiontableName = APP_TABLE_PREFIX.'contribution_aléatoire';
+    protected $joueurtableName = APP_TABLE_PREFIX.'joueur';
 
     protected static $instance;
 
@@ -314,7 +314,7 @@ class CadavreModel extends Model
             $sth->execute();
         } catch (\PDOException $e) {
             // Gérer l'erreur ici, par exemple, afficher un message d'erreur ou enregistrer dans un fichier de journal
-            echo "Erreur d'insertion dans la base de données : " . $e->getMessage();
+            echo "Erreur d'insertion dans la base de données : ".$e->getMessage();
         }
     }
 
@@ -493,7 +493,7 @@ class CadavreModel extends Model
             return self::$dbh->lastInsertId();
         } catch (\PDOException $e) {
             // Gérer l'erreur ici, par exemple, afficher un message d'erreur ou enregistrer dans un fichier de journal
-            echo "Erreur d'insertion dans la base de données : " . $e->getMessage();
+            echo "Erreur d'insertion dans la base de données : ".$e->getMessage();
             // Vous pouvez également lever à nouveau l'exception si vous voulez que l'erreur se propage.
             // throw $e;
         }
@@ -679,11 +679,12 @@ class CadavreModel extends Model
     public function getAllFinishedCadavre()
     {
         // Requête SQL pour récupérer les identifiants et les périodes des cadavres.
-        $sql = "SELECT DISTINCT(c.id_cadavre), c.titre_cadavre, c.date_debut_cadavre, c.date_fin_cadavre, c.nb_jaime
-        FROM {$this->cadavretableName} c
-        LEFT OUTER JOIN {$this->contributiontableName} co ON c.id_cadavre = co.id_cadavre
-        LEFT OUTER JOIN {$this->joueurtableName} j ON co.id_joueur = j.id_joueur 
-        WHERE (c.date_fin_cadavre < CURDATE() OR c.nb_contributions <= (SELECT COUNT(ordre_soumission) FROM {$this->contributiontableName} WHERE id_cadavre = c.id_cadavre))";
+        $sql = "SELECT DISTINCT(c.id_cadavre), c.titre_cadavre, c.date_debut_cadavre, c.date_fin_cadavre, c.nb_contributions AS nb_contributions_max, c.nb_jaime, 
+                (SELECT COUNT(ordre_soumission) FROM {$this->contributiontableName} WHERE id_cadavre = c.id_cadavre) AS nb_contributions
+                FROM {$this->cadavretableName} c
+                LEFT OUTER JOIN {$this->contributiontableName} co ON c.id_cadavre = co.id_cadavre
+                LEFT OUTER JOIN {$this->joueurtableName} j ON co.id_joueur = j.id_joueur 
+                WHERE (c.date_fin_cadavre < CURDATE() OR c.nb_contributions <= (SELECT COUNT(ordre_soumission) FROM {$this->contributiontableName} WHERE id_cadavre = c.id_cadavre))";
 
         // Prépare la requête SQL avec la connexion à la base de données.
         $sth = self::$dbh->prepare($sql);
@@ -691,7 +692,10 @@ class CadavreModel extends Model
         // Exécute la requête SQL.
         $sth->execute();
 
-        return $sth->fetchAll();
+        // Récupère les résultats sous forme de tableau associatif
+        $cadavres = $sth->fetchAll();
+
+        return $cadavres;
     }
 
     public function getFinishedCadavre($id)
@@ -747,25 +751,72 @@ class CadavreModel extends Model
         $result = $sth->fetchColumn();
 
         // Retourne le résultat sous forme d'entier
-        return (int) $result;
+        return $result;
     }
 
-    public function addLike($id, $newLike)
+    public function getSingleCadavre($id)
+    {
+        // Utilisation de la méthode existante pour obtenir les données du cadavre
+        $cadavres = $this->getFinishedCadavre($id);
+
+        // Vérifie si le cadavre existe
+        if (empty($cadavres)) {
+            return null;
+        }
+
+        // Structure les données pour un seul cadavre
+        $formattedData = [
+            'id_cadavre' => $cadavres[0]['id_cadavre'],
+            'titre_cadavre' => $cadavres[0]['titre_cadavre'],
+            'date_debut_cadavre' => $cadavres[0]['date_debut_cadavre'],
+            'date_fin_cadavre' => $cadavres[0]['date_fin_cadavre'],
+            'nb_jaime' => $cadavres[0]['nb_jaime'],
+            'contributions' => [],
+        ];
+
+        foreach ($cadavres as $cadavre) {
+            $formattedData['contributions'][] = [
+                'id_contribution' => $cadavre['id_contribution'],
+                'texte_contribution' => $cadavre['texte_contribution'],
+                'nom_plume' => $cadavre['nom_plume'],
+            ];
+        }
+
+        // Retourne l'objet Cadavre
+        return (object) $formattedData;
+    }
+
+    public function addLike($id)
     {
         try {
+            // Requête SQL pour récupérer le nombre actuel de likes
+            $selectSql = "SELECT nb_jaime FROM {$this->cadavretableName} WHERE id_cadavre = :id";
+            $selectSth = self::$dbh->prepare($selectSql);
+            $selectSth->bindParam(':id', $id);
+            $selectSth->execute();
+
+            // Récupère le nombre actuel de likes
+            $currentLikes = $selectSth->fetch(PDO::FETCH_COLUMN);
+
+            if ($currentLikes === false) {
+                // Si l'id n'est pas trouvé, retourne une erreur 404
+                http_response_code(404);
+                echo 'Not Found';
+                exit;
+            }
+
+            // Incrémente le nombre de likes
+            $newLikes = $currentLikes + 1;
+
             // Requête SQL pour mettre à jour le nombre de likes
-            $sql = "UPDATE {$this->cadavretableName} SET nb_jaime = :newLike WHERE id_cadavre = :id";
-            $sth = self::$dbh->prepare($sql);
-
-            // Lie les valeurs des paramètres de la requête SQL aux paramètres fournis.
-            $sth->bindParam(':newLike', $newLike);
-            $sth->bindParam(':id', $id);
-
-            // Exécute la requête SQL de mise à jour.
-            $sth->execute();
+            $updateSql = "UPDATE {$this->cadavretableName} SET nb_jaime = :newLikes WHERE id_cadavre = :id";
+            $updateSth = self::$dbh->prepare($updateSql);
+            $updateSth->bindParam(':newLikes', $newLikes);
+            $updateSth->bindParam(':id', $id);
+            $updateSth->execute();
 
             // Retourne le nombre de likes mis à jour.
-            return $newLike;
+            return $newLikes;
         } catch (PDOException $e) {
             // Gère les erreurs
             http_response_code(500);
