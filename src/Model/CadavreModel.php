@@ -701,24 +701,23 @@ class CadavreModel extends Model
     public function getFinishedCadavre($id)
     {
         // Requête SQL pour récupérer les informations d'un cadavre spécifique.
-        $sql = "SELECT 
-        c.id_cadavre, 
-        c.titre_cadavre, 
-        c.date_debut_cadavre, 
-        c.date_fin_cadavre, 
-        c.nb_jaime, 
-        co.id_contribution, 
-        co.texte_contribution,  
-        CASE
-            WHEN co.id_joueur IS NOT NULL THEN j.nom_plume
-            ELSE 'Administrateur'
-        END AS nom_plume
-    FROM 
-        {$this->cadavretableName} c
-        LEFT OUTER JOIN {$this->contributiontableName} co ON c.id_cadavre = co.id_cadavre 
-        LEFT OUTER JOIN {$this->joueurtableName} j ON co.id_joueur = j.id_joueur 
-    WHERE 
-        c.id_cadavre = :id";
+        $sql = "
+            SELECT 
+                c.id_cadavre, 
+                c.titre_cadavre, 
+                c.date_debut_cadavre, 
+                c.date_fin_cadavre, 
+                c.nb_jaime, 
+                co.id_contribution, 
+                co.texte_contribution,  
+               j.nom_plume  AS nom_plume
+            FROM 
+                {$this->cadavretableName} c
+                LEFT OUTER JOIN {$this->contributiontableName} co ON c.id_cadavre = co.id_cadavre 
+                LEFT OUTER JOIN {$this->joueurtableName} j ON co.id_joueur = j.id_joueur 
+            WHERE 
+                c.id_cadavre = :id
+        ";
         // Utilisation d'un paramètre nommé :id
 
         // Prépare la requête SQL avec la connexion à la base de données.
@@ -773,15 +772,31 @@ class CadavreModel extends Model
                 'date_fin_cadavre' => $cadavres[0]['date_fin_cadavre'],
                 'nb_jaime' => $cadavres[0]['nb_jaime'],
                 'contributions' => [],
+                'contributeurs' => '',
             ];
+
+            // Structure temporaire pour stocker les contributeurs uniques
+            $uniqueContributeurs = [];
 
             foreach ($cadavres as $cadavre) {
                 $formattedData['contributions'][] = [
                     'id_contribution' => $cadavre['id_contribution'],
                     'texte_contribution' => $cadavre['texte_contribution'],
-                    'nom_plume' => $cadavre['nom_plume'],
                 ];
+
+                $nomPlume = $cadavre['nom_plume'];
+
+                // Vérifie si le contributeur existe déjà
+                if (!in_array($nomPlume, $uniqueContributeurs)) {
+                    $uniqueContributeurs[] = $nomPlume;
+                }
             }
+
+            // Trie les contributeurs par ordre alphabétique
+            sort($uniqueContributeurs);
+
+            // Combinaison des contributeurs en une seule chaîne séparée par des virgules
+            $formattedData['contributeurs'] = implode(', ', $uniqueContributeurs);
 
             // Retourne l'objet Cadavre
             return (object) $formattedData;
@@ -816,12 +831,47 @@ class CadavreModel extends Model
             // Requête SQL pour mettre à jour le nombre de likes
             $updateSql = "UPDATE {$this->cadavretableName} SET nb_jaime = :newLikes WHERE id_cadavre = :id";
             $updateSth = self::$dbh->prepare($updateSql);
-            $updateSth->bindParam(':newLikes', $newLikes);
-            $updateSth->bindParam(':id', $id);
+            $updateSth->bindParam(':newLikes', $newLikes, PDO::PARAM_INT); // Assure que le paramètre est un entier
+            $updateSth->bindParam(':id', $id, PDO::PARAM_INT); // Assure que le paramètre est un entier
             $updateSth->execute();
 
             // Retourne le nombre de likes mis à jour.
             return $newLikes;
+        } catch (PDOException $e) {
+            // Gère les erreurs de base de données
+            throw new Exception('Database Error: '.$e->getMessage());
+        }
+    }
+
+    public function find(int|string $id): ?array
+    {
+        $sql = "SELECT * FROM `{$this->cadavretableName}` WHERE id_cadavre = :id";
+        $sth = $this->query($sql, [':id' => $id]);
+        if ($sth && $sth->rowCount()) {
+            return $sth->fetch();
+        }
+
+        return null;
+    }
+
+    public function update(int|string $id, array $datas): bool
+    {
+        try {
+            $sql = 'UPDATE `'.$this->cadavretableName.'` SET ';
+            foreach ($datas as $k => $v) {
+                $sql .= "`{$k}` = :{$k}, ";
+            }
+            $sql = rtrim($sql, ', '); // Supprime la virgule en trop à la fin
+            $sql .= ' WHERE `id_cadavre` = :id';
+
+            $attributes = [':id' => $id];
+            foreach ($datas as $k => $v) {
+                $attributes[':'.$k] = $v;
+            }
+
+            $sth = $this->query($sql, $attributes);
+
+            return $sth->rowCount() > 0;
         } catch (PDOException $e) {
             // Gère les erreurs de base de données
             throw new Exception('Database Error: '.$e->getMessage());

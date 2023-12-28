@@ -1,19 +1,22 @@
-== Info:   Trying [2a00:b6e0:1:20:15::1]:443...
-== Info: Connected to loufok.alwaysdata.net (2a00:b6e0:1:20:15::1) port 443
+== Info:   Trying 185.31.40.24:443...
+== Info: Connected to loufok.alwaysdata.net (185.31.40.24) port 443
 == Info: schannel: disabled automatic use of client certificate
 == Info: ALPN: curl offers http/1.1
 == Info: ALPN: server accepted http/1.1
 == Info: using HTTP/1.1
 => Send header, 157 bytes (0x9d)
-0000: POST /api/cadavre/add_like HTTP/1.1
-0025: Host: loufok.alwaysdata.net
-0042: User-Agent: curl/8.4.0
-005a: Accept: */*
-0067: Content-Type: application/json
-0087: Content-Length: 12
-009b: 
+0000: 50 4f 53 54 20 2f 61 70 69 2f 63 61 64 61 76 72 POST /api/cadavr
+0010: 65 2f 61 64 64 5f 6c 69 6b 65 20 48 54 54 50 2f e/add_like HTTP/
+0020: 31 2e 31 0d 0a 48 6f 73 74 3a 20 6c 6f 75 66 6f 1.1..Host: loufo
+0030: 6b 2e 61 6c 77 61 79 73 64 61 74 61 2e 6e 65 74 k.alwaysdata.net
+0040: 0d 0a 55 73 65 72 2d 41 67 65 6e 74 3a 20 63 75 ..User-Agent: cu
+0050: 72 6c 2f 38 2e 34 2e 30 0d 0a 41 63 63 65 70 74 rl/8.4.0..Accept
+0060: 3a 20 2a 2f 2a 0d 0a 43 6f 6e 74 65 6e 74 2d 54 : */*..Content-T
+0070: 79 70 65 3a 20 61 70 70 6c 69 63 61 74 69 6f 6e ype: application
+0080: 2f 6a 73 6f 6e 0d 0a 43 6f 6e 74 65 6e 74 2d 4c /json..Content-L
+0090: 65 6e 67 74 68 3a 20 31 32 0d 0a 0d 0a          ength: 12....
 => Send data, 12 bytes (0xc)
-0000: {  "id": 34}
+0000: 7b 20 20 22 69 64 22 3a 20 33 34 7d             {  "id": 34}
 == Info: schannel: remote party requests renegotiation
 == Info: schannel: renegotiating SSL/TLS connection
 == Info: schannel: SSL/TLS connection renegotiated
@@ -21,19 +24,28 @@
 == Info: schannel: renegotiating SSL/TLS connection
 == Info: schannel: SSL/TLS connection renegotiated
 <= Recv header, 36 bytes (0x24)
-0000: HTTP/1.1 500 Internal Server Error
+0000: 48 54 54 50 2f 31 2e 31 20 35 30 30 20 49 6e 74 HTTP/1.1 500 Int
+0010: 65 72 6e 61 6c 20 53 65 72 76 65 72 20 45 72 72 ernal Server Err
+0020: 6f 72 0d 0a                                     or..
 <= Recv header, 24 bytes (0x18)
-0000: Connection: keep-alive
+0000: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 6b 65 65 70 Connection: keep
+0010: 2d 61 6c 69 76 65 0d 0a                         -alive..
 <= Recv header, 19 bytes (0x13)
-0000: Content-Length: 0
+0000: 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 Content-Length: 
+0010: 30 0d 0a                                        0..
 <= Recv header, 37 bytes (0x25)
-0000: date: Mon, 18 Dec 2023 20:21:13 GMT
+0000: 64 61 74 65 3a 20 54 75 65 2c 20 31 39 20 44 65 date: Tue, 19 De
+0010: 63 20 32 30 32 33 20 30 38 3a 35 31 3a 33 37 20 c 2023 08:51:37 
+0020: 47 4d 54 0d 0a                                  GMT..
 <= Recv header, 16 bytes (0x10)
-0000: server: Apache
+0000: 73 65 72 76 65 72 3a 20 41 70 61 63 68 65 0d 0a server: Apache..
 <= Recv header, 40 bytes (0x28)
-0000: content-type: text/html; charset=UTF-8
+0000: 63 6f 6e 74 65 6e 74 2d 74 79 70 65 3a 20 74 65 content-type: te
+0010: 78 74 2f 68 74 6d 6c 3b 20 63 68 61 72 73 65 74 xt/html; charset
+0020: 3d 55 54 46 2d 38 0d 0a                         =UTF-8..
 <= Recv header, 18 bytes (0x12)
-0000: via: 1.1 alproxy
+0000: 76 69 61 3a 20 31 2e 31 20 61 6c 70 72 6f 78 79 via: 1.1 alproxy
+0010: 0d 0a                                           ..
 <= Recv header, 2 bytes (0x2)
-0000: 
+0000: 0d 0a                                           ..
 == Info: Connection #0 to host loufok.alwaysdata.net left intact
